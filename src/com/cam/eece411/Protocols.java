@@ -23,4 +23,14 @@ public class Protocols {
 	public static final byte CODE_SYSTEM_OVERLOAD	= 3;
 	public static final byte CODE_INTERNAL_FAILURE	= 4;
 	public static final byte CODE_UNKNOWN_COMMAND	= 5;
+	
+	// Port numbers
+	public static final int LISTENING_PORT	= 5000;
+	public static final int SENDING_PORT	= 5001;
+	
+	// Max message size
+	public static final int MAX_MSG_SIZE	= 15100;
+	
+	// Relative to nodes
+	public static final int MAX_NODE_NUMBER	= 255;
 }

@@ -1,7 +1,7 @@
 package com.cam.eece411;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
+import java.net.DatagramPacket;
+import java.net.InetAddress;
 import java.util.Arrays;
 
 /**
@@ -13,7 +13,8 @@ import java.util.Arrays;
  * @author cam
  *
  */
-public class AppMessage {
+public class AppMessage extends Message {
+	private InetAddress ip;
 	private byte command;
 	private byte[] key;
 	private int valueLength;
@@ -23,7 +24,10 @@ public class AppMessage {
 	 * Constructs an AppMessage object from the received request
 	 * @param data	the byte[] data of the packet received
 	 */
-	public AppMessage(byte[] data) {
+	public AppMessage(DatagramPacket packet) {
+		super(packet);
+		ip = packet.getAddress();
+		
 		// Get the command, it is always the first byte
 		command = data[0];
 
@@ -36,7 +40,7 @@ public class AppMessage {
 			break;
 		case Protocols.APP_CMD_PUT:
 			key = Arrays.copyOfRange(data, 1, 33);
-			valueLength = byteArrayToInt(Arrays.copyOfRange(data, 33, 35));
+			valueLength = Helper.byteArrayToInt(Arrays.copyOfRange(data, 33, 35));
 			value = Arrays.copyOfRange(data, 35, 35+valueLength);
 			break;
 		case Protocols.APP_CMD_REMOVE:
@@ -85,6 +89,14 @@ public class AppMessage {
 	public byte[] getValue() {
 		return this.value;
 	}
+	
+	/**
+	 * Returns the IP address of the immediate sender of this message
+	 * @return	the IP address of the sender
+	 */
+	public InetAddress getIP() {
+		return this.ip;
+	}
 
 	/**
 	 * Returns a ready-to-send response message based on the parameters
@@ -107,34 +119,11 @@ public class AppMessage {
 	public static byte[] buildResponse(byte responseCode, int valueLength, byte[] value) {
 		byte[] data = new byte[1 + 2 + valueLength];
 		data[0] = responseCode;
-		data[1] = intToByteArray(valueLength)[0];
-		data[2] = intToByteArray(valueLength)[1];
+		data[1] = Helper.intToByteArray(valueLength)[0];
+		data[2] = Helper.intToByteArray(valueLength)[1];
 		for (int i = 0; i < valueLength; i++) {
 			data[i+3] = value[i];
 		}
 		return data;
-	}
-
-	/**
-	 * Returns an int from the byte array specified, in little endian
-	 * @param b	a byte array to convert to an int
-	 * @return	the integer corresponding to the byte array
-	 */
-	public static int byteArrayToInt(byte[] b) {
-		final ByteBuffer bb = ByteBuffer.wrap(b);
-		bb.order(ByteOrder.LITTLE_ENDIAN);
-		return bb.getInt();
-	}
-
-	/**
-	 * Returns a byte array from the int specified, in little endian
-	 * @param i	the int to convert to a byte array
-	 * @return	the byte array corresponding to the int
-	 */
-	public static byte[] intToByteArray(int i) {
-		final ByteBuffer bb = ByteBuffer.allocate(Integer.SIZE / Byte.SIZE);
-		bb.order(ByteOrder.LITTLE_ENDIAN);
-		bb.putInt(i);
-		return bb.array();
 	}
 }
