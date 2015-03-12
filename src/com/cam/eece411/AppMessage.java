@@ -15,6 +15,7 @@ import java.util.Arrays;
  */
 public class AppMessage extends Message {
 	private InetAddress ip;
+	private byte[] uniqueID;
 	private byte command;
 	private byte[] key;
 	private int valueLength;
@@ -28,23 +29,26 @@ public class AppMessage extends Message {
 		super(packet);
 		ip = packet.getAddress();
 		
-		// Get the command, it is always the first byte
-		command = data[0];
+		// Get the unique ID, it's always the first 16 bytes
+		uniqueID = Arrays.copyOfRange(data, 0, 16);
+		
+		// Get the command, it is always the first byte after the unique ID
+		command = data[16];
 
 		// Use the command to determine which fields come next
 		switch (command) {
 		case Protocols.APP_CMD_GET:
-			key = Arrays.copyOfRange(data, 1, 33);
+			key = Arrays.copyOfRange(data, 17, 49);
 			valueLength = -1;
 			value = null;
 			break;
 		case Protocols.APP_CMD_PUT:
-			key = Arrays.copyOfRange(data, 1, 33);
-			valueLength = Helper.byteArrayToInt(Arrays.copyOfRange(data, 33, 35));
-			value = Arrays.copyOfRange(data, 35, 35+valueLength);
+			key = Arrays.copyOfRange(data, 17, 49);
+			valueLength = Helper.byteArrayToInt(Arrays.copyOfRange(data, 49, 51));
+			value = Arrays.copyOfRange(data, 51, 51+valueLength);
 			break;
 		case Protocols.APP_CMD_REMOVE:
-			key = Arrays.copyOfRange(data, 1, 33);
+			key = Arrays.copyOfRange(data, 17, 49);
 			valueLength = -1;
 			value = null;
 			break;
@@ -54,6 +58,14 @@ public class AppMessage extends Message {
 			value = null;
 			break;
 		}
+	}
+	
+	/**
+	 * Returns the unique ID of the request message
+	 * @return	the unique ID
+	 */
+	public byte[] getUniqueID() {
+		return this.uniqueID;
 	}
 
 	/**
@@ -100,29 +112,48 @@ public class AppMessage extends Message {
 
 	/**
 	 * Returns a ready-to-send response message based on the parameters
+	 * @param uniqueID		the unique ID to prepend to the message
 	 * @param responseCode	the response code for the message
 	 * @return				byte[] response message ready to send
 	 */
-	public static byte[] buildResponse(byte responseCode) {
-		byte[] data = new byte[1];
-		data[0] = responseCode;
+	public static byte[] buildResponse(byte[] uniqueID, byte responseCode) {
+		byte[] data = new byte[uniqueID.length + 1];
+		
+		// Prepend the message with the unique ID
+		for (int i = 0; i < uniqueID.length; i++) {
+			data[i] = uniqueID[i];
+		}
+		// Add the response code
+		data[uniqueID.length] = responseCode;
 		return data;
 	}
 
 	/**
 	 * Returns a ready-to-send response message based on the parameters
+	 * @param uniqueID		the unique ID to prepend to the message
 	 * @param responseCode	the response code for the message
 	 * @param valueLength	the length of the value in the message
 	 * @param value			the value originally requested
 	 * @return				byte[] response message ready to send
 	 */
-	public static byte[] buildResponse(byte responseCode, int valueLength, byte[] value) {
-		byte[] data = new byte[1 + 2 + valueLength];
-		data[0] = responseCode;
-		data[1] = Helper.intToByteArray(valueLength)[0];
-		data[2] = Helper.intToByteArray(valueLength)[1];
+	public static byte[] buildResponse(byte[] uniqueID, byte responseCode, int valueLength, byte[] value) {
+		byte[] data = new byte[uniqueID.length + 1 + 2 + valueLength];
+		
+		// Prepend the unique ID to the message
+		for (int i = 0; i < uniqueID.length; i++) {
+			data[i] = uniqueID[i];
+		}
+		int offset = uniqueID.length;
+		
+		// Add the response code and 2 byte value length
+		data[offset] = responseCode;
+		data[++offset] = Helper.intToByteArray(valueLength)[0];
+		data[++offset] = Helper.intToByteArray(valueLength)[1];
+		offset++;
+		
+		// Add the value to the message
 		for (int i = 0; i < valueLength; i++) {
-			data[i+3] = value[i];
+			data[i+offset] = value[i];
 		}
 		return data;
 	}
