@@ -1,10 +1,10 @@
 <?php
-echo "It begins.."
+echo 'It begins..';
 
 // Testing client for a single node KVStore service
 
 // The host running the Key Value Store
-$host = '';
+$host = 'planetlab1.cs.colorado.edu';
 
 // The port the host is listening on
 $port = 5000;
@@ -51,15 +51,15 @@ socket_bind($socket, "0.0.0.0", $port);
 // Send and receive messages
 for($i = 0; $i < $messages->length; $i++) {
 	socket_sendto($socket, $messages[$i]->data, strlen($messages[i]->data), 0x00, $host, $port) or die("Could not send data to KVStore");
-	echo "It sent the message\n"
-	socket_recvfrom($socket, $result, 15500, 0, $a, $b) or die("Could not read server response");
+	echo "It sent the message\n";
+	socket_recvfrom($socket, $result, 15500, 0, $from, $port) or die("Could not read server response");
 	parseMessage($messages[$i]->command, $result);
 }
 
-echo "It ends.. for now.\n"
+echo "It ends.. for now.\n";
 
 function parseMessage($sentCmd, $data) {
-	echo "\nMessage received!"
+	echo "\nMessage received!";
 	echo "- - - - - - - - - - - - -\n";
 	echo "Response Code: ".$data[16]."\n\n";
 }
@@ -68,7 +68,7 @@ function determineString($sentCmd, $data) {
 	$responseArray = unpack('H', $data);
 	$responseCode = $responesArray[16];
 	if ($command == $GET and $responseCode == 0) {
-
+		// do something
 	}
 }
 
