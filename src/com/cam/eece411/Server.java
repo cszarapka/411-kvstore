@@ -3,7 +3,6 @@ package com.cam.eece411;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.net.SocketException;
 
 /**
@@ -18,7 +17,7 @@ public class Server {
 		
 		// Step 1.
 		// Create a DHT where we are the first (and only) node
-		DHT myDHT = new DHT();
+		ConsistenHash myHash = new ConsistenHash();
 		
 		// Step 2.
 		// Set up the socket and packet
@@ -33,15 +32,13 @@ public class Server {
 			return;
 		}
 		
-		
 		// Step 4.
 		// Listen for commands (GET, PUT, REMOVE, SHUTDOWN)
 		while(true) {
-			System.out.println("It waits for your command now..");
+			System.out.println("It waits for requests..");
 			try {
 				socket.receive(packet);
-				System.out.println("It received a packet.");
-				myDHT.reactTo(packet);
+				myHash.reactTo(packet);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

@@ -2,6 +2,7 @@ package com.cam.eece411;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Random;
 
 /**
  * This helper class defines static methods that make life easier, like byte conversions.
@@ -19,6 +20,10 @@ public class Helper {
 		bb.order(ByteOrder.LITTLE_ENDIAN);
 		return bb.getInt();
 	}
+	
+	public static int valueLengthBytesToInt(byte[] b) {
+		return (int) b[0] + (((int) b[1]) * 256);
+	}
 
 	/**
 	 * Returns a byte array from the int specified, in little endian
@@ -30,5 +35,27 @@ public class Helper {
 		bb.order(ByteOrder.LITTLE_ENDIAN);
 		bb.putInt(i);
 		return bb.array();
+	}
+	
+	public static String bytesToHexString(byte[] bytes){
+		String string = "";
+		if (bytes != null) {
+			for (int i = 0; i < bytes.length; i++) {
+				string += String.format("%02X", bytes[i]) + " \\ ";
+			}
+		}
+        return string;
+    }  
+	
+	/**
+	 * Returns a randomized byte array of specified length
+	 * @param length	the length of the byte array to return
+	 * @return			the random byte array
+	 */
+	public static byte[] generateRandomByteArray(int length) {
+		Random rand = new Random();
+		byte[] bytes = new byte[length];
+		rand.nextBytes(bytes);
+		return bytes;
 	}
 }

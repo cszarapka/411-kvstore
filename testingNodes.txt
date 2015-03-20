@@ -1,2 +1,0 @@
-planetlab1.cs.columbia.edu
-planetlab1.cs.colorado.edu
