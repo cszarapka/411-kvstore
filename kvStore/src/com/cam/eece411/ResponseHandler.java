@@ -43,6 +43,7 @@ public class ResponseHandler implements Runnable {
 				case Protocols.APP_CMD_PUT: respondToPUT(); break;
 				case Protocols.APP_CMD_GET: respondToGET(); break;
 				case Protocols.APP_CMD_REMOVE: respondToREMOVE(); break;
+				case Protocols.CMD_IS_ALIVE: respondToIS_ALIVE(); break;
 			}
 		} else {
 			// Send it to the servicing node
@@ -88,6 +89,20 @@ public class ResponseHandler implements Runnable {
 		Server.sendMessage(new AppResponse(rcvdMsg, Protocols.CODE_SUCCESS));
 		System.out.println("It shuts down and simulates a crash now.. :(");
 		System.exit(0);
+	}
+	
+	private void respondToIS_ALIVE() {
+		
+			byte responseCode = Protocols.CODE_SUCCESS;
+			synchronized(KeyValueStore.class) {
+				// Put the key-value pair into our store, or
+				responseCode = KeyValueStore.put(rcvdMsg.getKey(), rcvdMsg.getValue());
+			}
+			// Build the response based on the success of the put, then send it
+			AppResponse response = new AppResponse(rcvdMsg, responseCode);
+			response.portToSendTo = Protocols.IS_ALIVE_RESPONSE_PORT;
+			Server.sendMessage(response);
+		
 	}
 	
 	private void respondToJOIN_REQUEST() {
