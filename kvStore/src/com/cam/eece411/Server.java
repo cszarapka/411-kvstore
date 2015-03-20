@@ -18,6 +18,7 @@ import com.cam.eece411.Utilities.Protocols;
 public class Server {
 	
 	public static Node me;
+	public static int state = Protocols.OUT_OF_TABLE;
 
 	public static void main(String[] args) throws SocketException {
 		System.out.println("\n\n\n\n\n\n\n");
@@ -30,23 +31,26 @@ public class Server {
 			System.out.println("Failed to get local IP");
 			e.printStackTrace();
 		}
-		
-		// Add ourself to the circle
-		Circle.add(me);
 
 		// Set up our socket and packet objects
 		byte[] receivedPacket = new byte[Protocols.MAX_MSG_SIZE];
 		DatagramSocket socket = new DatagramSocket(Protocols.LISTENING_PORT);
 		DatagramPacket packet = new DatagramPacket(receivedPacket, receivedPacket.length);
-
+		
 		// Listen for commands (GET, PUT, REMOVE, SHUTDOWN)
 		while(true) {
 			System.out.println("Waiting for a message...");
 			try {
 				socket.receive(packet);
 				System.out.println("Messaged received!");
-				// Launch the response handler thread
-				(new Thread(new ResponseHandler(packet))).start();
+				// Launch thread based on state we are in
+				switch (state) {
+					case Protocols.OUT_OF_TABLE: (new Thread(new ActivationHandler(packet))).start(); break;
+					case Protocols.IN_TABLE: (new Thread(new ResponseHandler(packet))).start(); break;
+					case Protocols.LEFT_TABLE:
+						// TODO: leave system gracefully
+						socket.close();
+				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

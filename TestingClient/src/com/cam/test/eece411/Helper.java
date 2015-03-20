@@ -21,6 +21,8 @@ public class Helper {
 //		return bb.getInt();
 //	}
 	
+	public static int NUM_NODES = 5;
+	
 	public static int valueLengthBytesToInt(byte[] b) {
 		return (int) b[0] + (((int) b[1]) * 256);
 	}

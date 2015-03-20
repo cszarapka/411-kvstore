@@ -7,4 +7,5 @@ public class NodeMessage extends ReceivedMessage {
 	public NodeMessage(DatagramPacket packet) {
 		super(packet);
 	}
+	
 }

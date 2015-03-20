@@ -1,9 +1,16 @@
 package com.cam.eece411;
 
+import java.io.DataInputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.net.DatagramPacket;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
 
 import com.cam.eece411.Messages.AppResponse;
 import com.cam.eece411.Messages.ReceivedMessage;
+import com.cam.eece411.Utilities.Helper;
 import com.cam.eece411.Utilities.Protocols;
 
 public class ResponseHandler implements Runnable {
@@ -22,10 +29,11 @@ public class ResponseHandler implements Runnable {
 	public void run() {
 		System.out.println("- - - - - - - - - - - - - - - - - -");
 		System.out.print(rcvdMsg.toString());
-
-		// Firstly, if it's a shutdown command, do that and be done with it
-		if (rcvdMsg.getCommand() == Protocols.APP_CMD_SHUTDOWN) {
-			respondToSHUTDOWN();
+		
+		// Check to see if it's one of the commands that isn't serviceable by a specific node
+		switch (rcvdMsg.getCommand()) {
+			case Protocols.APP_CMD_SHUTDOWN: respondToSHUTDOWN(); break;
+			case Protocols.CMD_JOIN_REQUEST: respondToJOIN_REQUEST(); return;
 		}
 		
 		// Find the node that should be servicing this command ** causes null pointer exception when there is no key
@@ -86,5 +94,9 @@ public class ResponseHandler implements Runnable {
 		Server.sendMessage(new AppResponse(rcvdMsg, Protocols.CODE_SUCCESS));
 		System.out.println("It shuts down and simulates a crash now.. :(");
 		System.exit(0);
+	}
+	
+	private void respondToJOIN_REQUEST() {
+		
 	}
 }

@@ -37,6 +37,15 @@ public class Circle {
 	}
 	
 	/**
+	 * Returns true or false depending on if this node is in our view of the system
+	 * @param node	the node to check for
+	 * @return		true or false
+	 */
+	public static boolean containsNode(Node node) {
+		return circle.containsValue(node);
+	}
+	
+	/**
 	 * Returns the node in the circle who is responsible for the 
 	 * specified key
 	 * @param key	the key's owner we are after

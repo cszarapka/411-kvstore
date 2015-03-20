@@ -11,6 +11,7 @@ public class Node {
 	public int nodeNumber;
 	public int nextNodeNumber;
 	public InetAddress ip;
+	public String name;
 	
 	/**
 	 * Constructs a new node with the specified fields
@@ -22,5 +23,6 @@ public class Node {
 		this.nodeNumber = nodeNumber;
 		this.nextNodeNumber = nextNodeNumber;
 		this.ip = ip;
+		this.name = ip.getHostName();
 	}
 }
