@@ -31,4 +31,10 @@ public class MessageBuilder {
 		
 		return buffer;
 	}
+	
+	public static byte[] echoedCommand(ReceivedMessage msg) {
+		byte[] buffer;
+		
+		return buffer;
+	}
 }

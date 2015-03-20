@@ -1,16 +1,10 @@
 package com.cam.eece411;
 
-import java.io.DataInputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.net.DatagramPacket;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
 
 import com.cam.eece411.Messages.AppResponse;
+import com.cam.eece411.Messages.MessageBuilder;
 import com.cam.eece411.Messages.ReceivedMessage;
-import com.cam.eece411.Utilities.Helper;
 import com.cam.eece411.Utilities.Protocols;
 
 public class ResponseHandler implements Runnable {
@@ -52,7 +46,7 @@ public class ResponseHandler implements Runnable {
 			}
 		} else {
 			// Send it to the servicing node
-			// TODO: send it (maybe as a node message?)
+			Server.sendMessage(MessageBuilder.echoedCommand(rcvdMsg), servicingNode.ip, Protocols.LISTENING_PORT);
 		}
 	}
 
