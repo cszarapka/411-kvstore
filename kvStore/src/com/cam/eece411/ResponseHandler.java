@@ -28,6 +28,7 @@ public class ResponseHandler implements Runnable {
 		switch (rcvdMsg.getCommand()) {
 			case Protocols.APP_CMD_SHUTDOWN: respondToSHUTDOWN(); break;
 			case Protocols.CMD_JOIN_REQUEST: respondToJOIN_REQUEST(); return;
+			case Protocols.CMD_IS_ALIVE: respondToIS_ALIVE(); break;
 		}
 		
 		// Find the node that should be servicing this command ** causes null pointer exception when there is no key
@@ -43,7 +44,7 @@ public class ResponseHandler implements Runnable {
 				case Protocols.APP_CMD_PUT: respondToPUT(); break;
 				case Protocols.APP_CMD_GET: respondToGET(); break;
 				case Protocols.APP_CMD_REMOVE: respondToREMOVE(); break;
-				case Protocols.CMD_IS_ALIVE: respondToIS_ALIVE(); break;
+				
 			}
 		} else {
 			// Send it to the servicing node
@@ -94,10 +95,7 @@ public class ResponseHandler implements Runnable {
 	private void respondToIS_ALIVE() {
 		
 			byte responseCode = Protocols.CODE_SUCCESS;
-			synchronized(KeyValueStore.class) {
-				// Put the key-value pair into our store, or
-				responseCode = KeyValueStore.put(rcvdMsg.getKey(), rcvdMsg.getValue());
-			}
+
 			// Build the response based on the success of the put, then send it
 			AppResponse response = new AppResponse(rcvdMsg, responseCode);
 			response.portToSendTo = Protocols.IS_ALIVE_RESPONSE_PORT;
