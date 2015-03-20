@@ -48,7 +48,7 @@ public class TestingClient {
 		byte[] key = Helper.generateRandomByteArray(32);
 		byte[] value = Helper.generateRandomByteArray(50);
 		
-		SendMessage[] messages = new SendMessage[8];
+		SendMessage[] messages = new SendMessage[10];
 		messages[0] = new GetRequest(key);			// should get KEY-DNE back
 		messages[1] = new RemoveRequest(key);		// should get KEY-DNE back
 		messages[2] = new PutRequest(key, value);	// should get SUCCESS back
@@ -57,6 +57,8 @@ public class TestingClient {
 		messages[5] = messages[0];					// should get KEY-DNE back
 		messages[6] = new ShutdownRequest();		// should get SUCCESS back
 		messages[7] = messages[0];					// should get nothing back
+		messages[8] = messages[0];
+		messages[9] = messages[0];
 		System.out.println("It has created the messages.");
 		
 		// Send and receive messages

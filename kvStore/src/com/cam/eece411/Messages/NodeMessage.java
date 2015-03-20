@@ -1,8 +1,6 @@
-package com.cam.eece411;
+package com.cam.eece411.Messages;
 
 import java.net.DatagramPacket;
-
-import com.cam.eece411.Messages.ReceivedMessage;
 
 public class NodeMessage extends ReceivedMessage {
 	

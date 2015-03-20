@@ -2,8 +2,8 @@ package com.cam.eece411.Messages;
 
 import java.net.InetAddress;
 
-import com.cam.eece411.Helper;
-import com.cam.eece411.Protocols;
+import com.cam.eece411.Utilities.Helper;
+import com.cam.eece411.Utilities.Protocols;
 
 /**
  * Representation of a message that is a response to an app-layer

@@ -4,8 +4,8 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.util.Arrays;
 
-import com.cam.eece411.Helper;
-import com.cam.eece411.Protocols;
+import com.cam.eece411.Utilities.Helper;
+import com.cam.eece411.Utilities.Protocols;
 
 public class ReceivedMessage {
 	protected InetAddress senderIP;
