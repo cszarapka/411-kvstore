@@ -64,7 +64,7 @@ public class WatchdogThread implements Runnable {
 				while(aliveIter.hasNext()) {
 					Node a = aliveIter.next();
 					message = MessageBuilder.isAlive();
-					Server.sendMessage(message, alive..ip, Protocols.LISTENING_PORT);
+					Server.sendMessage(message, a.ip, Protocols.LISTENING_PORT);
 				}
 			}
 			for(int i = 0; i < alive.size(); i++) {
