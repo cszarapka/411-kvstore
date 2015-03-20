@@ -1,6 +1,8 @@
 package com.cam.eece411;
 
 import java.util.Collections;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -43,6 +45,10 @@ public class Circle {
 	 */
 	public static boolean containsNode(Node node) {
 		return circle.containsValue(node);
+	}
+	
+	public static Set<Entry<Integer, Node>> getNodes() {
+		return circle.entrySet();
 	}
 	
 	/**

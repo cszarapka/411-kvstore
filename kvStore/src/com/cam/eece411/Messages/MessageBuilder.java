@@ -21,6 +21,17 @@ public class MessageBuilder {
 		return buffer;
 	}
 	
+	public static byte[] isAlive() {
+		byte[] buffer = new byte[17];
+		byte[] uniqueID = Helper.generateRandomByteArray(16);
+		byte command = Protocols.CMD_IS_ALIVE;
+		for(int i=0;i<uniqueID.length;i++){
+			buffer[i] = uniqueID[i];
+		}
+		buffer[16] = command;
+		return buffer;
+	}
+	
 	/**
 	 * Returns a byte[] buffer that is a ready-to-send response to a join
 	 * request-message

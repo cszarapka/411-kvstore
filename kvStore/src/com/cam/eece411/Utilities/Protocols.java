@@ -17,6 +17,7 @@ public class Protocols {
 	public static final byte CMD_CREATE_DHT				= 20;
 	public static final byte CMD_START_JOIN_REQUESTS 	= 21;
 	public static final byte CMD_JOIN_REQUEST			= 22;
+	public static final byte CMD_IS_ALIVE				= 23;
 	
 	// Response codes sent to the user of the DHT-KVStore
 	public static final byte CODE_SUCCESS			= 0;
@@ -27,12 +28,14 @@ public class Protocols {
 	public static final byte CODE_UNKNOWN_COMMAND	= 5;
 	
 	// Port numbers
-	public static final int LISTENING_PORT		= 5000;
-	public static final int SENDING_PORT		= 5001;
-	public static final int JOIN_RESPONSE_PORT 	= 5002;
+	public static final int LISTENING_PORT			= 5000;
+	public static final int SENDING_PORT			= 5001;
+	public static final int JOIN_RESPONSE_PORT 		= 5002;
+	public static final int IS_ALIVE_RESPONSE_PORT 	= 5003;
 	
 	// Timeout values
 	public static final int JOIN_TIMEOUT = 10000;
+	public static final int IS_ALIVE_TIMEOUT = 10000;
 	
 	// Max message size
 	public static final int MAX_MSG_SIZE	= 15100;
