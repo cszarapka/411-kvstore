@@ -43,8 +43,51 @@ public class MessageBuilder {
 		return buffer;
 	}
 	
+	/**
+	 * Returns a byte[] buffer that is a ready-to-send echoed app-layer request-message.
+	 * The command Protocols.CMD_ECHOED, sender IP and port are added to the buffer immediately 
+	 * after the unique ID (command = 1, IP = 4, port = 2)
+	 * @param msg
+	 * @return
+	 */
 	public static byte[] echoedCommand(ReceivedMessage msg) {
 		byte[] buffer;
+		byte[] uniqueID = msg.getUniqueID();
+		byte[] data = msg.getData();
+		int length = 0;
+		int index = 0;
+		
+		// Determine the length of the message based on the command
+		if (msg.getCommand() == Protocols.APP_CMD_PUT) {
+			length = uniqueID.length + 7 + 1 + msg.getKey().length + 2 + msg.getValueLength();
+		} else {
+			length = uniqueID.length + 7 + 1 + msg.getKey().length;
+		}
+		buffer = new byte[length];
+		
+		// Assemble the buffer
+		// Start with the unique ID
+		for (int i = 0; i < uniqueID.length; i++) {
+			buffer[index++] = uniqueID[i];
+		}
+		// Add the command
+		buffer[index++] = Protocols.CMD_ECHOED;
+		
+		// Add the IP (4 byte array)
+		byte[] originIP = msg.getSenderIP().getAddress();
+		for (int i = 0; i < 4; i++) {
+			buffer[index++] = originIP[i];
+		}
+		
+		// Add the port
+		byte[] originPort = Helper.intToByteArray(msg.getSenderPort());
+		buffer[index++] = originPort[0];
+		buffer[index++] = originPort[1];
+		
+		// Add the remaining of the rest of the original message
+		for (int i = uniqueID.length; i < data.length; i++) {
+			buffer[index++] = data[i];
+		}
 		
 		return buffer;
 	}

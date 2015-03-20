@@ -17,7 +17,8 @@ public class Protocols {
 	public static final byte CMD_CREATE_DHT				= 20;
 	public static final byte CMD_START_JOIN_REQUESTS 	= 21;
 	public static final byte CMD_JOIN_REQUEST			= 22;
-	public static final byte CMD_IS_ALIVE				= 23;
+	public static final byte CMD_IS_ALIVE				= 24;
+	public static final byte CMD_ECHOED					= 23;
 	
 	// Response codes sent to the user of the DHT-KVStore
 	public static final byte CODE_SUCCESS			= 0;
