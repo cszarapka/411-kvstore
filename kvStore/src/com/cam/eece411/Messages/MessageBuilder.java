@@ -32,8 +32,24 @@ public class MessageBuilder {
 		return buffer;
 	}
 	
+	/**
+	 * Returns a byte[] buffer that is a ready-to-send echoed app-layer request-message.
+	 * The command Protocols.CMD_ECHOED, sender IP and port are added to the buffer immediately 
+	 * after the unique ID
+	 * @param msg
+	 * @return
+	 */
 	public static byte[] echoedCommand(ReceivedMessage msg) {
 		byte[] buffer;
+		
+		switch (msg.getCommand()) {
+			case Protocols.APP_CMD_PUT:
+				break;
+			case Protocols.APP_CMD_GET:
+				break;
+			case Protocols.APP_CMD_REMOVE:
+				break;
+		}
 		
 		return buffer;
 	}
