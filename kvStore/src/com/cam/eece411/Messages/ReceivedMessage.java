@@ -17,6 +17,7 @@ public class ReceivedMessage {
 	private byte[] key;
 	private int valueLength;
 	private byte[] value;
+	private int nodeID;
 	
 	public ReceivedMessage(DatagramPacket packet) {
 		// Get the guaranteed data
@@ -36,6 +37,15 @@ public class ReceivedMessage {
 			valueLength = Helper.valueLengthBytesToInt(Arrays.copyOfRange(data, 49, 51));
 			value = Arrays.copyOfRange(data, 51, 51+valueLength);
 		}
+		
+		if (command == Protocols.CMD_IS_DEAD) {
+			nodeID = Helper.valueLengthBytesToInt(Arrays.copyOfRange(data, 17, 18));
+		}
+	}
+	
+	//used for isDead
+	public int getNodeID() {
+		return this.nodeID;
 	}
 	
 	public byte[] getData() {

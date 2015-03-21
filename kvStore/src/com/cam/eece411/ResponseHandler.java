@@ -28,6 +28,7 @@ public class ResponseHandler implements Runnable {
 		switch (rcvdMsg.getCommand()) {
 			case Protocols.APP_CMD_SHUTDOWN: respondToSHUTDOWN(); break;
 			case Protocols.CMD_JOIN_REQUEST: respondToJOIN_REQUEST(); return;
+			case Protocols.CMD_IS_DEAD: respondToISDEAD(); break;
 		}
 		
 		// Find the node that should be servicing this command ** causes null pointer exception when there is no key
@@ -50,6 +51,15 @@ public class ResponseHandler implements Runnable {
 		}
 	}
 
+	private void respondToISDEAD() {
+		synchronized(Circle.class) {
+			// Put the key-value pair into our store, or
+			Circle.remove(rcvdMsg.getNodeID());
+		}
+		
+		
+	}
+	
 	private void respondToPUT() {
 		byte responseCode;
 		synchronized(KeyValueStore.class) {
