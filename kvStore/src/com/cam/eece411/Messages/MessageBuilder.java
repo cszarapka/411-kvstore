@@ -1,5 +1,6 @@
 package com.cam.eece411.Messages;
 
+import com.cam.eece411.Node;
 import com.cam.eece411.Utilities.Helper;
 import com.cam.eece411.Utilities.Protocols;
 
@@ -32,13 +33,29 @@ public class MessageBuilder {
 		return buffer;
 	}
 	
+	public static byte[] isDead( Node n ) {
+		byte[] buffer = new byte[19];
+		byte[] nodeID = new byte[2];
+		byte[] uniqueID = Helper.generateRandomByteArray(16);
+		byte command = Protocols.CMD_IS_DEAD;
+		for(int i=0;i<uniqueID.length;i++){
+			buffer[i] = uniqueID[i];
+		}
+		buffer[16] = command;
+		nodeID = Helper.intToByteArray(n.nodeNumber);
+		buffer[17] = nodeID[0];
+		buffer[18] = nodeID[1];
+		
+		return buffer;
+	}
+	
 	/**
 	 * Returns a byte[] buffer that is a ready-to-send response to a join
 	 * request-message
 	 * @return
 	 */
 	public static byte[] responseToJoinRequest() {
-		byte[] buffer;
+		byte[] buffer = null;
 		
 		return buffer;
 	}

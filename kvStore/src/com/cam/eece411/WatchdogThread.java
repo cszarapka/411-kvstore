@@ -5,6 +5,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -16,7 +17,12 @@ public class WatchdogThread implements Runnable {
 
 	public void run() {
 		for(;;) {
-			Set<Entry<Integer,Node>>nodelist = Circle.getNodes();
+			Set<Entry<Integer,Node>>nodelist;
+			synchronized(Circle.class) {
+				nodelist = Circle.getNodes();
+			}
+			Set<Node> dead = new HashSet<Node>();
+			Set<Node> alive = new HashSet<Node>();
 			Node node;
 			byte[] message;
 			byte[] receivedPacket = new byte[Protocols.MAX_MSG_SIZE];
@@ -32,13 +38,15 @@ public class WatchdogThread implements Runnable {
 						socket.setSoTimeout(Protocols.IS_ALIVE_TIMEOUT);
 						DatagramPacket packet = new DatagramPacket(receivedPacket, receivedPacket.length);
 						socket.receive(packet);
-						
+						alive.add(node);
 					} catch (SocketException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 
 					} catch (SocketTimeoutException e) {
-						
+						// Messaged server failed to respond. 
+						// Treat it as dead
+						dead.add(node);
 						
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
@@ -48,6 +56,23 @@ public class WatchdogThread implements Runnable {
 				
 				
 			}
+			//now we have a set of node numbers "alive" and a set "dead"
+			Iterator<Node> deadIter = dead.iterator();
+			while(deadIter.hasNext()) {
+				Node d = deadIter.next();
+				Iterator<Node> aliveIter = alive.iterator();
+				while(aliveIter.hasNext()) {
+					Node a = aliveIter.next();
+					message = MessageBuilder.isDead(d);
+					Server.sendMessage(message, a.ip, Protocols.LISTENING_PORT);
+				}
+			}
+			for(int i = 0; i < alive.size(); i++) {
+				//file duplication shit or something idek
+			}
+			
+			
+			
 		}
 	}
 
