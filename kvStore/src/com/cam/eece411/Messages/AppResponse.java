@@ -20,6 +20,7 @@ public class AppResponse {
 	private int valueLength;
 	private byte[] value;
 	
+	
 	/**
 	 * Constructs a new response message that is a reply to a PUT, REMOVE or SHUTDOWN
 	 * @param msg			the message to respond to (ID, IP, port)

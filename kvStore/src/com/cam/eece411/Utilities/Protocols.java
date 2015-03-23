@@ -18,6 +18,7 @@ public class Protocols {
 	public static final byte CMD_START_JOIN_REQUESTS 	= 21;
 	public static final byte CMD_JOIN_REQUEST			= 22;
 	public static final byte CMD_IS_ALIVE				= 24;
+	public static final byte CMD_IS_DEAD				= 25;
 	public static final byte CMD_ECHOED					= 23;
 	public static final byte CMD_JOIN_RESPONSE			= 25;
 	public static final byte CMD_JOIN_CONFIRM			= 26;

@@ -1,6 +1,7 @@
 package com.cam.eece411.Messages;
 
 import com.cam.eece411.Circle;
+import com.cam.eece411.Node;
 import com.cam.eece411.Utilities.Helper;
 import com.cam.eece411.Utilities.Protocols;
 
@@ -20,7 +21,8 @@ public class MessageBuilder {
 		buffer[uniqueID.length] = Protocols.CMD_JOIN_REQUEST;
 		return buffer;
 	}
-	
+
+	// Shouldn't isAlive take a node?
 	public static byte[] isAlive() {
 		byte[] buffer = new byte[17];
 		byte[] uniqueID = Helper.generateRandomByteArray(16);
@@ -28,6 +30,48 @@ public class MessageBuilder {
 			buffer[i] = uniqueID[i];
 		}
 		buffer[16] = Protocols.CMD_IS_ALIVE;
+		return buffer;
+	}
+	
+	public static byte[] isAlive(Node node) {
+		byte[] buffer = new byte[21];
+		byte[] uniqueID = Helper.generateRandomByteArray(16);
+		byte[] ip;
+		int index = 0;
+		// Add the unique ID
+		for (int i = 0; i < uniqueID.length; i++) {
+			buffer[index++] = uniqueID[i];
+		}
+		// Add the command
+		buffer[index++] = Protocols.CMD_IS_ALIVE;
+		
+		// Add the node's IP
+		ip = node.ip.getAddress();
+		for (int i = 0; i < ip.length; i++) {
+			buffer[index] = ip[i];
+		}
+		
+		// Add the node number and next node number
+		buffer[index++] = (byte) node.nodeNumber;
+		buffer[index++] = (byte) node.nextNodeNumber;
+		
+		// all done!
+		return buffer;
+	}
+	
+	public static byte[] isDead( Node n ) {
+		byte[] buffer = new byte[19];
+		byte[] nodeID = new byte[2];
+		byte[] uniqueID = Helper.generateRandomByteArray(16);
+		byte command = Protocols.CMD_IS_DEAD;
+		for(int i=0;i<uniqueID.length;i++){
+			buffer[i] = uniqueID[i];
+		}
+		buffer[16] = command;
+		nodeID = Helper.intToByteArray(n.nodeNumber);
+		buffer[17] = nodeID[0];
+		buffer[18] = nodeID[1];
+		
 		return buffer;
 	}
 	

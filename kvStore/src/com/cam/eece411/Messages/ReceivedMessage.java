@@ -17,6 +17,7 @@ public class ReceivedMessage {
 	private byte[] key;
 	private int valueLength;
 	private byte[] value;
+	private int nodeID;
 	
 	private int offeredNodeNumber;
 	private int offeredNextNodeNumber;
@@ -55,6 +56,15 @@ public class ReceivedMessage {
 			offeredNodeNumber = data[17];
 			offeredNextNodeNumber = data[18];
 		}
+		
+		if (command == Protocols.CMD_IS_DEAD) {
+			nodeID = Helper.valueLengthBytesToInt(Arrays.copyOfRange(data, 17, 18));
+		}
+	}
+	
+	//used for isDead
+	public int getNodeID() {
+		return this.nodeID;
 	}
 	
 	public byte[] getData() {
