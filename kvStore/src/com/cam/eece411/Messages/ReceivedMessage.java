@@ -18,6 +18,11 @@ public class ReceivedMessage {
 	private int valueLength;
 	private byte[] value;
 	
+	private int offeredNodeNumber;
+	private int offeredNextNodeNumber;
+	private int numberOfNodes;
+	private byte[] nodes;
+	
 	public ReceivedMessage(DatagramPacket packet) {
 		// Get the guaranteed data
 		senderIP = packet.getAddress();
@@ -29,12 +34,26 @@ public class ReceivedMessage {
 		// Get the key, if there is one
 		if (command < Protocols.APP_CMD_SHUTDOWN) {
 			key = Arrays.copyOfRange(data, 17, 49);
+			
+			// Get the value length and value, if there are any
+			if (command == Protocols.APP_CMD_PUT) {
+				valueLength = Helper.valueLengthBytesToInt(Arrays.copyOfRange(data, 49, 51));
+				value = Arrays.copyOfRange(data, 51, 51+valueLength);
+			}
 		}
 		
-		// Get the value length and value, if there are any
-		if (command == Protocols.APP_CMD_PUT) {
-			valueLength = Helper.valueLengthBytesToInt(Arrays.copyOfRange(data, 49, 51));
-			value = Arrays.copyOfRange(data, 51, 51+valueLength);
+		// Get the JOIN_RESPONSE message details
+		if (command == Protocols.CMD_JOIN_RESPONSE) {
+			offeredNodeNumber = data[17];
+			offeredNextNodeNumber = data[18];
+			numberOfNodes = data[19];
+			nodes = Arrays.copyOfRange(data, 20, 20+(numberOfNodes*5));
+		}
+		
+		// Get the JOIN_CONFIRM message details
+		if (command == Protocols.CMD_JOIN_CONFIRM) {
+			offeredNodeNumber = data[17];
+			offeredNextNodeNumber = data[18];
 		}
 	}
 	
@@ -84,6 +103,22 @@ public class ReceivedMessage {
 	
 	public byte[] getValue() {
 		return this.value;
+	}
+	
+	public int getOfferedNodeNumber() {
+		return this.offeredNodeNumber;
+	}
+	
+	public int getOfferedNextNodeNumber() {
+		return this.offeredNextNodeNumber;
+	}
+	
+	public int getNumberOfNodes() {
+		return this.numberOfNodes;
+	}
+	
+	public byte[] getNodes() {
+		return this.nodes;
 	}
 	
 //	public AppResponse buildResponse() {

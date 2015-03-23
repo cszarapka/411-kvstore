@@ -1,5 +1,9 @@
 package com.cam.eece411;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map.Entry;
@@ -7,7 +11,6 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import com.cam.eece411.Utilities.Helper;
 import com.cam.eece411.Utilities.MD5HashFunction;
 
 /**
@@ -30,6 +33,22 @@ public class Circle {
 	 */
 	public static void add(Node node) {
 		circle.put(node.nodeNumber, node);
+	}
+	
+	/**
+	 * Adds nodes to the circle from a byte array
+	 * @param nodes	the nodes to add to the circle
+	 */
+	public static void add(byte[] nodes)  {
+		int index = 0;
+		while (index < nodes.length) {
+			try {
+				add(new Node(InetAddress.getByAddress(Arrays.copyOfRange(nodes, index, index+4)), nodes[index+4]));
+			} catch (UnknownHostException e) {
+				System.out.println("Tried to add a node that ain't got no host.");
+			}
+			index += 5;
+		}
 	}
 
 	/**
@@ -98,5 +117,17 @@ public class Circle {
 			buffer[index++] = (byte) nodeNumber;
 		}
 		return buffer;
+	}
+	
+	/**
+	 * Returns the count of nodes we have in our circle
+	 * @return	an integer count of the nodes in the circle
+	 */
+	public static int getSize() {
+		return circle.size();
+	}
+	
+	public static Collection<Node> nodes() {
+		return circle.values();
 	}
 }

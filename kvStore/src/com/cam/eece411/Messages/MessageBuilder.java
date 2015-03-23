@@ -1,5 +1,6 @@
 package com.cam.eece411.Messages;
 
+import com.cam.eece411.Circle;
 import com.cam.eece411.Utilities.Helper;
 import com.cam.eece411.Utilities.Protocols;
 
@@ -13,32 +14,62 @@ public class MessageBuilder {
 	public static byte[] requestToJoin() {
 		byte[] buffer = new byte[17];
 		byte[] uniqueID = Helper.generateRandomByteArray(16);
-		byte command = Protocols.CMD_JOIN_REQUEST;
 		for (int i = 0; i < uniqueID.length; i++) {
 			buffer[i] = uniqueID[i];
 		}
-		buffer[uniqueID.length] = command;
+		buffer[uniqueID.length] = Protocols.CMD_JOIN_REQUEST;
 		return buffer;
 	}
 	
 	public static byte[] isAlive() {
 		byte[] buffer = new byte[17];
 		byte[] uniqueID = Helper.generateRandomByteArray(16);
-		byte command = Protocols.CMD_IS_ALIVE;
 		for(int i=0;i<uniqueID.length;i++){
 			buffer[i] = uniqueID[i];
 		}
-		buffer[16] = command;
+		buffer[16] = Protocols.CMD_IS_ALIVE;
 		return buffer;
 	}
 	
 	/**
 	 * Returns a byte[] buffer that is a ready-to-send response to a join
 	 * request-message
-	 * @return
+	 * @param	the join request message to respond to
+	 * @return	buffer to place into a packet that will be sent to a node wanting
+	 * 			to join the system
+	 * 
+	 * The response has the following format:
+	 * | ID | CMD | OfferedNode # | OfferedNextNode # | # of nodes | Nodes (IP, Node #) | 
+	 * 
 	 */
-	public static byte[] responseToJoinRequest() {
+	public static byte[] responseToJoinRequest(ReceivedMessage msg, int offeredNodeNumber, int offeredNextNodeNumber) {
 		byte[] buffer;
+		byte[] uniqueID = msg.getUniqueID();
+		byte[] circleView;
+		int index = 0;
+		
+		// Lock the circle
+		synchronized (Circle.class) {
+			buffer = new byte[uniqueID.length + 4 + Circle.getSize()*5];
+			// Fill the buffer
+			// Start with the unique ID
+			for (int i = 0; i < uniqueID.length; i++) {
+				buffer[index++] = uniqueID[i];
+			}
+			// Add the command
+			buffer[index++] = Protocols.CMD_JOIN_RESPONSE;
+			
+			// Add offered node numbers and number of nodes
+			buffer[index++] = (byte) offeredNodeNumber;
+			buffer[index++] = (byte) offeredNextNodeNumber;
+			buffer[index++] = (byte) Circle.getSize();
+			
+			// Add all the nodes from the circle
+			circleView = Circle.getView();
+			for (int i = 0; i < circleView.length; i++) {
+				buffer[index++] = circleView[i];
+			}
+		}
 		
 		return buffer;
 	}
@@ -89,6 +120,19 @@ public class MessageBuilder {
 			buffer[index++] = data[i];
 		}
 		
+		return buffer;
+	}
+	
+	public static byte[] joinConfirm(ReceivedMessage msg) {
+		byte[] buffer = new byte[19];
+		byte[] uniqueID = msg.getUniqueID();
+		int index = 0;
+		for (int i = 0; i < uniqueID.length; i++) {
+			buffer[index++] = uniqueID[i];
+		}
+		buffer[index++] = Protocols.CMD_JOIN_CONFIRM;
+		buffer[index++] = (byte) msg.getOfferedNodeNumber();
+		buffer[index++] = (byte) msg.getOfferedNextNodeNumber();
 		return buffer;
 	}
 }

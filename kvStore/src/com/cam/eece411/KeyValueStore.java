@@ -2,6 +2,7 @@ package com.cam.eece411;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.cam.eece411.Utilities.Protocols;
@@ -59,5 +60,9 @@ public class KeyValueStore {
 		}
 		// TODO: add other possible codes
 		return responseCode;
+	}
+	
+	public static Set<ByteBuffer> getKeys() {
+		return store.keySet();
 	}
 }

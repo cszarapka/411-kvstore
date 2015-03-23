@@ -19,6 +19,8 @@ public class Protocols {
 	public static final byte CMD_JOIN_REQUEST			= 22;
 	public static final byte CMD_IS_ALIVE				= 24;
 	public static final byte CMD_ECHOED					= 23;
+	public static final byte CMD_JOIN_RESPONSE			= 25;
+	public static final byte CMD_JOIN_CONFIRM			= 26;
 	
 	// Response codes sent to the user of the DHT-KVStore
 	public static final byte CODE_SUCCESS			= 0;
@@ -48,4 +50,5 @@ public class Protocols {
 	public static final int OUT_OF_TABLE = 0;
 	public static final int IN_TABLE = 1;
 	public static final int LEFT_TABLE = 2;
+	public static final int HANDLING_JOIN = 3;
 }

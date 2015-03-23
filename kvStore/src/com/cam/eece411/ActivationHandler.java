@@ -132,7 +132,7 @@ public class ActivationHandler implements Runnable {
 			socket.setSoTimeout(Protocols.JOIN_TIMEOUT);
 			socket.receive(packet);
 			socket.close();
-			respondToJOIN_RESPONSE();
+			respondToJOIN_RESPONSE(packet);
 		} catch (SocketException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -142,17 +142,33 @@ public class ActivationHandler implements Runnable {
 		}
 	}
 
-	private void respondToJOIN_RESPONSE() {
+	private void respondToJOIN_RESPONSE(DatagramPacket packet) {
 		// From received message, determine your:
 		/*
 		 * From received message, get your:
 		 * 	- node number
 		 * 	- next node number
 		 * 	- view of the system
-		 * 	- notice of how many files are about to be coming your way
-		 * Then wait for and receive all these files/key-value pairs
 		 * Then notify the node that sent you them, so he can add you to his circle,
 		 * and notify all his circle's nodes
 		 */
+		ReceivedMessage rcvdMsg = new ReceivedMessage(packet);
+		if (rcvdMsg.getCommand() != Protocols.CMD_JOIN_RESPONSE) {
+			// go no further
+			return;
+		}
+		
+		// Get your node number and that of the next below you
+		Server.me.nodeNumber = rcvdMsg.getOfferedNodeNumber();
+		Server.me.nextNodeNumber = rcvdMsg.getOfferedNextNodeNumber();
+		
+		// Construct your view of the system
+		Circle.add(rcvdMsg.getNodes());
+		
+		// Add ourself to the circle
+		Circle.add(Server.me);
+		Server.state = Protocols.IN_TABLE;
+		
+		Server.sendMessage(MessageBuilder.joinConfirm(rcvdMsg), rcvdMsg.getSenderIP(), Protocols.LISTENING_PORT);
 	}
 }

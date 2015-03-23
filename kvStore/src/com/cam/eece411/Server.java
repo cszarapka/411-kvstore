@@ -16,14 +16,14 @@ import com.cam.eece411.Utilities.Protocols;
  *
  */
 public class Server {
-	
-	public static Node me;
-	public static int state = Protocols.OUT_OF_TABLE;
 
-	public static void main(String[] args) throws SocketException {
+	public static Node me;
+	public static Integer state = Protocols.OUT_OF_TABLE;
+
+	public static void main(String[] args) throws SocketException, IOException {
 		System.out.println("\n\n\n\n\n\n\n");
 		System.out.println("It has begun.");
-		
+
 		// Instantiate ourself as a node
 		try {
 			me = new Node(Protocols.MAX_NODE_NUMBER, 0, InetAddress.getLocalHost());
@@ -36,23 +36,19 @@ public class Server {
 		byte[] receivedPacket = new byte[Protocols.MAX_MSG_SIZE];
 		DatagramSocket socket = new DatagramSocket(Protocols.LISTENING_PORT);
 		DatagramPacket packet = new DatagramPacket(receivedPacket, receivedPacket.length);
-		
+
 		// Listen for commands (GET, PUT, REMOVE, SHUTDOWN)
 		while(true) {
 			System.out.println("Waiting for a message...");
-			try {
-				socket.receive(packet);
-				System.out.println("Messaged received!");
-				// Launch thread based on state we are in
-				switch (state) {
-					case Protocols.OUT_OF_TABLE: (new Thread(new ActivationHandler(packet))).start(); break;
-					case Protocols.IN_TABLE: (new Thread(new ResponseHandler(packet))).start(); break;
-					case Protocols.LEFT_TABLE:
-						// TODO: leave system gracefully
-						socket.close();
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
+			socket.receive(packet);
+			System.out.println("Messaged received!");
+			// Launch thread based on state we are in
+			switch (state) {
+				case Protocols.OUT_OF_TABLE: (new Thread(new ActivationHandler(packet))).start(); break;
+				case Protocols.IN_TABLE: (new Thread(new ResponseHandler(packet))).start(); break;
+				case Protocols.LEFT_TABLE:
+					// TODO: leave system gracefully
+					socket.close();
 			}
 		}
 	}
