@@ -153,6 +153,7 @@ public class ResponseHandler implements Runnable {
 		// Add this node to our table
 		Node aliveNode = new Node(rcvdMsg.getOfferedNodeNumber(), rcvdMsg.getOfferedNextNodeNumber(), rcvdMsg.getSenderIP());
 		Circle.add(aliveNode);
+		Server.me.nextNodeNumber = aliveNode.nodeNumber;
 		
 		// TODO: Optimization: make it so that nodes reply to a new type of put message with a remove
 		// Go through all of the keys
