@@ -29,12 +29,18 @@ public class ResponseHandler implements Runnable {
 	public void run() {
 		System.out.println("- - - - - - - - - - - - - - - - - -");
 		System.out.print(rcvdMsg.toString());
+		
+		if (Server.state == Protocols.HANDLING_JOIN) {
+			if (rcvdMsg.getCommand() == Protocols.CMD_JOIN_CONFIRM) {
+				respondToJOIN_CONFIRM();
+			}
+			return;
+		}
 
 		// Check to see if it's one of the commands that isn't serviceable by a specific node
 		switch (rcvdMsg.getCommand()) {
 			case Protocols.APP_CMD_SHUTDOWN: respondToSHUTDOWN(); return;
 			case Protocols.CMD_JOIN_REQUEST: respondToJOIN_REQUEST(); return;
-			case Protocols.CMD_JOIN_CONFIRM: respondToJOIN_CONFIRM(); return;
 			case Protocols.CMD_IS_DEAD: respondToISDEAD(); return;
 			case Protocols.CMD_IS_ALIVE: respondToIS_ALIVE(); return;
 		}
