@@ -43,11 +43,13 @@ public class Circle {
 		int index = 0;
 		while (index < nodes.length) {
 			try {
-				add(new Node(InetAddress.getByAddress(Arrays.copyOfRange(nodes, index, index+4)), nodes[index+4]));
+				add(new Node(nodes[index+4],
+						nodes[index+5],
+						InetAddress.getByAddress(Arrays.copyOfRange(nodes, index, index+4))));
 			} catch (UnknownHostException e) {
 				System.out.println("Tried to add a node that ain't got no host.");
 			}
-			index += 5;
+			index += 6;
 		}
 	}
 
@@ -96,13 +98,12 @@ public class Circle {
 	/**
 	 * Returns this node's view of the system as a byte array.
 	 * The format of the byte array is as follows:
-	 * | IP | Node # | IP | Node # | IP | Node # ...
+	 * | IP | Node # | Next Node # | ...
 	 * @return	all the nodes this node is aware of as a byte array
 	 */
 	public static byte[] getView() {
 		byte[] buffer = new byte[circle.size()*5];
 		byte[] ip;
-		int nodeNumber;
 		int index = 0;
 		Iterator<Node> nodes = circle.values().iterator();
 		Node currNode;
@@ -110,11 +111,11 @@ public class Circle {
 		while(nodes.hasNext()) {
 			currNode = nodes.next();
 			ip = currNode.ip.getAddress();
-			nodeNumber = currNode.nodeNumber;
 			for (int i = 0; i < 4; i++) {
 				buffer[index++] = ip[i];
 			}
-			buffer[index++] = (byte) nodeNumber;
+			buffer[index++] = (byte) currNode.nodeNumber;
+			buffer[index++] = (byte) currNode.nextNodeNumber;
 		}
 		return buffer;
 	}

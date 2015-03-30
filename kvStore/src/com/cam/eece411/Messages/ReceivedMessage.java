@@ -50,7 +50,7 @@ public class ReceivedMessage {
 			offeredNodeNumber = data[17];
 			offeredNextNodeNumber = data[18];
 			numberOfNodes = data[19];
-			nodes = Arrays.copyOfRange(data, 20, 20+(numberOfNodes*5));
+			nodes = Arrays.copyOfRange(data, 20, 20+(numberOfNodes*6));
 		}
 		
 		// Get the JOIN_CONFIRM message details

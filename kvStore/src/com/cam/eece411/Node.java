@@ -25,10 +25,4 @@ public class Node {
 		this.ip = ip;
 		this.name = ip.getHostName();
 	}
-	
-	public Node(InetAddress ip, int nodeNumber) {
-		this.ip = ip;
-		this.name = ip.getHostName();
-		this.nodeNumber = nodeNumber;
-	}
 }
