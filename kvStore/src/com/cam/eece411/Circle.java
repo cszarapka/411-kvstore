@@ -130,4 +130,8 @@ public class Circle {
 	public static Collection<Node> nodes() {
 		return circle.values();
 	}
+	
+	public static String toText() {
+		return circle.toString();
+	}
 }
