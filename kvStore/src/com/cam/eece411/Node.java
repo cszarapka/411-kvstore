@@ -20,6 +20,13 @@ public class Node {
 	 * @param ip				the IP address of this node
 	 */
 	public Node(int nodeNumber, int nextNodeNumber, InetAddress ip) {
+		if(nodeNumber < 0) {
+			nodeNumber += 256;
+		}
+		if(nextNodeNumber < 0) {
+			nextNodeNumber += 256;
+			System.out.println("nextNodeNumber was negative. This should never happen.");
+		}
 		this.nodeNumber = nodeNumber;
 		this.nextNodeNumber = nextNodeNumber;
 		this.ip = ip;
@@ -27,6 +34,7 @@ public class Node {
 	}
 	
 	public Node(InetAddress ip, int nodeNumber) {
+		System.out.println("node inserted without next node number. This should never happen");
 		this.ip = ip;
 		this.name = ip.getHostName();
 		this.nodeNumber = nodeNumber;
