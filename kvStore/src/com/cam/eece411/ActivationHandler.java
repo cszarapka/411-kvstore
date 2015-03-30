@@ -41,6 +41,8 @@ public class ActivationHandler implements Runnable {
 			// Add ourself as the first node in the circle
 			Circle.add(Server.me);
 			Server.state = Protocols.IN_TABLE;
+
+			System.out.println(Circle.toText());
 		}
 		// Read all the nodes to be in the system from the file
 		FileInputStream fin;
@@ -174,7 +176,8 @@ public class ActivationHandler implements Runnable {
 		// Add ourself to the circle
 		Circle.add(Server.me);
 		Server.state = Protocols.IN_TABLE;
-		
+
+		System.out.println(Circle.toText());
 		Server.sendMessage(MessageBuilder.joinConfirm(rcvdMsg), rcvdMsg.getSenderIP(), Protocols.LISTENING_PORT);
 	}
 }

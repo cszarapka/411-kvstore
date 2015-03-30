@@ -65,7 +65,8 @@ public class ResponseHandler implements Runnable {
 			// Put the key-value pair into our store, or
 			Circle.remove(rcvdMsg.getNodeID());
 		}
-		
+
+		System.out.println(Circle.toText());
 		
 	}
 	
@@ -129,6 +130,8 @@ public class ResponseHandler implements Runnable {
 		response.portToSendTo = Protocols.IS_ALIVE_RESPONSE_PORT;
 		Server.sendMessage(response);
 
+		System.out.println(Circle.toText());
+
 	}
 
 	private void respondToJOIN_REQUEST() {
@@ -173,6 +176,8 @@ public class ResponseHandler implements Runnable {
  				}
  			}
 		}
+
+		System.out.println(Circle.toText());
 		
 		// Now broadcast to all the other nodes the update - send an isAlive message to all nodes in circle
 		// Nodes that don't have it will add it
