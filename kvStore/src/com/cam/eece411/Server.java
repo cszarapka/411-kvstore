@@ -46,7 +46,7 @@ public class Server {
 			switch (state) {
 				case Protocols.OUT_OF_TABLE: (new Thread(new ActivationHandler(packet))).start(); break;
 				case Protocols.IN_TABLE: (new Thread(new ResponseHandler(packet))).start(); break;
-				case Protocols.HANDLING_JOIN: break;
+				case Protocols.HANDLING_JOIN: (new Thread(new ResponseHandler(packet))).start(); break;
 				case Protocols.LEFT_TABLE:
 					// TODO: leave system gracefully
 					socket.close();
