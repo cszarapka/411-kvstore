@@ -34,7 +34,7 @@ public class MessageBuilder {
 	}
 	
 	public static byte[] isAlive(Node node) {
-		byte[] buffer = new byte[21];
+		byte[] buffer = new byte[23];
 		byte[] uniqueID = Helper.generateRandomByteArray(16);
 		byte[] ip;
 		int index = 0;
@@ -48,7 +48,7 @@ public class MessageBuilder {
 		// Add the node's IP
 		ip = node.ip.getAddress();
 		for (int i = 0; i < ip.length; i++) {
-			buffer[index] = ip[i];
+			buffer[index++] = ip[i];
 		}
 		
 		// Add the node number and next node number

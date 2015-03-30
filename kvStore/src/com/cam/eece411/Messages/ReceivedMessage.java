@@ -24,6 +24,8 @@ public class ReceivedMessage {
 	private int numberOfNodes;
 	private byte[] nodes;
 	
+	private byte[] nodeIP;
+	
 	public ReceivedMessage(DatagramPacket packet) {
 		// Get the guaranteed data
 		senderIP = packet.getAddress();
@@ -60,6 +62,14 @@ public class ReceivedMessage {
 		if (command == Protocols.CMD_IS_DEAD) {
 			nodeID = Helper.valueLengthBytesToInt(Arrays.copyOfRange(data, 17, 18));
 		}
+		if(command == Protocols.CMD_IS_ALIVE) {
+			offeredNodeNumber = data[21];
+			offeredNextNodeNumber = data[22];
+			nodeIP = new byte[4];
+			for(int i = 0; i < 4; i++) {
+				nodeIP[i] = data[17+i];
+			}
+		}
 	}
 	
 	//used for isDead
@@ -68,7 +78,7 @@ public class ReceivedMessage {
 	}
 	
 	public byte[] getData() {
-		return this.getData();
+		return this.data;
 	}
 	
 	/**
@@ -117,6 +127,10 @@ public class ReceivedMessage {
 	
 	public int getOfferedNodeNumber() {
 		return this.offeredNodeNumber;
+	}
+	
+	public byte[] getNodeIP() {
+		return this.nodeIP;
 	}
 	
 	public int getOfferedNextNodeNumber() {

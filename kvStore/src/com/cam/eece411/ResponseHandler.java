@@ -1,6 +1,8 @@
 package com.cam.eece411;
 
 import java.net.DatagramPacket;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.Iterator;
 
@@ -110,9 +112,17 @@ public class ResponseHandler implements Runnable {
 	private void respondToIS_ALIVE() {
 
 		byte responseCode = Protocols.CODE_SUCCESS;
-		synchronized(KeyValueStore.class) {
+		InetAddress inet = null;
+		try {
+			inet = InetAddress.getByAddress(rcvdMsg.getNodeIP());
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Node node = new Node(rcvdMsg.getOfferedNodeNumber(),rcvdMsg.getOfferedNextNodeNumber(),inet);
+		synchronized(Circle.class) {
 			// Put the key-value pair into our store, or
-			responseCode = KeyValueStore.put(rcvdMsg.getKey(), rcvdMsg.getValue());
+			Circle.add(node);
 		}
 		// Build the response based on the success of the put, then send it
 		AppResponse response = new AppResponse(rcvdMsg, responseCode);
