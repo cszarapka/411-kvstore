@@ -136,7 +136,7 @@ public class ResponseHandler implements Runnable {
 
 	private void respondToJOIN_REQUEST() {
 		synchronized(Server.state) {
-			//Server.state = Protocols.HANDLING_JOIN;
+			Server.state = Protocols.HANDLING_JOIN;
 		}
 		int offeredNodeNumber = (Server.me.nodeNumber / 2) + (Server.me.nextNodeNumber / 2);
 		int offeredNextNodeNumber = Server.me.nextNodeNumber;
@@ -153,6 +153,8 @@ public class ResponseHandler implements Runnable {
 		// Add this node to our table
 		Node aliveNode = new Node(rcvdMsg.getOfferedNodeNumber(), rcvdMsg.getOfferedNextNodeNumber(), rcvdMsg.getSenderIP());
 		Circle.add(aliveNode);
+		Server.state = Protocols.IN_TABLE;
+		
 		synchronized(Server.me) {
 			Server.me.nextNodeNumber = aliveNode.nodeNumber;
 		}
