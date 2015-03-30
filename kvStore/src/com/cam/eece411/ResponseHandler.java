@@ -129,7 +129,7 @@ public class ResponseHandler implements Runnable {
 		int offeredNextNodeNumber = Server.me.nextNodeNumber;
 		
 		Server.sendMessage( MessageBuilder.responseToJoinRequest(rcvdMsg, offeredNodeNumber, offeredNextNodeNumber),
-				rcvdMsg.getSenderIP(), Protocols.LISTENING_PORT );
+				rcvdMsg.getSenderIP(), Protocols.JOIN_RESPONSE_PORT );
 	}
 	
 	private void respondToJOIN_CONFIRM() {

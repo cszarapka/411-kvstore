@@ -7,6 +7,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
@@ -63,7 +64,7 @@ public class ActivationHandler implements Runnable {
 		ArrayList<InetAddress> ips = new ArrayList<InetAddress>();
 		try {
 			for (int i = 0; i < Helper.NUM_NODES; i++) {
-				if (Server.me.name.equalsIgnoreCase(nodeList[i].trim())) {
+				if (!Server.me.name.equalsIgnoreCase(nodeList[i].trim())) {
 					ips.add(InetAddress.getByName(nodeList[i].trim()));
 				}
 			}
@@ -125,20 +126,25 @@ public class ActivationHandler implements Runnable {
 	}
 
 	private void awaitJoinResponse() {
+		DatagramSocket socket = null;
 		try {
 			byte[] receiveData = new byte[Protocols.MAX_MSG_SIZE];
-			DatagramSocket socket = new DatagramSocket(Protocols.JOIN_RESPONSE_PORT);
+			socket = new DatagramSocket(Protocols.JOIN_RESPONSE_PORT);
 			DatagramPacket packet = new DatagramPacket(receiveData, receiveData.length);
 			socket.setSoTimeout(Protocols.JOIN_TIMEOUT);
 			socket.receive(packet);
 			socket.close();
+			System.out.println("It found a table to join........");
 			respondToJOIN_RESPONSE(packet);
-		} catch (SocketException e1) {
+		} catch (SocketTimeoutException e1) {
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			//e1.printStackTrace();
+			System.out.println("It didn't find a table to join........");
+			socket.close();
 		} catch (IOException e2) {
 			// TODO Auto-generated catch block
 			e2.printStackTrace();
+			socket.close();
 		}
 	}
 
