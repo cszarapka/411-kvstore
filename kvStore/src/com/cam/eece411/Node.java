@@ -21,7 +21,7 @@ public class Node {
 	 */
 	public Node(int nodeNumber, int nextNodeNumber, InetAddress ip) {
 		if(nodeNumber < 0) {
-			System.out.println("Node number was negative. This should never happen.");
+			//System.out.println("Node number was negative. This should never happen.");
 			nodeNumber += 256;
 		}
 		if(nextNodeNumber < 0) {

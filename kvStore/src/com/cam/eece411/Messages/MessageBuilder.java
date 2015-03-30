@@ -107,9 +107,10 @@ public class MessageBuilder {
 			buffer[index++] = (byte) offeredNodeNumber;
 			buffer[index++] = (byte) offeredNextNodeNumber;
 			buffer[index++] = (byte) Circle.getSize();
-			
 			// Add all the nodes from the circle
 			circleView = Circle.getView();
+
+			System.out.println("Circle.getSize(): "+Circle.getSize()+"\ncircleView.length: " + circleView.length +"\nbuffer.length: "+buffer.length+"\nindex:"+index+"\n");
 			for (int i = 0; i < circleView.length; i++) {
 				buffer[index++] = circleView[i];
 			}

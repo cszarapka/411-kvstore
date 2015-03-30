@@ -63,8 +63,9 @@ public class ReceivedMessage {
 			nodeID = Helper.valueLengthBytesToInt(Arrays.copyOfRange(data, 17, 18));
 		}
 		if(command == Protocols.CMD_IS_ALIVE) {
-			offeredNodeNumber = data[21];
-			offeredNextNodeNumber = data[22];
+			offeredNodeNumber = Helper.unsignedByteToInt(data[21]);
+			offeredNextNodeNumber = Helper.unsignedByteToInt(data[22]);
+			
 			nodeIP = new byte[4];
 			for(int i = 0; i < 4; i++) {
 				nodeIP[i] = data[17+i];
