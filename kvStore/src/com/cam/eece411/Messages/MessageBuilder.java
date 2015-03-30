@@ -94,7 +94,7 @@ public class MessageBuilder {
 		
 		// Lock the circle
 		synchronized (Circle.class) {
-			buffer = new byte[uniqueID.length + 4 + Circle.getSize()*5];
+			buffer = new byte[uniqueID.length + 4 + Circle.getSize()*6];
 			// Fill the buffer
 			// Start with the unique ID
 			for (int i = 0; i < uniqueID.length; i++) {
