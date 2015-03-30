@@ -1,0 +1,18 @@
+[SERVER ADDRESSES]:
+plab3.eece.ksu.edu
+pl2.cs.yale.edu
+pl1.pku.edu.cn
+pl2.6test.edu.cn
+planetlab2.cs.ubc.ca
+
+
+1) ssh -i ~/.ssh/id_rsa ubc_eece411_5@[SERVERADDRESS]
+
+2) scp kvStore.jar testingNodes.txt ubc_eece411_5@[SERVERADDRESS]:
+
+3) java -jar kvStore.jar
+
+4) scp kvStore.jar testingNodes.txt ubc_eece411_5@plab3.eece.ksu.edu:; scp kvStore.jar testingNodes.txt ubc_eece411_5@pl2.cs.yale.edu:; scp kvStore.jar testingNodes.txt ubc_eece411_5@pl1.pku.edu.cn:; scp kvStore.jar testingNodes.txt ubc_eece411_5@pl2.6test.edu.cn:; scp kvStore.jar testingNodes.txt ubc_eece411_5@planetlab2.cs.ubc.ca:
+
+instructions: 
+6 terminal windows open. 5 use command 1 to ssh into the 5 servers above, then use command 3 to run the jar once it's transferred. The last window is to scp files onto all 5 using command 4. 
