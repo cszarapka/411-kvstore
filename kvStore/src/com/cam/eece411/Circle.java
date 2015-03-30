@@ -132,6 +132,16 @@ public class Circle {
 	}
 	
 	public static String toText() {
-		return circle.toString();
+		Iterator<Node> nodes = circle.values().iterator();
+		Node currNode;
+		
+		String string = "| Node Name | Node # | Node's Next Node # |\n";
+		
+		while (nodes.hasNext()) {
+			currNode = nodes.next();
+			string += "| " + currNode.name + " | " + currNode.nodeNumber + " | " + currNode.nextNodeNumber + " |\n";
+		}
+		
+		return string;
 	}
 }
