@@ -6,10 +6,10 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import com.cam.eece411.Messages.MessageBuilder;
 import com.cam.eece411.Messages.ReceivedMessage;
@@ -166,18 +166,34 @@ public class ActivationHandler implements Runnable {
 			return;
 		}
 		
-		// Get your node number and that of the next below you
-		Server.me.nodeNumber = rcvdMsg.getOfferedNodeNumber();
-		Server.me.nextNodeNumber = rcvdMsg.getOfferedNextNodeNumber();
+		synchronized(Server.me) {
+			// Get your node number and that of the next below you
+			Server.me.nodeNumber = rcvdMsg.getOfferedNodeNumber();
+			Server.me.nextNodeNumber = rcvdMsg.getOfferedNextNodeNumber();
+		}
 		
-		// Construct your view of the system
-		Circle.add(rcvdMsg.getNodes());
+		synchronized(Circle.class) {
+			// Construct your view of the system
+			Circle.add(rcvdMsg.getNodes());
 		
-		// Add ourself to the circle
-		Circle.add(Server.me);
-		Server.state = Protocols.IN_TABLE;
+			// Add ourself to the circle
+			Circle.add(Server.me);
+			Server.state = Protocols.IN_TABLE;
 		
-		// Change the node who brought us in
+			// Change the node who brought us in
+			Iterator<Node> nodes = Circle.nodes().iterator();
+			int distance = 256;
+			Node nodeToEdit = null;
+			Node currNode;
+			while (nodes.hasNext()) {
+				currNode = nodes.next();
+				if (((currNode.nodeNumber - Server.me.nodeNumber) % 256) < distance) {
+					distance = currNode.nodeNumber - Server.me.nodeNumber;
+					nodeToEdit = currNode;
+				}
+			}
+			nodeToEdit.nextNodeNumber = Server.me.nodeNumber;
+		}
 
 		System.out.println(Circle.toText());
 		Server.sendMessage(MessageBuilder.joinConfirm(rcvdMsg), rcvdMsg.getSenderIP(), Protocols.LISTENING_PORT);
