@@ -176,6 +176,8 @@ public class ActivationHandler implements Runnable {
 		// Add ourself to the circle
 		Circle.add(Server.me);
 		Server.state = Protocols.IN_TABLE;
+		
+		// Change the node who brought us in
 
 		System.out.println(Circle.toText());
 		Server.sendMessage(MessageBuilder.joinConfirm(rcvdMsg), rcvdMsg.getSenderIP(), Protocols.LISTENING_PORT);

@@ -20,14 +20,7 @@ public class Node {
 	 * @param ip				the IP address of this node
 	 */
 	public Node(int nodeNumber, int nextNodeNumber, InetAddress ip) {
-		if(nodeNumber < 0) {
-			//System.out.println("Node number was negative. This should never happen.");
-			nodeNumber += 256;
-		}
-		if(nextNodeNumber < 0) {
-			nextNodeNumber += 256;
-			System.out.println("nextNodeNumber was negative. This should never happen.");
-		}
+
 		this.nodeNumber = nodeNumber;
 		this.nextNodeNumber = nextNodeNumber;
 		this.ip = ip;
