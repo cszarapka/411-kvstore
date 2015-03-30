@@ -20,9 +20,9 @@ public class Helper {
 		bb.order(ByteOrder.LITTLE_ENDIAN);
 		return bb.getInt();
 	}
-	
+
 	public static int NUM_NODES = 5;
-	
+
 	public static int valueLengthBytesToInt(byte[] b) {
 		return (int) b[0] + (((int) b[1]) * 256);
 	}
@@ -38,7 +38,7 @@ public class Helper {
 		bb.putInt(i);
 		return bb.array();
 	}
-	
+
 	public static String bytesToHexString(byte[] bytes){
 		String string = "";
 		if (bytes != null) {
@@ -46,9 +46,9 @@ public class Helper {
 				string += String.format("%02X", bytes[i]) + " \\ ";
 			}
 		}
-        return string;
-    }  
-	
+		return string;
+	}  
+
 	/**
 	 * Returns a randomized byte array of specified length
 	 * @param length	the length of the byte array to return
@@ -59,5 +59,14 @@ public class Helper {
 		byte[] bytes = new byte[length];
 		rand.nextBytes(bytes);
 		return bytes;
+	}
+
+	/**
+	 * Returns an int from a byte value treated as unsigned
+	 * @param b	unsigned byte
+	 * @return	integer (from 0-255)
+	 */
+	public static int unsignedByteToInt(byte b) {
+		return (int) b & 0xFF;
 	}
 }

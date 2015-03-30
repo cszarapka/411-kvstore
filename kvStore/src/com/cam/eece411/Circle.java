@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import com.cam.eece411.Utilities.Helper;
 import com.cam.eece411.Utilities.MD5HashFunction;
 
 /**
@@ -43,8 +44,8 @@ public class Circle {
 		int index = 0;
 		while (index < nodes.length) {
 			try {
-				add(new Node(nodes[index+4],
-						nodes[index+5],
+				add(new Node(Helper.unsignedByteToInt(nodes[index+4]),
+						Helper.unsignedByteToInt(nodes[index+5]),
 						InetAddress.getByAddress(Arrays.copyOfRange(nodes, index, index+4))));
 			} catch (UnknownHostException e) {
 				System.out.println("Tried to add a node that ain't got no host.");
