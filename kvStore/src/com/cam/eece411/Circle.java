@@ -103,7 +103,7 @@ public class Circle {
 	 * @return	all the nodes this node is aware of as a byte array
 	 */
 	public static byte[] getView() {
-		byte[] buffer = new byte[circle.size()*5];
+		byte[] buffer = new byte[circle.size()*6];
 		byte[] ip;
 		int index = 0;
 		Iterator<Node> nodes = circle.values().iterator();
