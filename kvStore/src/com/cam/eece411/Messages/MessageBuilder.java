@@ -34,7 +34,7 @@ public class MessageBuilder {
 	}
 	
 	public static byte[] isAlive(Node node) {
-		byte[] buffer = new byte[23];
+		byte[] buffer = new byte[22];
 		byte[] uniqueID = Helper.generateRandomByteArray(16);
 		byte[] ip;
 		int index = 0;
@@ -53,7 +53,6 @@ public class MessageBuilder {
 		
 		// Add the node number and next node number
 		buffer[index++] = (byte) node.nodeNumber;
-		buffer[index++] = (byte) node.nextNodeNumber;
 		
 		// all done!
 		return buffer;
@@ -86,7 +85,7 @@ public class MessageBuilder {
 	 * | ID | CMD | OfferedNode # | OfferedNextNode # | # of nodes | Nodes (IP, Node #) | 
 	 * 
 	 */
-	public static byte[] responseToJoinRequest(ReceivedMessage msg, int offeredNodeNumber, int offeredNextNodeNumber) {
+	public static byte[] responseToJoinRequest(ReceivedMessage msg, int offeredNodeNumber) {
 		byte[] buffer;
 		byte[] uniqueID = msg.getUniqueID();
 		byte[] circleView;
@@ -94,7 +93,7 @@ public class MessageBuilder {
 		
 		// Lock the circle
 		synchronized (Circle.class) {
-			buffer = new byte[uniqueID.length + 4 + Circle.getSize()*6];
+			buffer = new byte[uniqueID.length + 3 + Circle.getSize()*5];
 			// Fill the buffer
 			// Start with the unique ID
 			for (int i = 0; i < uniqueID.length; i++) {
@@ -103,10 +102,10 @@ public class MessageBuilder {
 			// Add the command
 			buffer[index++] = Protocols.CMD_JOIN_RESPONSE;
 			
-			// Add offered node numbers and number of nodes
+			// Add offered node number and number of nodes
 			buffer[index++] = (byte) offeredNodeNumber;
-			buffer[index++] = (byte) offeredNextNodeNumber;
 			buffer[index++] = (byte) Circle.getSize();
+			
 			// Add all the nodes from the circle
 			circleView = Circle.getView();
 
@@ -114,8 +113,7 @@ public class MessageBuilder {
 			for (int i = 0; i < circleView.length; i++) {
 				buffer[index++] = circleView[i];
 			}
-		}
-		
+		}	
 		return buffer;
 	}
 	
@@ -169,7 +167,7 @@ public class MessageBuilder {
 	}
 	
 	public static byte[] joinConfirm(ReceivedMessage msg) {
-		byte[] buffer = new byte[19];
+		byte[] buffer = new byte[18];
 		byte[] uniqueID = msg.getUniqueID();
 		int index = 0;
 		for (int i = 0; i < uniqueID.length; i++) {
@@ -177,7 +175,6 @@ public class MessageBuilder {
 		}
 		buffer[index++] = Protocols.CMD_JOIN_CONFIRM;
 		buffer[index++] = (byte) msg.getOfferedNodeNumber();
-		buffer[index++] = (byte) msg.getOfferedNextNodeNumber();
 		return buffer;
 	}
 }

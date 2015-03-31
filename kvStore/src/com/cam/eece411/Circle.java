@@ -27,15 +27,17 @@ public class Circle {
 
 	// Obligatory constructor
 	public Circle() {}
-	
+
 	/**
 	 * Adds a node to the circle
 	 * @param node		the node to add to the circle
 	 */
 	public static void add(Node node) {
 		circle.put(node.nodeNumber, node);
+		// Print out the nodes in the circle
+		System.out.println("\nCircle contents:\n" + toText());
 	}
-	
+
 	/**
 	 * Adds nodes to the circle from a byte array
 	 * @param nodes	the nodes to add to the circle
@@ -45,12 +47,11 @@ public class Circle {
 		while (index < nodes.length) {
 			try {
 				add(new Node(Helper.unsignedByteToInt(nodes[index+4]),
-						Helper.unsignedByteToInt(nodes[index+5]),
 						InetAddress.getByAddress(Arrays.copyOfRange(nodes, index, index+4))));
 			} catch (UnknownHostException e) {
 				System.out.println("Tried to add a node that ain't got no host.");
 			}
-			index += 6;
+			index += 5;
 		}
 	}
 
@@ -60,8 +61,10 @@ public class Circle {
 	 */
 	public static void remove(int nodeID) {
 		circle.remove(nodeID);
+		// Print out the nodes in the circle
+		System.out.println("\nCircle contents:\n" + toText());
 	}
-	
+
 	/**
 	 * Returns true or false depending on if this node is in our view of the system
 	 * @param node	the node to check for
@@ -70,11 +73,11 @@ public class Circle {
 	public static boolean containsNode(Node node) {
 		return circle.containsValue(node);
 	}
-	
+
 	public static Set<Entry<Integer, Node>> getNodes() {
 		return circle.entrySet();
 	}
-	
+
 	/**
 	 * Returns the node in the circle who is responsible for the 
 	 * specified key
@@ -97,18 +100,35 @@ public class Circle {
 	}
 	
 	/**
+	 * Returns the closest CCW node to this node
+	 * @return
+	 */
+	public static Node getNextNodeOf(Node node) {
+		int nextNodeNumber;
+		// Get all the nodes strictly lower than us, exclusive
+		SortedMap<Integer, Node> headMap = circle.headMap(node.nodeNumber);
+		
+		if (headMap.isEmpty()) {
+			nextNodeNumber = circle.lastKey();
+		} else {
+			nextNodeNumber = headMap.lastKey();
+		}
+		return circle.get(nextNodeNumber);
+	}
+
+	/**
 	 * Returns this node's view of the system as a byte array.
 	 * The format of the byte array is as follows:
-	 * | IP | Node # | Next Node # | ...
+	 * | IP | Node # | ...
 	 * @return	all the nodes this node is aware of as a byte array
 	 */
 	public static byte[] getView() {
-		byte[] buffer = new byte[circle.size()*6];
+		byte[] buffer = new byte[circle.size()*5];
 		byte[] ip;
 		int index = 0;
 		Iterator<Node> nodes = circle.values().iterator();
 		Node currNode;
-		
+
 		while(nodes.hasNext()) {
 			currNode = nodes.next();
 			ip = currNode.ip.getAddress();
@@ -116,11 +136,10 @@ public class Circle {
 				buffer[index++] = ip[i];
 			}
 			buffer[index++] = (byte) currNode.nodeNumber;
-			buffer[index++] = (byte) currNode.nextNodeNumber;
 		}
 		return buffer;
 	}
-	
+
 	/**
 	 * Returns the count of nodes we have in our circle
 	 * @return	an integer count of the nodes in the circle
@@ -128,22 +147,22 @@ public class Circle {
 	public static int getSize() {
 		return circle.size();
 	}
-	
+
 	public static Collection<Node> nodes() {
 		return circle.values();
 	}
-	
+
 	public static String toText() {
 		Iterator<Node> nodes = circle.values().iterator();
 		Node currNode;
-		
-		String string = "| Node Name | Node # | Node's Next Node # |\n";
-		
+
+		String string = "| Node # | Node Name |\n";
+
 		while (nodes.hasNext()) {
 			currNode = nodes.next();
-			string += "| " + currNode.name + " | " + currNode.nodeNumber + " | " + currNode.nextNodeNumber + " |\n";
+			string += "| " + currNode.nodeNumber + " | " + currNode.name + " |\n";
 		}
-		
+
 		return string;
 	}
 }

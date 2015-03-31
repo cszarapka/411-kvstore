@@ -71,9 +71,6 @@ public class ResponseHandler implements Runnable {
 			// Put the key-value pair into our store, or
 			Circle.remove(rcvdMsg.getNodeID());
 		}
-
-		System.out.println(Circle.toText());
-		
 	}
 	
 	private void respondToPUT() {
@@ -126,7 +123,7 @@ public class ResponseHandler implements Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		Node node = new Node(rcvdMsg.getOfferedNodeNumber(),rcvdMsg.getOfferedNextNodeNumber(),inet);
+		Node node = new Node(rcvdMsg.getOfferedNodeNumber(),inet);
 		synchronized(Circle.class) {
 			// Put the key-value pair into our store, or
 			Circle.add(node);
@@ -135,40 +132,50 @@ public class ResponseHandler implements Runnable {
 		AppResponse response = new AppResponse(rcvdMsg, responseCode);
 		response.portToSendTo = Protocols.IS_ALIVE_RESPONSE_PORT;
 		Server.sendMessage(response);
-
-		System.out.println(Circle.toText());
-
 	}
 
 	private void respondToJOIN_REQUEST() {
+		int myNumber, nextNodeNumber, offeredNodeNumber;
+		int maxNodeCount = Protocols.MAX_NUMBER_OF_NODES;
+		
 		synchronized(Server.state) {
-			Server.state = Protocols.HANDLING_JOIN;
+			synchronized(Circle.class) {
+				Server.state = Protocols.HANDLING_JOIN;
+				myNumber = Server.me.nodeNumber;
+				nextNodeNumber = Circle.getNextNodeOf(Server.me).nodeNumber;
+			}	
 		}
 		
-		int offeredNodeNumber;
-		if(Server.me.nodeNumber == Server.me.nextNodeNumber) {
-			offeredNodeNumber = (Server.me.nodeNumber - (Protocols.MAX_NUMBER_OF_NODES / 2)) % Protocols.MAX_NUMBER_OF_NODES;
+		// Determine number half way between us and next node number
+		if(myNumber == nextNodeNumber) {
+			offeredNodeNumber = (myNumber - (maxNodeCount / 2)) % maxNodeCount;
 		} else {
-			offeredNodeNumber = (Server.me.nodeNumber - (((Server.me.nextNodeNumber - Server.me.nodeNumber) % Protocols.MAX_NUMBER_OF_NODES) / 2)) % Protocols.MAX_NUMBER_OF_NODES;
+			offeredNodeNumber = (myNumber - (((myNumber - nextNodeNumber) % maxNodeCount) / 2)) % maxNodeCount;
 		}
-		int offeredNextNodeNumber = Server.me.nextNodeNumber;
 		
-		Server.sendMessage( MessageBuilder.responseToJoinRequest(rcvdMsg, offeredNodeNumber, offeredNextNodeNumber),
+		// Add this node to our table
+		Node newNode = new Node(offeredNodeNumber, rcvdMsg.getSenderIP());
+		synchronized(Circle.class) {
+			Circle.add(newNode);
+		}
+		
+		Server.sendMessage( MessageBuilder.responseToJoinRequest(rcvdMsg, offeredNodeNumber),
 				rcvdMsg.getSenderIP(), Protocols.JOIN_RESPONSE_PORT );
 	}
 	
 	private void respondToJOIN_CONFIRM() {
 		Iterator<ByteBuffer> keys = KeyValueStore.getKeys().iterator();
 		byte[] currentKey = new byte[32];
-		int hash;
+		int hash, hisNextNodeNumber;
+		int hisNodeNumber = rcvdMsg.getOfferedNodeNumber();
+		Node newNode = new Node(hisNodeNumber, rcvdMsg.getSenderIP());
+
+		synchronized(Circle.class) {
+			hisNextNodeNumber = Circle.getNextNodeOf(newNode).nodeNumber;
+		}
 		
-		// Add this node to our table
-		Node aliveNode = new Node(rcvdMsg.getOfferedNodeNumber(), rcvdMsg.getOfferedNextNodeNumber(), rcvdMsg.getSenderIP());
-		Circle.add(aliveNode);
-		Server.state = Protocols.IN_TABLE;
-		
-		synchronized(Server.me) {
-			Server.me.nextNodeNumber = aliveNode.nodeNumber;
+		synchronized(Server.state) {
+			Server.state = Protocols.IN_TABLE;
 		}
 		
 		// TODO: Optimization: make it so that nodes reply to a new type of put message with a remove
@@ -181,20 +188,18 @@ public class ResponseHandler implements Runnable {
 			hash = MD5HashFunction.hash(currentKey);
 			
 			// Only PUT this key/value pair to the new node if he should have it
-			if (rcvdMsg.getOfferedNodeNumber() > rcvdMsg.getOfferedNextNodeNumber()) {
-				if (rcvdMsg.getOfferedNodeNumber() >= hash && hash >=rcvdMsg.getOfferedNextNodeNumber()) {
+			if (hisNodeNumber > hisNextNodeNumber) {
+				if (hisNodeNumber >= hash && hash >= hisNextNodeNumber) {
 					Server.sendMessage((new PutRequest(currentKey, KeyValueStore.get(currentKey))).data, rcvdMsg.getSenderIP(), Protocols.LISTENING_PORT);
 					KeyValueStore.remove(currentKey);
 				}
  			} else {
- 				if (rcvdMsg.getOfferedNodeNumber() >= hash || hash >= rcvdMsg.getOfferedNextNodeNumber()) {
+ 				if (hisNodeNumber >= hash || hash >= hisNextNodeNumber) {
  					Server.sendMessage((new PutRequest(currentKey, KeyValueStore.get(currentKey))).data, rcvdMsg.getSenderIP(), Protocols.LISTENING_PORT);
  					KeyValueStore.remove(currentKey);
  				}
  			}
 		}
-
-		System.out.println(Circle.toText());
 		
 		// Now broadcast to all the other nodes the update - send an isAlive message to all nodes in circle
 		// Nodes that don't have it will add it
@@ -202,7 +207,9 @@ public class ResponseHandler implements Runnable {
 		Node node;
 		while (nodes.hasNext()) {
 			node = nodes.next();
-			Server.sendMessage(MessageBuilder.isAlive(aliveNode), node.ip, Protocols.LISTENING_PORT);
+			if (node.nodeNumber != Server.me.nodeNumber) {
+				Server.sendMessage(MessageBuilder.isAlive(newNode), node.ip, Protocols.LISTENING_PORT);
+			}
 		}
 	}
 }

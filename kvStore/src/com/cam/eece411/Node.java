@@ -9,20 +9,17 @@ import java.net.InetAddress;
  */
 public class Node {
 	public int nodeNumber;
-	public int nextNodeNumber;
 	public InetAddress ip;
 	public String name;
 	
 	/**
 	 * Constructs a new node with the specified fields
 	 * @param nodeNumber		the node number of the node
-	 * @param nextNodeNumber	the next closest (CCW) node's number
 	 * @param ip				the IP address of this node
 	 */
-	public Node(int nodeNumber, int nextNodeNumber, InetAddress ip) {
+	public Node(int nodeNumber, InetAddress ip) {
 
 		this.nodeNumber = nodeNumber;
-		this.nextNodeNumber = nextNodeNumber;
 		this.ip = ip;
 		this.name = ip.getHostName();
 	}

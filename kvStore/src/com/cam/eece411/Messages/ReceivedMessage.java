@@ -20,7 +20,6 @@ public class ReceivedMessage {
 	private int nodeID;
 	
 	private int offeredNodeNumber;
-	private int offeredNextNodeNumber;
 	private int numberOfNodes;
 	private byte[] nodes;
 	
@@ -45,18 +44,18 @@ public class ReceivedMessage {
 			}
 		}
 		
+		
+		
 		// Get the JOIN_RESPONSE message details
 		if (command == Protocols.CMD_JOIN_RESPONSE) {
 			offeredNodeNumber = Helper.unsignedByteToInt(data[17]);
-			offeredNextNodeNumber = Helper.unsignedByteToInt(data[18]);
-			numberOfNodes = data[19];
-			nodes = Arrays.copyOfRange(data, 20, 20+(numberOfNodes*6));
+			numberOfNodes = data[18];
+			nodes = Arrays.copyOfRange(data, 19, 19+(numberOfNodes*5));
 		}
 		
 		// Get the JOIN_CONFIRM message details
 		if (command == Protocols.CMD_JOIN_CONFIRM) {
 			offeredNodeNumber = Helper.unsignedByteToInt(data[17]);
-			offeredNextNodeNumber = Helper.unsignedByteToInt(data[18]);
 		}
 		
 		if (command == Protocols.CMD_IS_DEAD) {
@@ -64,7 +63,6 @@ public class ReceivedMessage {
 		}
 		if(command == Protocols.CMD_IS_ALIVE) {
 			offeredNodeNumber = Helper.unsignedByteToInt(data[21]);
-			offeredNextNodeNumber = Helper.unsignedByteToInt(data[22]);
 			
 			nodeIP = new byte[4];
 			for(int i = 0; i < 4; i++) {
@@ -132,10 +130,6 @@ public class ReceivedMessage {
 	
 	public byte[] getNodeIP() {
 		return this.nodeIP;
-	}
-	
-	public int getOfferedNextNodeNumber() {
-		return this.offeredNextNodeNumber;
 	}
 	
 	public int getNumberOfNodes() {

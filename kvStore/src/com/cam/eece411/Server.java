@@ -26,7 +26,7 @@ public class Server {
 
 		// Instantiate ourself as a node
 		try {
-			me = new Node(Protocols.MAX_NODE_NUMBER,Protocols.MAX_NODE_NUMBER , InetAddress.getLocalHost());
+			me = new Node(Protocols.MAX_NODE_NUMBER, InetAddress.getLocalHost());
 		} catch (UnknownHostException e) {
 			System.out.println("Failed to get local IP");
 			e.printStackTrace();
