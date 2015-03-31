@@ -136,15 +136,12 @@ public class ActivationHandler implements Runnable {
 			socket.setSoTimeout(Protocols.JOIN_TIMEOUT);
 			socket.receive(packet);
 			socket.close();
-			System.out.println("It found a table to join........");
+			System.out.println("Received join-response");
 			respondToJOIN_RESPONSE(packet);
 		} catch (SocketTimeoutException e1) {
-			// TODO Auto-generated catch block
-			//e1.printStackTrace();
-			System.out.println("It didn't find a table to join........");
+			System.out.println("Join request timed out");
 			socket.close();
 		} catch (IOException e2) {
-			// TODO Auto-generated catch block
 			e2.printStackTrace();
 			socket.close();
 		}
@@ -160,6 +157,7 @@ public class ActivationHandler implements Runnable {
 			
 			// Copy our view of the system from what we were sent, this includes us already
 			Circle.add(rcvdMsg.getNodes());
+			Circle.add(Server.me);
 			
 			// Change our state so we are now in the table
 			Server.state = Protocols.IN_TABLE;

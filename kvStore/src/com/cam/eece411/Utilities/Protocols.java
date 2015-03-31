@@ -38,7 +38,7 @@ public class Protocols {
 	public static final int IS_ALIVE_RESPONSE_PORT 	= 5003;
 	
 	// Timeout values
-	public static final int JOIN_TIMEOUT = 10000;
+	public static final int JOIN_TIMEOUT = 5000;
 	public static final int IS_ALIVE_TIMEOUT = 10000;
 	
 	// Max message size
