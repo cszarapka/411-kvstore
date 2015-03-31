@@ -43,7 +43,7 @@ public class Helper {
 		String string = "";
 		if (bytes != null) {
 			for (int i = 0; i < bytes.length; i++) {
-				string += String.format("%02X", bytes[i]) + " \\ ";
+				string += String.format("%02X", bytes[i]);
 			}
 		}
 		return string;
