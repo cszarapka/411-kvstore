@@ -69,4 +69,23 @@ public class Helper {
 	public static int unsignedByteToInt(byte b) {
 		return (int) b & 0xFF;
 	}
+	
+	public static String byteCodeToString(byte b) {
+		String string = "UNKNOWN";
+		switch(b) {
+			case Protocols.APP_CMD_PUT: 		string = "PUT"; break;
+			case Protocols.APP_CMD_GET: 		string = "GET"; break;
+			case Protocols.APP_CMD_REMOVE: 		string = "REMOVE"; break;
+			case Protocols.APP_CMD_SHUTDOWN: 	string = "SHUTDOWN"; break;
+			case Protocols.CMD_CREATE_DHT: 		string = "CREATE-DHT"; break;
+			case Protocols.CMD_START_JOIN_REQUESTS: string = "START-JOIN-REQUESTS"; break;
+			case Protocols.CMD_JOIN_REQUEST: 	string = "JOIN-REQUEST"; break;
+			case Protocols.CMD_ECHOED: 			string = "ECHOED"; break;
+			case Protocols.CMD_IS_ALIVE: 		string = "IS-ALIVE"; break;
+			case Protocols.CMD_IS_DEAD: 		string = "IS-DEAD"; break;
+			case Protocols.CMD_JOIN_RESPONSE:	string = "JOIN-RESPONSE"; break;
+			case Protocols.CMD_JOIN_CONFIRM: 	string = "JOIN-CONFIRM"; break;
+		}
+		return string;
+	}
 }

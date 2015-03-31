@@ -8,6 +8,7 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 
 import com.cam.eece411.Messages.AppResponse;
+import com.cam.eece411.Utilities.Helper;
 import com.cam.eece411.Utilities.Protocols;
 
 /**
@@ -65,7 +66,7 @@ public class Server {
 			DatagramSocket socket = new DatagramSocket(Protocols.SENDING_PORT);
 			DatagramPacket packet = new DatagramPacket(data, data.length, ip, port);
 			socket.send(packet);
-			System.out.println("It sended a packet.........");
+			System.out.println("Sent a " + Helper.byteCodeToString(data[16]) + " to " + ip.toString() + " at " + port);
 			socket.close();
 		} catch (Exception e) {
 			System.out.println("It failed to create a sending socket, so it gave up.");

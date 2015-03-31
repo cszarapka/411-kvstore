@@ -27,8 +27,8 @@ public class ResponseHandler implements Runnable {
 	 * a response-message
 	 */
 	public void run() {
-		System.out.println("- - - - - - - - - - - - - - - - - -");
-		System.out.print(rcvdMsg.toString());
+		System.out.println("- - Response thread launched to handle:");
+		System.out.println(rcvdMsg.toString());
 		
 		if (Server.state == Protocols.HANDLING_JOIN) {
 			if (rcvdMsg.getCommand() == Protocols.CMD_JOIN_CONFIRM) {

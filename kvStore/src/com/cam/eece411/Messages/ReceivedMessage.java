@@ -13,18 +13,18 @@ public class ReceivedMessage {
 	protected byte[] uniqueID;
 	protected byte command;
 	protected byte[] data;
-	
+
 	private byte[] key;
 	private int valueLength;
 	private byte[] value;
 	private int nodeID;
-	
+
 	private int offeredNodeNumber;
 	private int numberOfNodes;
 	private byte[] nodes;
-	
+
 	private byte[] nodeIP;
-	
+
 	public ReceivedMessage(DatagramPacket packet) {
 		// Get the guaranteed data
 		senderIP = packet.getAddress();
@@ -32,54 +32,52 @@ public class ReceivedMessage {
 		data = packet.getData();
 		uniqueID = Arrays.copyOfRange(data, 0, 16);
 		command = data[16];
-		
+
 		// Get the key, if there is one
 		if (command < Protocols.APP_CMD_SHUTDOWN) {
 			key = Arrays.copyOfRange(data, 17, 49);
-			
+
 			// Get the value length and value, if there are any
 			if (command == Protocols.APP_CMD_PUT) {
 				valueLength = Helper.valueLengthBytesToInt(Arrays.copyOfRange(data, 49, 51));
 				value = Arrays.copyOfRange(data, 51, 51+valueLength);
 			}
 		}
-		
-		
-		
+
 		// Get the JOIN_RESPONSE message details
 		if (command == Protocols.CMD_JOIN_RESPONSE) {
 			offeredNodeNumber = Helper.unsignedByteToInt(data[17]);
 			numberOfNodes = data[18];
 			nodes = Arrays.copyOfRange(data, 19, 19+(numberOfNodes*5));
 		}
-		
+
 		// Get the JOIN_CONFIRM message details
 		if (command == Protocols.CMD_JOIN_CONFIRM) {
 			offeredNodeNumber = Helper.unsignedByteToInt(data[17]);
 		}
-		
+
 		if (command == Protocols.CMD_IS_DEAD) {
 			nodeID = Helper.valueLengthBytesToInt(Arrays.copyOfRange(data, 17, 18));
 		}
 		if(command == Protocols.CMD_IS_ALIVE) {
 			offeredNodeNumber = Helper.unsignedByteToInt(data[21]);
-			
+
 			nodeIP = new byte[4];
 			for(int i = 0; i < 4; i++) {
 				nodeIP[i] = data[17+i];
 			}
 		}
 	}
-	
+
 	//used for isDead
 	public int getNodeID() {
 		return this.nodeID;
 	}
-	
+
 	public byte[] getData() {
 		return this.data;
 	}
-	
+
 	/**
 	 * Returns the unique ID of the request message
 	 * @return	the unique ID
@@ -95,7 +93,7 @@ public class ReceivedMessage {
 	public byte getCommand() {
 		return this.command;
 	}
-	
+
 	/**
 	 * Returns the IP address of the immediate sender of this message
 	 * @return	the IP address of the sender
@@ -103,7 +101,7 @@ public class ReceivedMessage {
 	public InetAddress getSenderIP() {
 		return this.senderIP;
 	}
-	
+
 	/**
 	 * Returns the port this message was sent on
 	 * @return	the port
@@ -111,43 +109,44 @@ public class ReceivedMessage {
 	public int getSenderPort() {
 		return this.senderPort;
 	}
-	
+
 	public int getValueLength() {
 		return this.valueLength;
 	}
-	
+
 	public byte[] getKey() {
 		return this.key;
 	}
-	
+
 	public byte[] getValue() {
 		return this.value;
 	}
-	
+
 	public int getOfferedNodeNumber() {
 		return this.offeredNodeNumber;
 	}
-	
+
 	public byte[] getNodeIP() {
 		return this.nodeIP;
 	}
-	
+
 	public int getNumberOfNodes() {
 		return this.numberOfNodes;
 	}
-	
+
 	public byte[] getNodes() {
 		return this.nodes;
 	}
-	
-//	public AppResponse buildResponse() {
-//		
-//	}
-	
+
+	//	public AppResponse buildResponse() {
+	//		
+	//	}
+
 	public String toString() {
-		String string =	"Unique ID: " + Helper.bytesToHexString(uniqueID) + "\n" +
-						"Command: " + Integer.toHexString(command) + "\n";
-		
+		String string =	"- - Message contents:\n" +
+				"Unique ID: " + Helper.bytesToHexString(uniqueID) + "\n" +
+				"Command: " + Helper.byteCodeToString(command) + "\n";
+
 		// Get the key, if there is one
 		if (command < Protocols.APP_CMD_SHUTDOWN) {
 			string += "Key: " + Helper.bytesToHexString(key) + "\n";
@@ -158,7 +157,37 @@ public class ReceivedMessage {
 			string += "Value-Length: " + valueLength + "\n";
 			string += "Value: " + Helper.bytesToHexString(value) + "\n";
 		}
+
+		// Get the JOIN_RESPONSE message details
+		if (command == Protocols.CMD_JOIN_RESPONSE) {
+			string += "Offered Node Number: " + offeredNodeNumber + "\n";
+			string += "Number of nodes sent: " + numberOfNodes + "\n";
+			string += "# | IP:\n";
+			int i = 0;
+			try {
+				while (i < nodes.length) {
+					string += nodes[i+4] + " | " + InetAddress.getByAddress(Arrays.copyOfRange(nodes, i, i+4)) + "\n";
+					i += 5;
+				}
+			} catch (java.net.UnknownHostException e) {
+				e.printStackTrace();
+			} 
+		}
+
+		// Get the JOIN_CONFIRM message details
+		if (command == Protocols.CMD_JOIN_CONFIRM) {
+			string += "Offered node number: " + offeredNodeNumber + "\n";
+		}
+
+		if (command == Protocols.CMD_IS_DEAD) {
+			nodeID = Helper.valueLengthBytesToInt(Arrays.copyOfRange(data, 17, 18));
+		}
 		
+		if(command == Protocols.CMD_IS_ALIVE) {
+			string += "Offered node number " + offeredNodeNumber + "\n";
+			string += "Node IP: " + nodeIP.toString() + "\n";
+		}
+
 		return string;
 	}
 }

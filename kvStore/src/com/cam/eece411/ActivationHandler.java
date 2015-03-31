@@ -9,7 +9,6 @@ import java.net.InetAddress;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import com.cam.eece411.Messages.MessageBuilder;
 import com.cam.eece411.Messages.ReceivedMessage;
@@ -41,8 +40,6 @@ public class ActivationHandler implements Runnable {
 			// Add ourself as the first node in the circle
 			Circle.add(Server.me);
 			Server.state = Protocols.IN_TABLE;
-
-			System.out.println(Circle.toText());
 		}
 		// Read all the nodes to be in the system from the file
 		FileInputStream fin;
