@@ -151,61 +151,21 @@ public class ActivationHandler implements Runnable {
 	}
 
 	private void respondToJOIN_RESPONSE(DatagramPacket packet) {
-		// From received message, determine your:
-		/*
-		 * From received message, get your:
-		 * 	- node number
-		 * 	- next node number
-		 * 	- view of the system
-		 * Then notify the node that sent you them, so he can add you to his circle,
-		 * and notify all his circle's nodes
-		 */
 		ReceivedMessage rcvdMsg = new ReceivedMessage(packet);
-		if (rcvdMsg.getCommand() != Protocols.CMD_JOIN_RESPONSE) {
-			// go no further
-			return;
-		}
-
-		synchronized(Server.me) {
-			// Get your node number and that of the next below you
+		
+		// Ensure this is a join response message
+		if (rcvdMsg.getCommand() == Protocols.CMD_JOIN_RESPONSE) {
+			// Set your own node number
 			Server.me.nodeNumber = rcvdMsg.getOfferedNodeNumber();
-			Server.me.nextNodeNumber = rcvdMsg.getOfferedNextNodeNumber();
-		}
-
-		synchronized(Circle.class) {
-			// Construct your view of the system
+			
+			// Copy our view of the system from what we were sent, this includes us already
 			Circle.add(rcvdMsg.getNodes());
-
-			// EVERYTHING AFTER THIS
 			
-			// Add ourself to the circle
-			Circle.add(Server.me);
+			// Change our state so we are now in the table
 			Server.state = Protocols.IN_TABLE;
-
-			// Change the node who brought us in
-			Iterator<Node> nodes = Circle.nodes().iterator();
-			int distance = Protocols.MAX_NUMBER_OF_NODES;
-			Node nodeToEdit = null;
-			Node currNode;
-			while (nodes.hasNext()) {
-				currNode = nodes.next();
-				if(currNode.nodeNumber != Server.me.nodeNumber) {
-					if (((currNode.nodeNumber - Server.me.nodeNumber) % Protocols.MAX_NUMBER_OF_NODES) < distance) {
-
-						distance = (currNode.nodeNumber - Server.me.nodeNumber) % Protocols.MAX_NUMBER_OF_NODES;
-						nodeToEdit = currNode;
-					}
-				}
-			}
-			nodeToEdit.nextNodeNumber = Server.me.nodeNumber;
-			Node nodeToAdd = new Node(nodeToEdit.nodeNumber,Server.me.nodeNumber,nodeToEdit.ip);
-			Circle.add(nodeToAdd);
-			
-			//EVERYTHING BEFORE THIS
-			
 		}
 
-		System.out.println(Circle.toText());
+		// Send a confirmation message to the node
 		Server.sendMessage(MessageBuilder.joinConfirm(rcvdMsg), rcvdMsg.getSenderIP(), Protocols.LISTENING_PORT);
 	}
 }
