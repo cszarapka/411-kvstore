@@ -69,7 +69,7 @@ public class ResponseHandler implements Runnable {
 	private void respondToISDEAD() {
 		synchronized(Circle.class) {
 			// Put the key-value pair into our store, or
-			Circle.remove(rcvdMsg.getNodeID());
+			Circle.remove(rcvdMsg.getNodeNumber());
 		}
 	}
 	

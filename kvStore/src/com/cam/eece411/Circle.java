@@ -30,7 +30,7 @@ public class Circle {
 
 	/**
 	 * Adds a node to the circle
-	 * @param node		the node to add to the circle
+	 * @param node	the node to add to the circle
 	 */
 	public static void add(Node node) {
 		circle.put(node.nodeNumber, node);
@@ -100,8 +100,9 @@ public class Circle {
 	}
 	
 	/**
-	 * Returns the closest CCW node to this node
-	 * @return
+	 * Returns the closest CCW node to the specified node
+	 * @param	the node to find the closest CCW node of
+	 * @return	the closest CCW node to
 	 */
 	public static Node getNextNodeOf(Node node) {
 		int nextNodeNumber;
@@ -109,9 +110,11 @@ public class Circle {
 		SortedMap<Integer, Node> headMap = circle.headMap(node.nodeNumber);
 		
 		if (headMap.isEmpty()) {
+			// if there are no nodes in the head map, get the largest valued node
 			nextNodeNumber = circle.lastKey();
 			System.out.println("head map's empty\n");
 		} else {
+			// if there are nodes smaller than us, get the largest one (closest)
 			nextNodeNumber = headMap.lastKey();
 			System.out.println("head map'sn't empty\n");
 		}
@@ -122,22 +125,23 @@ public class Circle {
 	 * Returns this node's view of the system as a byte array.
 	 * The format of the byte array is as follows:
 	 * | IP | Node # | ...
-	 * @return	all the nodes this node is aware of as a byte array
+	 * @return	all the nodes in this node's circle as a byte array
 	 */
 	public static byte[] getView() {
+		// 4 bytes for IP and 1 for node number
 		byte[] buffer = new byte[circle.size()*5];
 		byte[] ip;
 		int index = 0;
 		Iterator<Node> nodes = circle.values().iterator();
-		Node currNode;
-
+		Node node;
+		
 		while(nodes.hasNext()) {
-			currNode = nodes.next();
-			ip = currNode.ip.getAddress();
+			node = nodes.next();
+			ip = node.ip.getAddress();
 			for (int i = 0; i < 4; i++) {
 				buffer[index++] = ip[i];
 			}
-			buffer[index++] = (byte) currNode.nodeNumber;
+			buffer[index++] = (byte) node.nodeNumber;
 		}
 		return buffer;
 	}
@@ -150,10 +154,18 @@ public class Circle {
 		return circle.size();
 	}
 
+	/**
+	 * Returns the nodes in the circle as collection
+	 * @return	a collection of the nodes in this circle
+	 */
 	public static Collection<Node> nodes() {
 		return circle.values();
 	}
 
+	/**
+	 * A toString() for a static member
+	 * @return	the node #'s and node name's of the node in this circle
+	 */
 	public static String toText() {
 		Iterator<Node> nodes = circle.values().iterator();
 		Node currNode;

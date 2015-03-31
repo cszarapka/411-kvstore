@@ -17,7 +17,7 @@ public class ReceivedMessage {
 	private byte[] key;
 	private int valueLength;
 	private byte[] value;
-	private int nodeID;
+	private int nodeNumber;
 
 	private int offeredNodeNumber;
 	private int numberOfNodes;
@@ -25,6 +25,14 @@ public class ReceivedMessage {
 
 	private byte[] nodeIP;
 
+	/**
+	 * Builds a message object from a received packet.
+	 * The message contents are parsed and put into local variables to
+	 * be accessed via getter methods. Based on the command in the message
+	 * we know the format of the message and use that knowledge to correctly
+	 * retrieve the data
+	 * @param packet
+	 */
 	public ReceivedMessage(DatagramPacket packet) {
 		// Get the guaranteed data
 		senderIP = packet.getAddress();
@@ -44,21 +52,23 @@ public class ReceivedMessage {
 			}
 		}
 
-		// Get the JOIN_RESPONSE message details
-		if (command == Protocols.CMD_JOIN_RESPONSE) {
+		// Get the offered node number from the join protocol
+		if (command == Protocols.CMD_JOIN_RESPONSE || command == Protocols.CMD_JOIN_CONFIRM) {
 			offeredNodeNumber = Helper.unsignedByteToInt(data[17]);
-			numberOfNodes = data[18];
-			nodes = Arrays.copyOfRange(data, 19, 19+(numberOfNodes*5));
+			
+			// Get the number of nodes, and then the nodes (IP's and #'s)
+			if (command == Protocols.CMD_JOIN_RESPONSE) {
+				numberOfNodes = data[18];
+				nodes = Arrays.copyOfRange(data, 19, 19+(numberOfNodes*5));
+			}
 		}
 
-		// Get the JOIN_CONFIRM message details
-		if (command == Protocols.CMD_JOIN_CONFIRM) {
-			offeredNodeNumber = Helper.unsignedByteToInt(data[17]);
-		}
-
+		// Get the message details specific to IS-DEAD messages
 		if (command == Protocols.CMD_IS_DEAD) {
-			nodeID = Helper.valueLengthBytesToInt(Arrays.copyOfRange(data, 17, 18));
+			nodeNumber = Helper.valueLengthBytesToInt(Arrays.copyOfRange(data, 17, 18));
 		}
+		
+		// Get the message details specific to IS-ALIVE messages
 		if(command == Protocols.CMD_IS_ALIVE) {
 			offeredNodeNumber = Helper.unsignedByteToInt(data[21]);
 
@@ -69,9 +79,9 @@ public class ReceivedMessage {
 		}
 	}
 
-	//used for isDead
-	public int getNodeID() {
-		return this.nodeID;
+	
+	public int getNodeNumber() {
+		return this.nodeNumber;
 	}
 
 	public byte[] getData() {
@@ -138,10 +148,9 @@ public class ReceivedMessage {
 		return this.nodes;
 	}
 
-	//	public AppResponse buildResponse() {
-	//		
-	//	}
-
+	/**
+	 * Based on the command, gets the possible message contents
+	 */
 	public String toString() {
 		String string =	"- - Message contents:\n" +
 				"Unique ID: " + Helper.bytesToHexString(uniqueID) + "\n" +
@@ -158,7 +167,6 @@ public class ReceivedMessage {
 			string += "Value: " + Helper.bytesToHexString(value) + "\n";
 		}
 
-		// Get the JOIN_RESPONSE message details
 		if (command == Protocols.CMD_JOIN_RESPONSE) {
 			string += "Offered Node Number: " + offeredNodeNumber + "\n";
 			string += "Number of nodes sent: " + numberOfNodes + "\n";
@@ -174,13 +182,12 @@ public class ReceivedMessage {
 			} 
 		}
 
-		// Get the JOIN_CONFIRM message details
 		if (command == Protocols.CMD_JOIN_CONFIRM) {
 			string += "Offered node number: " + offeredNodeNumber + "\n";
 		}
 
 		if (command == Protocols.CMD_IS_DEAD) {
-			nodeID = Helper.valueLengthBytesToInt(Arrays.copyOfRange(data, 17, 18));
+			nodeNumber = Helper.valueLengthBytesToInt(Arrays.copyOfRange(data, 17, 18));
 		}
 		
 		if(command == Protocols.CMD_IS_ALIVE) {
@@ -188,6 +195,6 @@ public class ReceivedMessage {
 			string += "Node IP: " + nodeIP.toString() + "\n";
 		}
 
-		return string;
+		return string + "\n";
 	}
 }

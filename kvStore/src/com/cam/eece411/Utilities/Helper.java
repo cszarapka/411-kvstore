@@ -11,6 +11,11 @@ import java.util.Random;
  */
 public class Helper {
 	/**
+	 * The current number of nodes being used for testing/deployment
+	 */
+	public static int NUM_NODES = 5;
+	
+	/**
 	 * Returns an int from the byte array specified, in little endian
 	 * @param b	a byte array to convert to an int
 	 * @return	the integer corresponding to the byte array
@@ -21,8 +26,9 @@ public class Helper {
 		return bb.getInt();
 	}
 
-	public static int NUM_NODES = 5;
-
+	/*
+	 * I don't quite know what this was for any more..
+	 */
 	public static int valueLengthBytesToInt(byte[] b) {
 		return (int) b[0] + (((int) b[1]) * 256);
 	}
@@ -39,6 +45,11 @@ public class Helper {
 		return bb.array();
 	}
 
+	/**
+	 * Converts a byte array to a hex string
+	 * @param bytes	the byte array
+	 * @return		the corresponding hex string
+	 */
 	public static String bytesToHexString(byte[] bytes){
 		String string = "";
 		if (bytes != null) {
@@ -70,6 +81,11 @@ public class Helper {
 		return (int) b & 0xFF;
 	}
 	
+	/**
+	 * Converts a byte command code into the corresponding string
+	 * @param b	the byte command
+	 * @return	the string of that command
+	 */
 	public static String byteCodeToString(byte b) {
 		String string = "UNKNOWN";
 		switch(b) {

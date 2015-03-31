@@ -15,6 +15,12 @@ import com.cam.eece411.Messages.ReceivedMessage;
 import com.cam.eece411.Utilities.Helper;
 import com.cam.eece411.Utilities.Protocols;
 
+/**
+ * The thread that handles all events prior to being in
+ * the table (create-DHT and the joining process)
+ * @author cam
+ *
+ */
 public class ActivationHandler implements Runnable {
 	private ReceivedMessage rcvdMsg;
 
@@ -23,15 +29,14 @@ public class ActivationHandler implements Runnable {
 	}
 
 	public void run() {
-		/*
-		 * If it is a CREATE_DHT command and we aren't in the table (and we are also
-		 * in an UNACTIVATED state) then start the DHT with yourself
-		 */
-		if (rcvdMsg.getCommand() == Protocols.CMD_CREATE_DHT && !Circle.containsNode(Server.me)) {
-			respondToCREATE();
-		}
-		else if (rcvdMsg.getCommand() == Protocols.CMD_START_JOIN_REQUESTS && !Circle.containsNode(Server.me)) {
-			respondToSTART_JOIN_REQUESTS();
+		// Only do anything if we are not in our circle
+		if (!Circle.containsNode(Server.me)) {
+			if (rcvdMsg.getCommand() == Protocols.CMD_CREATE_DHT) {
+				respondToCREATE();
+			}
+			else if (rcvdMsg.getCommand() == Protocols.CMD_START_JOIN_REQUESTS) {
+				respondToSTART_JOIN_REQUESTS();
+			}
 		}
 	}
 
@@ -146,16 +151,16 @@ public class ActivationHandler implements Runnable {
 
 	private void respondToJOIN_RESPONSE(DatagramPacket packet) {
 		ReceivedMessage rcvdMsg = new ReceivedMessage(packet);
-		
+
 		// Ensure this is a join response message
 		if (rcvdMsg.getCommand() == Protocols.CMD_JOIN_RESPONSE) {
 			// Set your own node number
 			Server.me.nodeNumber = rcvdMsg.getOfferedNodeNumber();
-			
+
 			// Copy our view of the system from what we were sent, this includes us already
 			Circle.add(rcvdMsg.getNodes());
 			Circle.add(Server.me);
-			
+
 			// Change our state so we are now in the table
 			Server.state = Protocols.IN_TABLE;
 		}
