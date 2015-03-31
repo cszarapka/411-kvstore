@@ -149,7 +149,7 @@ public class ResponseHandler implements Runnable {
 		if(Server.me.nodeNumber == Server.me.nextNodeNumber) {
 			offeredNodeNumber = (Server.me.nodeNumber - (Protocols.MAX_NUMBER_OF_NODES / 2)) % Protocols.MAX_NUMBER_OF_NODES;
 		} else {
-			offeredNodeNumber = ((((Server.me.nextNodeNumber - Server.me.nodeNumber) % Protocols.MAX_NUMBER_OF_NODES) / 2) + Server.me.nodeNumber) % Protocols.MAX_NUMBER_OF_NODES;
+			offeredNodeNumber = (Server.me.nodeNumber - (((Server.me.nextNodeNumber - Server.me.nodeNumber) % Protocols.MAX_NUMBER_OF_NODES) / 2)) % Protocols.MAX_NUMBER_OF_NODES;
 		}
 		int offeredNextNodeNumber = Server.me.nextNodeNumber;
 		
