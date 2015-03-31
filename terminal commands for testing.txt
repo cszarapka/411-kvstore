@@ -16,3 +16,6 @@ planetlab2.cs.ubc.ca
 
 instructions: 
 6 terminal windows open. 5 use command 1 to ssh into the 5 servers above, then use command 3 to run the jar once it's transferred. The last window is to scp files onto all 5 using command 4. 
+
+
+offeredNodeNumber = (127 - (((127 - 255) % 256) / 2)) % 256;

@@ -62,8 +62,9 @@ public class Server {
 	 * @param port	the port to send the packet to
 	 */
 	public static void sendMessage(byte[] data, InetAddress ip, int port) {
+		DatagramSocket socket = null;
 		try {
-			DatagramSocket socket = new DatagramSocket(Protocols.SENDING_PORT);
+			socket = new DatagramSocket(Protocols.SENDING_PORT);
 			DatagramPacket packet = new DatagramPacket(data, data.length, ip, port);
 			socket.send(packet);
 			System.out.println("Sent a " + Helper.byteCodeToString(data[16]) + " to " + ip.toString() + " at " + port);
@@ -71,12 +72,13 @@ public class Server {
 		} catch (Exception e) {
 			System.out.println("It failed to create a sending socket, so it gave up.");
 			e.printStackTrace();
+			socket.close();
 			return;
 		}
 	}
 
 	public static void sendMessage(AppResponse msg) {
-		DatagramSocket socket;
+		DatagramSocket socket = null;
 		DatagramPacket packet;
 		try {
 			socket = new DatagramSocket(Protocols.SENDING_PORT);
@@ -89,6 +91,7 @@ public class Server {
 		} catch (Exception e) {
 			System.out.println("It failed to create a sending socket, so it gave up.");
 			e.printStackTrace();
+			socket.close();
 			return;
 		}
 	}

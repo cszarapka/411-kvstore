@@ -52,9 +52,9 @@ public class TestingClient {
 		byte[] key = Helper.generateRandomByteArray(32);
 		byte[] value = Helper.generateRandomByteArray(50);
 		
-		SendMessage[] messages = new SendMessage[1];
+		SendMessage[] messages = new SendMessage[10];
 		messages[0] = new CreateTableRequest();
-		/*messages[1] = new GetRequest(key);			// should get KEY-DNE back
+		messages[1] = new GetRequest(key);			// should get KEY-DNE back
 		messages[2] = new RemoveRequest(key);		// should get KEY-DNE back
 		messages[3] = new PutRequest(key, value);	// should get SUCCESS back
 		messages[4] = messages[1];					// should get SUCCESS back
@@ -62,7 +62,7 @@ public class TestingClient {
 		messages[6] = new ShutdownRequest();		// should get SUCCESS back
 		messages[7] = messages[0];					// should get nothing back
 		messages[8] = messages[0];
-		messages[9] = messages[0];*/
+		messages[9] = messages[0];
 		System.out.println("It has created the messages.");
 		
 		// Send and receive messages
@@ -86,6 +86,14 @@ public class TestingClient {
 				System.out.println("- - - - - - - - - - - - - - - - - -");
 			} catch (IOException e) {
 				System.out.println("\nX X\nMessage " + i + " -Exception: " + e.getMessage() + "\nX X\n\n");
+			}
+			if(i == 0) {
+				try {
+					Thread.sleep(20000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 		System.out.println("It finished sending and receiving test messages");

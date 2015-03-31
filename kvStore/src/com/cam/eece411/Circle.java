@@ -110,8 +110,10 @@ public class Circle {
 		
 		if (headMap.isEmpty()) {
 			nextNodeNumber = circle.lastKey();
+			System.out.println("head map's empty\n");
 		} else {
 			nextNodeNumber = headMap.lastKey();
+			System.out.println("head map'sn't empty\n");
 		}
 		return circle.get(nextNodeNumber);
 	}

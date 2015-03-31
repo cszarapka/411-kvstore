@@ -137,7 +137,7 @@ public class ResponseHandler implements Runnable {
 	private void respondToJOIN_REQUEST() {
 		int myNumber, nextNodeNumber, offeredNodeNumber;
 		int maxNodeCount = Protocols.MAX_NUMBER_OF_NODES;
-		
+		System.out.println("I'M IN THIS PART NOW\n");
 		synchronized(Server.state) {
 			synchronized(Circle.class) {
 				Server.state = Protocols.HANDLING_JOIN;
@@ -148,11 +148,12 @@ public class ResponseHandler implements Runnable {
 		
 		// Determine number half way between us and next node number
 		if(myNumber == nextNodeNumber) {
-			offeredNodeNumber = (myNumber - (maxNodeCount / 2)) % maxNodeCount;
+			offeredNodeNumber = (myNumber - (maxNodeCount / 2) + maxNodeCount) % maxNodeCount;
 		} else {
-			offeredNodeNumber = (myNumber - (((myNumber - nextNodeNumber) % maxNodeCount) / 2)) % maxNodeCount;
+			offeredNodeNumber = (myNumber - (((myNumber - nextNodeNumber + maxNodeCount) % maxNodeCount) / 2) + maxNodeCount) % maxNodeCount;
 		}
-		
+		System.out.println((myNumber - (((myNumber - nextNodeNumber + maxNodeCount) % maxNodeCount) / 2) + maxNodeCount) % maxNodeCount);
+		System.out.println("My node number: " + myNumber + "\nNext node number: " + nextNodeNumber + "\noffered node number: " + offeredNodeNumber + "\n");
 		// Add this node to our table
 		Node newNode = new Node(offeredNodeNumber, rcvdMsg.getSenderIP());
 		synchronized(Circle.class) {
