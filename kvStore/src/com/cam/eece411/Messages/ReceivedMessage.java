@@ -47,16 +47,16 @@ public class ReceivedMessage {
 		
 		// Get the JOIN_RESPONSE message details
 		if (command == Protocols.CMD_JOIN_RESPONSE) {
-			offeredNodeNumber = data[17];
-			offeredNextNodeNumber = data[18];
+			offeredNodeNumber = Helper.unsignedByteToInt(data[17]);
+			offeredNextNodeNumber = Helper.unsignedByteToInt(data[18]);
 			numberOfNodes = data[19];
 			nodes = Arrays.copyOfRange(data, 20, 20+(numberOfNodes*6));
 		}
 		
 		// Get the JOIN_CONFIRM message details
 		if (command == Protocols.CMD_JOIN_CONFIRM) {
-			offeredNodeNumber = data[17];
-			offeredNextNodeNumber = data[18];
+			offeredNodeNumber = Helper.unsignedByteToInt(data[17]);
+			offeredNextNodeNumber = Helper.unsignedByteToInt(data[18]);
 		}
 		
 		if (command == Protocols.CMD_IS_DEAD) {

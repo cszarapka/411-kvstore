@@ -46,6 +46,7 @@ public class Protocols {
 	
 	// Relative to nodes
 	public static final int MAX_NODE_NUMBER	= 255;
+	public static final int MAX_NUMBER_OF_NODES = MAX_NODE_NUMBER + 1;
 	
 	// States the server is in during its lifetime
 	public static final int OUT_OF_TABLE = 0;

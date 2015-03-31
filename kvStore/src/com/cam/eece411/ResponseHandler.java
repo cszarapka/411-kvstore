@@ -144,7 +144,13 @@ public class ResponseHandler implements Runnable {
 		synchronized(Server.state) {
 			Server.state = Protocols.HANDLING_JOIN;
 		}
-		int offeredNodeNumber = (Server.me.nodeNumber / 2) + (Server.me.nextNodeNumber / 2);
+		
+		int offeredNodeNumber;
+		if(Server.me.nodeNumber == Server.me.nextNodeNumber) {
+			offeredNodeNumber = (Server.me.nodeNumber - (Protocols.MAX_NUMBER_OF_NODES / 2)) % Protocols.MAX_NUMBER_OF_NODES;
+		} else {
+			offeredNodeNumber = ((((Server.me.nextNodeNumber - Server.me.nodeNumber) % Protocols.MAX_NUMBER_OF_NODES) / 2) + Server.me.nodeNumber) % Protocols.MAX_NUMBER_OF_NODES;
+		}
 		int offeredNextNodeNumber = Server.me.nextNodeNumber;
 		
 		Server.sendMessage( MessageBuilder.responseToJoinRequest(rcvdMsg, offeredNodeNumber, offeredNextNodeNumber),
