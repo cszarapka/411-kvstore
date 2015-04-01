@@ -1,3 +1,1 @@
-1. Place term.sh, MultiWindowTesting.php, kvStore.jar, testingClient.jar, and testingNodes.txt all in the same folder
-
-2. cd to folder and run "php MultiWindowTesting.php"
+if you've changed the jars or testingNodes.txt, run copyandlaunch, if not run launch to skip the scp steps
