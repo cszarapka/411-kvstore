@@ -17,19 +17,19 @@ import com.cam.test.eece411.Messages.ShutdownRequest;
 import com.cam.test.eece411.Messages.SimpleResponse;
 
 public class TestingClient {
-	
+
 	public static final byte PUT		= 1;
 	public static final byte GET		= 2;
 	public static final byte REMOVE		= 3;
 	public static final byte SHUTDOWN	= 4;
 	public static final byte CREATE_DHT = 20;
 	public static final byte START_JOIN_REQUESTS = 21;
-	
+
 
 	public static void main(String[] args) {
 		System.out.println("\n\n\n\n\n");
 		System.out.println("The client awakens.");
-		
+
 		DatagramSocket socket;
 		DatagramPacket sendPacket;
 		DatagramPacket receivePacket;
@@ -47,28 +47,39 @@ public class TestingClient {
 			return;
 		}
 		int serverPort = 5000;
-		
+
 		// Build some test data
 		byte[] key = Helper.generateRandomByteArray(32);
 		byte[] value = Helper.generateRandomByteArray(50);
-		
+
+		boolean[] shouldWait = new boolean[10];
 		SendMessage[] messages = new SendMessage[10];
 		messages[0] = new CreateTableRequest();
+		shouldWait[0] = false;
 		messages[1] = new GetRequest(key);			// should get KEY-DNE back
+		shouldWait[0] = true;
 		messages[2] = new RemoveRequest(key);		// should get KEY-DNE back
+		shouldWait[0] = true;
 		messages[3] = new PutRequest(key, value);	// should get SUCCESS back
+		shouldWait[0] = true;
 		messages[4] = messages[1];					// should get SUCCESS back
-		messages[5] = messages[0];					// should get KEY-DNE back
+		shouldWait[0] = true;
+		messages[5] = messages[1];					// should get KEY-DNE back
+		shouldWait[0] = true;
 		messages[6] = new ShutdownRequest();		// should get SUCCESS back
+		shouldWait[0] = false;
 		messages[7] = messages[0];					// should get nothing back
+		shouldWait[0] = true;
 		messages[8] = messages[0];
+		shouldWait[0] = true;
 		messages[9] = messages[0];
+		shouldWait[0] = true;
 		System.out.println("It has created the messages.");
-		
+
 		// Send and receive messages
 		for (int i = 0; i < messages.length; i++) {
 			sendPacket = new DatagramPacket(messages[i].data, messages[i].data.length, serverIP, serverPort);
-			
+
 			try {
 				socket.send(sendPacket);
 				System.out.println("- - - - - - - - - - - - - - - - - -");
@@ -76,12 +87,14 @@ public class TestingClient {
 				System.out.print(messages[i].toString());
 				byte[] rcvData = new byte[15500];
 				receivePacket = new DatagramPacket(rcvData, rcvData.length);
-				socket.receive(receivePacket);
-				System.out.println("- - Response:");
-				if (messages[i].command == GET && receivePacket.getData()[16] == 0) {
-					System.out.print((new GetResponse(receivePacket)).toString());
-				} else {
-					System.out.print((new SimpleResponse(receivePacket)).toString());
+				if(!shouldWait[i]) { 
+					socket.receive(receivePacket);
+					System.out.println("- - Response:");
+					if (messages[i].command == GET && receivePacket.getData()[16] == 0) {
+						System.out.print((new GetResponse(receivePacket)).toString());
+					} else {
+						System.out.print((new SimpleResponse(receivePacket)).toString());
+					}
 				}
 				System.out.println("- - - - - - - - - - - - - - - - - -");
 			} catch (IOException e) {

@@ -2,6 +2,7 @@ package com.cam.eece411.Messages;
 
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 
 import com.cam.eece411.Utilities.Helper;
@@ -41,6 +42,28 @@ public class ReceivedMessage {
 		uniqueID = Arrays.copyOfRange(data, 0, 16);
 		command = data[16];
 
+		if(command == Protocols.CMD_ECHOED) {
+			byte[] ip = new byte[4];
+			byte[] port = new byte[4];
+			for(int i = 0; i < 4; i++) {
+				ip[i] = data[17+i];
+			}
+			for(int i = 0; i < 2; i++) {
+				port[i] = data[21+i];
+			}
+			command = data[23];
+			try {
+				senderIP = InetAddress.getByAddress(ip);
+			} catch (UnknownHostException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			senderPort = Helper.byteArrayToInt(port);
+			for(int i = 0; i < data.length - 23; i++) {
+				data[16+i] = data[23+i];
+			}
+		}
+		
 		// Get the key, if there is one
 		if (command < Protocols.APP_CMD_SHUTDOWN) {
 			key = Arrays.copyOfRange(data, 17, 49);
