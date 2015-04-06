@@ -187,6 +187,9 @@ public class ResponseHandler implements Runnable {
 			
 			// Hash the key
 			hash = MD5HashFunction.hash(currentKey);
+			System.out.println(currentKey);
+			
+			
 			
 			// Only PUT this key/value pair to the new node if he should have it
 			if (hisNodeNumber > hisNextNodeNumber) {

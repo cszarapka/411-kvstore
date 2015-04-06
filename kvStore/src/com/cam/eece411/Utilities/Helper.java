@@ -2,7 +2,12 @@ package com.cam.eece411.Utilities;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Iterator;
 import java.util.Random;
+
+import com.cam.eece411.KeyValueStore;
+import com.cam.eece411.Server;
+import com.cam.eece411.Messages.PutRequest;
 
 /**
  * This helper class defines static methods that make life easier, like byte conversions.
@@ -26,6 +31,24 @@ public class Helper {
 		return bb.getInt();
 	}
 
+	public static void printKVStore() {
+		Iterator<ByteBuffer> keys = KeyValueStore.getKeys().iterator();
+		byte[] currentKey = new byte[32];
+		int hash;
+		byte[] currentValue = null;
+		while (keys.hasNext()) {
+			// Unwrap the array from the byte buffer
+			currentKey = keys.next().array();
+			
+			// Hash the key
+			hash = MD5HashFunction.hash(currentKey);
+			KeyValueStore.get(currentKey);
+			System.out.println("\nHash: " + hash + " Key: " + bytesToHexString(currentKey) + " Value: " + bytesToHexString(KeyValueStore.get(currentKey)));
+			
+			
+		}
+	}
+	
 	/*
 	 * I don't quite know what this was for any more..
 	 */
