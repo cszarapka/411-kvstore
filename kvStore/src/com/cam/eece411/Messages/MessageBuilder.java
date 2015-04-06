@@ -2,6 +2,7 @@ package com.cam.eece411.Messages;
 
 import com.cam.eece411.Circle;
 import com.cam.eece411.Node;
+import com.cam.eece411.Server;
 import com.cam.eece411.Utilities.Helper;
 import com.cam.eece411.Utilities.Protocols;
 
@@ -109,7 +110,7 @@ public class MessageBuilder {
 			// Add all the nodes from the circle
 			circleView = Circle.getView();
 
-			System.out.println("Circle.getSize(): "+Circle.getSize()+"\ncircleView.length: " + circleView.length +"\nbuffer.length: "+buffer.length+"\nindex:"+index+"\n");
+			if(Server.VERBOSE) System.out.println("Circle.getSize(): "+Circle.getSize()+"\ncircleView.length: " + circleView.length +"\nbuffer.length: "+buffer.length+"\nindex:"+index+"\n");
 			for (int i = 0; i < circleView.length; i++) {
 				buffer[index++] = circleView[i];
 			}

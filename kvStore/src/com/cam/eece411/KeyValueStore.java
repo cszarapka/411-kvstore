@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.cam.eece411.Utilities.Helper;
 import com.cam.eece411.Utilities.Protocols;
 
 /**
@@ -32,6 +33,7 @@ public class KeyValueStore {
 		store.put(ByteBuffer.wrap(key), Arrays.copyOf(value, value.length));
 		// TODO: change the response code if the put fails due to overflow
 		// TODO: test what happens when you set the max heap size, and then overflow it
+		Helper.printKVStore();
 		return responseCode;
 	}
 	

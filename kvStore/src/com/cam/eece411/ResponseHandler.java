@@ -27,8 +27,8 @@ public class ResponseHandler implements Runnable {
 	 * a response-message
 	 */
 	public void run() {
-		System.out.println("- - Response thread launched to handle:");
-		System.out.println(rcvdMsg.toString());
+		if(Server.VERBOSE) System.out.println("- - Response thread launched to handle:");
+		if(Server.VERBOSE) System.out.println(rcvdMsg.toString());
 		
 		if (Server.state == Protocols.HANDLING_JOIN) {
 			if (rcvdMsg.getCommand() == Protocols.CMD_JOIN_CONFIRM) {
@@ -120,7 +120,7 @@ public class ResponseHandler implements Runnable {
 
 	private void respondToSHUTDOWN() {
 		Server.sendMessage(new AppResponse(rcvdMsg, Protocols.CODE_SUCCESS));
-		System.out.println("It shuts down and simulates a crash now.. :(");
+		if(Server.VERBOSE) System.out.println("It shuts down and simulates a crash now.. :(");
 		System.exit(0);
 	}
 
@@ -148,7 +148,7 @@ public class ResponseHandler implements Runnable {
 	private void respondToJOIN_REQUEST() {
 		int myNumber, nextNodeNumber, offeredNodeNumber;
 		int maxNodeCount = Protocols.MAX_NUMBER_OF_NODES;
-		System.out.println("I'M IN THIS PART NOW\n");
+		if(Server.VERBOSE) System.out.println("I'M IN THIS PART NOW\n");
 		synchronized(Server.state) {
 			synchronized(Circle.class) {
 				Server.state = Protocols.HANDLING_JOIN;
@@ -163,8 +163,8 @@ public class ResponseHandler implements Runnable {
 		} else {
 			offeredNodeNumber = (myNumber - (((myNumber - nextNodeNumber + maxNodeCount) % maxNodeCount) / 2) + maxNodeCount) % maxNodeCount;
 		}
-		System.out.println((myNumber - (((myNumber - nextNodeNumber + maxNodeCount) % maxNodeCount) / 2) + maxNodeCount) % maxNodeCount);
-		System.out.println("My node number: " + myNumber + "\nNext node number: " + nextNodeNumber + "\noffered node number: " + offeredNodeNumber + "\n");
+		if(Server.VERBOSE) System.out.println((myNumber - (((myNumber - nextNodeNumber + maxNodeCount) % maxNodeCount) / 2) + maxNodeCount) % maxNodeCount);
+		if(Server.VERBOSE) System.out.println("My node number: " + myNumber + "\nNext node number: " + nextNodeNumber + "\noffered node number: " + offeredNodeNumber + "\n");
 		// Add this node to our table
 		Node newNode = new Node(offeredNodeNumber, rcvdMsg.getSenderIP());
 		synchronized(Circle.class) {
@@ -198,6 +198,9 @@ public class ResponseHandler implements Runnable {
 			
 			// Hash the key
 			hash = MD5HashFunction.hash(currentKey);
+			if(Server.VERBOSE) System.out.println(currentKey);
+			
+			
 			
 			// Only PUT this key/value pair to the new node if he should have it
 			if (hisNodeNumber > hisNextNodeNumber) {

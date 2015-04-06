@@ -16,6 +16,7 @@ import com.cam.test.eece411.Messages.RemoveRequest;
 import com.cam.test.eece411.Messages.SendMessage;
 import com.cam.test.eece411.Messages.ShutdownRequest;
 import com.cam.test.eece411.Messages.SimpleResponse;
+import com.cam.test.eece411.Messages.StartJoinRequests;
 
 public class TestingClient {
 
@@ -36,7 +37,7 @@ public class TestingClient {
 		DatagramPacket receivePacket;
 		InetAddress serverIP;
 		try {
-			serverIP = InetAddress.getByName("pl1.pku.edu.cn");
+			serverIP = InetAddress.getByName("pl2.6test.edu.cn");
 		} catch (UnknownHostException e) {
 			System.out.println("\nX X\nException: " + e.getMessage() + "\nX X\n\nIt ends now.");
 			return;
@@ -60,7 +61,7 @@ public class TestingClient {
 
 		boolean[] shouldWait = new boolean[199];
 		SendMessage[] messages = new SendMessage[199];
-		messages[0] = new CreateTableRequest();
+		messages[0] = new StartJoinRequests(key);
 		shouldWait[0] = false;
 		messages[1] = new GetRequest(key);			// should get KEY-DNE back
 		shouldWait[1] = true;
