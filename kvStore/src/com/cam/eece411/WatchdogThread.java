@@ -85,19 +85,23 @@ public class WatchdogThread implements Runnable {
 			int myNodeNum = Server.me.nodeNumber;
 			
 			//vector containing successor and predecessor nodes
-			Vector<Node> replicators = findCoveredNodes(alive, myNodeNum);
+			Vector<Node> replicators = new Vector<Node>();
 			
+			synchronized(Circle.class) {
+				//add next node to vector
+				replicators.add(Circle.getNextNodeOf(Server.me));
+				
+				//add prev node to vector if not the same as the first
+				if( Circle.getNextNodeOf(Server.me).nodeNumber != Circle.getPrevNodeOf(Server.me).nodeNumber)
+					replicators.add(Circle.getPrevNodeOf(Server.me));
+			}
 			//send all the keys covered by myNodeNum to the successor and predecessors in replicators
 			sendAllKeys(replicators, myNodeNum);
-			
-			
-			
-			
-			
 		}
 	}
 	
 	/**
+	 * Used for data replication between nodes. <br><br>
 	 * Sends a PUT message for each key covered by the local node to the successor and predecessor of the local node 
 	 * @param replicators Vector<Node> containing the successor and predecessor nodes
 	 * @param myNodeNum The local node's node number
@@ -131,73 +135,6 @@ public class WatchdogThread implements Runnable {
 			}
 			
 		}
-	}
-	
-	/**
-	 * Finds the predecessor and successor nodes that will have replicated key-values sent to them. Usage for WatchDogThread
-	 * @param alive	Set containing all the alive nodes
-	 * @param myNodeNum	The local node's node number
-	 * @return Vector<Node> containing successorNode in index 0, predecessorNode in index 1. if the node's are the same 
-	 * 			(such as in a 2 node system) then only index 0 will contain a node
-	 */
-	public Vector<Node> findCoveredNodes(Set<Node> alive, int myNodeNum){
-		Iterator<Node> aliveIter = alive.iterator();
-		Vector<Node> replicators = new Vector<Node>();
-		Node successorNode = new Node(-1, null);
-		Node predecessorNode = new Node(-1, null);;
-		
-		while(aliveIter.hasNext()){
-			Node nextNode = aliveIter.next();
-			
-			if(nextNode.nodeNumber > myNodeNum){
-				if(successorNode.nodeNumber == -1){
-					successorNode = nextNode;
-				} else if(nextNode.nodeNumber < successorNode.nodeNumber){
-					successorNode = nextNode;
-				}
-			} else if(nextNode.nodeNumber < myNodeNum){
-				if(predecessorNode.nodeNumber == -1){
-					predecessorNode = nextNode;
-				} else if(nextNode.nodeNumber > predecessorNode.nodeNumber){
-					predecessorNode = nextNode;
-				}
-			}
-		}
-		//if the predecessor and successor aren't simply greater and lesser than the node number, a wrapping case is handled
-		if(successorNode.nodeNumber == -1){ //successor needs to wrap
-			aliveIter = alive.iterator(); //restart iterator
-			while(aliveIter.hasNext()){
-				Node nextNode = aliveIter.next();
-				
-				if(successorNode.nodeNumber == -1){
-					successorNode = nextNode;
-				} else if(nextNode.nodeNumber < successorNode.nodeNumber){
-					successorNode = nextNode;
-				}
-			}
-		}
-		//if the predecessor and successor aren't simply greater and lesser than the node number, a wrapping case is handled
-		if(predecessorNode.nodeNumber == -1){ //predecessor needs to wrap
-			aliveIter = alive.iterator(); //restart iterator	
-			while(aliveIter.hasNext()){
-				Node nextNode = aliveIter.next();
-				
-				if(predecessorNode.nodeNumber == -1){
-					predecessorNode = nextNode;
-				} else if(nextNode.nodeNumber > predecessorNode.nodeNumber){
-					predecessorNode = nextNode;
-				}
-			}
-		}
-		
-		
-		//add successornode to the vector of nodes to replicate
-		replicators.add(0, successorNode);
-		//only add predecessornode if it is not the same as successornode
-		if(successorNode.nodeNumber != predecessorNode.nodeNumber)
-			replicators.add(1, predecessorNode);
-		
-		return replicators;
 	}
 
 }

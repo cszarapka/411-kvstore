@@ -102,8 +102,8 @@ public class Circle {
 	
 	/**
 	 * Returns the closest CCW node to the specified node
-	 * @param	the node to find the closest CCW node of
-	 * @return	the closest CCW node to
+	 * @param node	the node to find the closest CCW node of
+	 * @return	the closest CCW node to the specified node
 	 */
 	public static Node getNextNodeOf(Node node) {
 		int nextNodeNumber;
@@ -118,6 +118,28 @@ public class Circle {
 			// if there are nodes smaller than us, get the largest one (closest)
 			nextNodeNumber = headMap.lastKey();
 			System.out.println("head map'sn't empty\n");
+		}
+		return circle.get(nextNodeNumber);
+	}
+	
+	/**
+	 * Returns the closest CW node to the specified node
+	 * @param node	the node to find the closest CW node of
+	 * @return	the closest CCW node to the specified node
+	 */
+	public static Node getPrevNodeOf(Node node){
+		int nextNodeNumber;
+		//Get all the nodes strictly higher than us, exclusive
+		SortedMap<Integer, Node> tailMap = circle.tailMap(node.nodeNumber);
+		
+		if(tailMap.isEmpty()){
+			// if there are no nodes in the tail map, get the smallest valued node
+			nextNodeNumber = circle.firstKey();
+			System.out.println("tail map's empty\n");
+		} else {
+			// if there are nodes smaller than us, get the smallest one (closest)
+			nextNodeNumber = tailMap.firstKey();
+			System.out.println("tail map'sn't empty\n");
 		}
 		return circle.get(nextNodeNumber);
 	}
