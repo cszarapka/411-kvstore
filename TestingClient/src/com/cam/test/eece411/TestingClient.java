@@ -6,7 +6,9 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.sql.Timestamp;
 import java.util.Arrays;
+import java.sql.Date;
 
 import com.cam.test.eece411.Messages.CreateTableRequest;
 import com.cam.test.eece411.Messages.GetRequest;
@@ -37,7 +39,7 @@ public class TestingClient {
 		DatagramPacket receivePacket;
 		InetAddress serverIP;
 		try {
-			serverIP = InetAddress.getByName("pl2.6test.edu.cn");
+			serverIP = InetAddress.getByName("planetlab2.cs.ubc.ca");
 		} catch (UnknownHostException e) {
 			System.out.println("\nX X\nException: " + e.getMessage() + "\nX X\n\nIt ends now.");
 			return;
@@ -58,10 +60,12 @@ public class TestingClient {
 		byte[] value = Helper.generateRandomByteArray(50);
 		byte[][] keys = new byte[98][32];
 		byte[][] values = new byte[98][50];
+		long startTime = 0;
+		long endTime;
 
 		boolean[] shouldWait = new boolean[199];
 		SendMessage[] messages = new SendMessage[199];
-		messages[0] = new StartJoinRequests(key);
+		messages[0] = new CreateTableRequest();
 		shouldWait[0] = false;
 		messages[1] = new GetRequest(key);			// should get KEY-DNE back
 		shouldWait[1] = true;
@@ -99,7 +103,10 @@ public class TestingClient {
 		// Send and receive messages
 		for (int i = 0; i < messages.length; i++) {
 			sendPacket = new DatagramPacket(messages[i].data, messages[i].data.length, serverIP, serverPort);
-
+			if(i == 3) {
+				java.util.Date date= new java.util.Date();
+				startTime = date.getTime();
+			}
 			try {
 				socket.send(sendPacket);
 				System.out.println("- - - - - - - - - - - - - - - - - -");
@@ -138,7 +145,10 @@ public class TestingClient {
 				}
 			}
 		}
+		java.util.Date date= new java.util.Date();
+		endTime = date.getTime();
 		System.out.println("It finished sending and receiving test messages");
+		System.out.println("\nTime: " + (endTime - startTime));
 		socket.close();
 		System.out.println("It ends.. for now");
 		return;
