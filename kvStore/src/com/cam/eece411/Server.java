@@ -21,16 +21,17 @@ public class Server {
 	public static Node me;
 	public static Integer state = Protocols.OUT_OF_TABLE;
 	public static Object sendingLock = new Object();
+	public static boolean VERBOSE = true; //if false, print statements suppressed
 
 	public static void main(String[] args) throws SocketException, IOException {
-		System.out.println("\n\n\n\n\n\n\n");
-		System.out.println("It has begun.");
+		if(Server.VERBOSE) System.out.println("\n\n\n\n\n\n\n");
+		if(Server.VERBOSE) System.out.println("It has begun.");
 
 		// Instantiate ourself as a node
 		try {
 			me = new Node(Protocols.MAX_NODE_NUMBER, InetAddress.getLocalHost());
 		} catch (UnknownHostException e) {
-			System.out.println("Failed to get local IP");
+			if(Server.VERBOSE) System.out.println("Failed to get local IP");
 			e.printStackTrace();
 		}
 
@@ -41,9 +42,9 @@ public class Server {
 
 		// Listen for commands (GET, PUT, REMOVE, SHUTDOWN)
 		while(true) {
-			System.out.println("Waiting for a message...");
+			if(Server.VERBOSE) System.out.println("Waiting for a message...");
 			socket.receive(packet);
-			System.out.println("Messaged received!");
+			if(Server.VERBOSE) System.out.println("Messaged received!");
 			// Launch thread based on state we are in
 			switch (state) {
 			case Protocols.OUT_OF_TABLE: (new Thread(new ActivationHandler(packet))).start(); break;
@@ -69,10 +70,10 @@ public class Server {
 				socket = new DatagramSocket(Protocols.SENDING_PORT);
 				DatagramPacket packet = new DatagramPacket(data, data.length, ip, port);
 				socket.send(packet);
-				System.out.println("Sent a " + Helper.byteCodeToString(data[16]) + " to " + ip.toString() + " at " + port);
+				if(Server.VERBOSE) System.out.println("Sent a " + Helper.byteCodeToString(data[16]) + " to " + ip.toString() + " at " + port);
 				socket.close();
 			} catch (Exception e) {
-				System.out.println("It failed to create a sending socket, so it gave up.");
+				if(Server.VERBOSE) System.out.println("It failed to create a sending socket, so it gave up.");
 				e.printStackTrace();
 				socket.close();
 				return;
@@ -88,12 +89,12 @@ public class Server {
 				socket = new DatagramSocket(Protocols.SENDING_PORT);
 				packet = new DatagramPacket(msg.buffer, msg.buffer.length, msg.ipToSendTo, msg.portToSendTo);
 				socket.send(packet);
-				System.out.println("- - It responded with:");
-				System.out.print(msg.toString());
-				System.out.println("- - - - - - - - - - - - - - - - - -");
+				if(Server.VERBOSE) System.out.println("- - It responded with:");
+				if(Server.VERBOSE) System.out.print(msg.toString());
+				if(Server.VERBOSE) System.out.println("- - - - - - - - - - - - - - - - - -");
 				socket.close();
 			} catch (Exception e) {
-				System.out.println("It failed to create a sending socket, so it gave up.");
+				if(Server.VERBOSE) System.out.println("It failed to create a sending socket, so it gave up.");
 				e.printStackTrace();
 				socket.close();
 				return;
