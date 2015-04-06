@@ -6,6 +6,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 
 import com.cam.test.eece411.Messages.CreateTableRequest;
 import com.cam.test.eece411.Messages.GetRequest;
@@ -55,6 +56,7 @@ public class TestingClient {
 		byte[] key3 = Helper.generateRandomByteArray(32);
 		byte[] value = Helper.generateRandomByteArray(50);
 		byte[][] keys = new byte[98][32];
+		byte[][] values = new byte[98][50];
 
 		boolean[] shouldWait = new boolean[199];
 		SendMessage[] messages = new SendMessage[199];
@@ -65,8 +67,9 @@ public class TestingClient {
 		messages[2] = new RemoveRequest(key);		// should get KEY-DNE back
 		shouldWait[2] = true;
 		for(int i = 3; i < 101; i++) {
+			values[i-3] = Helper.generateRandomByteArray(50);
 			keys[i-3] = Helper.generateRandomByteArray(32);
-			messages[i] = new PutRequest(keys[i - 3],Helper.generateRandomByteArray(50));
+			messages[i] = new PutRequest(keys[i - 3],values[i-3]);
 			shouldWait[i] = true;
 		}
 		for(int i = 101;i<199;i++) {
@@ -106,10 +109,19 @@ public class TestingClient {
 				if(shouldWait[i]) { 
 					socket.receive(receivePacket);
 					System.out.println("- - Response:");
-					if (messages[i].command == GET && receivePacket.getData()[16] == 0) {
-						System.out.print((new GetResponse(receivePacket)).toString());
+					if (messages[i].command == GET && receivePacket.getData()[16] == 0 && i > 50) {
+						boolean correct = true;
+						for(int j = 0; j < 50; j++) {
+							if(receivePacket.getData()[j+19] != values[i - 101][j]) {
+								System.out.println("\npacket " + receivePacket.getData()[j+17+32] + " \nand value " + values[i - 101][j]);
+								correct = false;
+							}
+							
+						}
+						System.out.println("\n FILE CONTENTS ARE: " + correct);
+						//System.out.print((new GetResponse(receivePacket)).toString());
 					} else {
-						System.out.print((new SimpleResponse(receivePacket)).toString());
+						//System.out.print((new SimpleResponse(receivePacket)).toString());
 					}
 				}
 				System.out.println("- - - - - - - - - - - - - - - - - -");
