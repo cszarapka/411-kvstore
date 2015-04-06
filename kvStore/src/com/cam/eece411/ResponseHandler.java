@@ -43,7 +43,7 @@ public class ResponseHandler implements Runnable {
 			case Protocols.CMD_JOIN_REQUEST: respondToJOIN_REQUEST(); return;
 			case Protocols.CMD_IS_DEAD: respondToISDEAD(); return;
 			case Protocols.CMD_IS_ALIVE: respondToIS_ALIVE(); return;
-			case Protocols.CMD_REPLICATION_PUT: respondToPUT_REPLICATION(); break;
+			case Protocols.CMD_REPLICATION_PUT: respondToPUT_REPLICATION(); return;
 		}
 
 		// Find the node that should be servicing this command ** causes null pointer exception when there is no key
