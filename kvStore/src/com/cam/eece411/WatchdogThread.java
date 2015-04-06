@@ -13,7 +13,6 @@ import java.util.Set;
 import java.util.Vector;
 
 import com.cam.eece411.Messages.MessageBuilder;
-import com.cam.eece411.Messages.PutRequest;
 import com.cam.eece411.Messages.PutRequestReplication;
 import com.cam.eece411.Utilities.MD5HashFunction;
 import com.cam.eece411.Utilities.Protocols;
@@ -76,8 +75,8 @@ public class WatchdogThread implements Runnable {
 			/**
 			* file replication
 			* 		algorithm:	
-			* 			- get the set of remote nodes that this local node covers
-			* 			- copy all the keys that the remote node covers to the local node
+			* 			- get the set of remote nodes that this local node covers [1 successor, 1 predecessor]
+			* 			- send puts for all keys the local node covers to the 2 remote nodes
 			*		NOTE: this may be slow as balls if there are a large amount of keys on each covered node.
 			*				might be better to put into it's own thread.
 			*/
@@ -85,99 +84,120 @@ public class WatchdogThread implements Runnable {
 			//get local node number
 			int myNodeNum = Server.me.nodeNumber;
 			
-			//holds neighbour nodes
-			Node successorNode = new Node(-1, null);
-			Node predecessorNode = new Node(-1, null);;
-			Iterator<Node> aliveIter = alive.iterator();
+			//vector containing successor and predecessor nodes
+			Vector<Node> replicators = findCoveredNodes(alive, myNodeNum);
 			
-			//check each node in the iterator and add accordingly
-			while(aliveIter.hasNext()){
-				Node nextNode = aliveIter.next();
-				
-				if(nextNode.nodeNumber > myNodeNum){
-					if(successorNode.nodeNumber == -1){
-						successorNode = nextNode;
-					} else if(nextNode.nodeNumber < successorNode.nodeNumber){
-						successorNode = nextNode;
-					}
-				} else if(nextNode.nodeNumber < myNodeNum){
-					if(predecessorNode.nodeNumber == -1){
-						predecessorNode = nextNode;
-					} else if(nextNode.nodeNumber > predecessorNode.nodeNumber){
-						predecessorNode = nextNode;
-					}
-				}
-			}
-			
-			// check that a successor and predecessor have been found, if not, wrap around circle
-			if(successorNode.nodeNumber == -1){ //successor needs to wrap
-				aliveIter = alive.iterator(); //restart iterator
-				while(aliveIter.hasNext()){
-					Node nextNode = aliveIter.next();
-					
-					if(successorNode.nodeNumber == -1){
-						successorNode = nextNode;
-					} else if(nextNode.nodeNumber < successorNode.nodeNumber){
-						successorNode = nextNode;
-					}
-				}
-			}
-			if(predecessorNode.nodeNumber == -1){ //predecessor needs to wrap
-				aliveIter = alive.iterator(); //restart iterator	
-				while(aliveIter.hasNext()){
-					Node nextNode = aliveIter.next();
-					
-					if(predecessorNode.nodeNumber == -1){
-						predecessorNode = nextNode;
-					} else if(nextNode.nodeNumber > predecessorNode.nodeNumber){
-						predecessorNode = nextNode;
-					}
-				}
-			}
-			
-			//now we know our predecessor and successor [successorNode, predecessorNode], it is possible that they are the same
-			//check if successor/predecessor are the same
-			Vector<Node> replicators = new Vector<Node>();
-			replicators.addElement(successorNode);
-			if(successorNode.nodeNumber != predecessorNode.nodeNumber){
-				replicators.addElement(predecessorNode);
-			}
-			
-			//send puts of all covered keys to each node in the replicators vector
-			KeyValueStore kvstore = new KeyValueStore();
-			Iterator<ByteBuffer> keys = KeyValueStore.getKeys().iterator();
-			byte[] currentKey = new byte[32];
-			
-			// Go through all of the keys
-			while (keys.hasNext()) {
-				// Unwrap the array from the byte buffer
-				currentKey = keys.next().array();
-				
-				// Hash the key
-				int hash = MD5HashFunction.hash(currentKey);
-				
-				for(int i = 0; i < replicators.size(); i++){
-					// Only PUT this key/value pair to the new node if the local node covers it
-					if (myNodeNum > replicators.get(i).nodeNumber) {
-						if (myNodeNum >= hash && hash >= replicators.get(i).nodeNumber) {
-							Server.sendMessage((new PutRequestReplication(currentKey, KeyValueStore.get(currentKey))).data, replicators.get(i).ip, Protocols.LISTENING_PORT);
-							KeyValueStore.remove(currentKey);
-						}
-		 			} else {
-		 				if (myNodeNum >= hash || hash >= replicators.get(i).nodeNumber) {
-		 					Server.sendMessage((new PutRequestReplication(currentKey, KeyValueStore.get(currentKey))).data, replicators.get(i).ip, Protocols.LISTENING_PORT);
-		 					KeyValueStore.remove(currentKey);
-		 				}
-		 			}
-				}
-				
-			}
+			//send all the keys covered by myNodeNum to the successor and predecessors in replicators
+			sendAllKeys(replicators, myNodeNum);
 			
 			
 			
 			
 			
 		}
+	}
+	
+	/**
+	 * Sends a PUT message for each key covered by the local node to the successor and predecessor of the local node 
+	 * @param replicators Vector<Node> containing the successor and predecessor nodes
+	 * @param myNodeNum The local node's node number
+	 */
+	public void sendAllKeys(Vector<Node> replicators, int myNodeNum){
+		//send puts of all covered keys to each node in the replicators vector
+		Iterator<ByteBuffer> keys = KeyValueStore.getKeys().iterator();
+		byte[] currentKey = new byte[32];
+		
+		// Go through all of the keys
+		while (keys.hasNext()) {
+			// Unwrap the array from the byte buffer
+			currentKey = keys.next().array();
+			
+			// Hash the key
+			int hash = MD5HashFunction.hash(currentKey);
+			
+			for(int i = 0; i < replicators.size(); i++){
+				// Only PUT this key/value pair to the new node if the local node covers it
+				if (myNodeNum > replicators.get(i).nodeNumber) {
+					if (myNodeNum >= hash && hash >= replicators.get(i).nodeNumber) {
+						Server.sendMessage((new PutRequestReplication(currentKey, KeyValueStore.get(currentKey))).data, replicators.get(i).ip, Protocols.LISTENING_PORT);
+						KeyValueStore.remove(currentKey);
+					}
+	 			} else {
+	 				if (myNodeNum >= hash || hash >= replicators.get(i).nodeNumber) {
+	 					Server.sendMessage((new PutRequestReplication(currentKey, KeyValueStore.get(currentKey))).data, replicators.get(i).ip, Protocols.LISTENING_PORT);
+	 					KeyValueStore.remove(currentKey);
+	 				}
+	 			}
+			}
+			
+		}
+	}
+	
+	/**
+	 * Finds the predecessor and successor nodes that will have replicated key-values sent to them. Usage for WatchDogThread
+	 * @param alive	Set containing all the alive nodes
+	 * @param myNodeNum	The local node's node number
+	 * @return Vector<Node> containing successorNode in index 0, predecessorNode in index 1. if the node's are the same 
+	 * 			(such as in a 2 node system) then only index 0 will contain a node
+	 */
+	public Vector<Node> findCoveredNodes(Set<Node> alive, int myNodeNum){
+		Iterator<Node> aliveIter = alive.iterator();
+		Vector<Node> replicators = new Vector<Node>();
+		Node successorNode = new Node(-1, null);
+		Node predecessorNode = new Node(-1, null);;
+		
+		while(aliveIter.hasNext()){
+			Node nextNode = aliveIter.next();
+			
+			if(nextNode.nodeNumber > myNodeNum){
+				if(successorNode.nodeNumber == -1){
+					successorNode = nextNode;
+				} else if(nextNode.nodeNumber < successorNode.nodeNumber){
+					successorNode = nextNode;
+				}
+			} else if(nextNode.nodeNumber < myNodeNum){
+				if(predecessorNode.nodeNumber == -1){
+					predecessorNode = nextNode;
+				} else if(nextNode.nodeNumber > predecessorNode.nodeNumber){
+					predecessorNode = nextNode;
+				}
+			}
+		}
+		//if the predecessor and successor aren't simply greater and lesser than the node number, a wrapping case is handled
+		if(successorNode.nodeNumber == -1){ //successor needs to wrap
+			aliveIter = alive.iterator(); //restart iterator
+			while(aliveIter.hasNext()){
+				Node nextNode = aliveIter.next();
+				
+				if(successorNode.nodeNumber == -1){
+					successorNode = nextNode;
+				} else if(nextNode.nodeNumber < successorNode.nodeNumber){
+					successorNode = nextNode;
+				}
+			}
+		}
+		//if the predecessor and successor aren't simply greater and lesser than the node number, a wrapping case is handled
+		if(predecessorNode.nodeNumber == -1){ //predecessor needs to wrap
+			aliveIter = alive.iterator(); //restart iterator	
+			while(aliveIter.hasNext()){
+				Node nextNode = aliveIter.next();
+				
+				if(predecessorNode.nodeNumber == -1){
+					predecessorNode = nextNode;
+				} else if(nextNode.nodeNumber > predecessorNode.nodeNumber){
+					predecessorNode = nextNode;
+				}
+			}
+		}
+		
+		
+		//add successornode to the vector of nodes to replicate
+		replicators.add(0, successorNode);
+		//only add predecessornode if it is not the same as successornode
+		if(successorNode.nodeNumber != predecessorNode.nodeNumber)
+			replicators.add(1, predecessorNode);
+		
+		return replicators;
 	}
 
 }
