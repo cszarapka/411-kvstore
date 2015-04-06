@@ -101,6 +101,7 @@ public class Helper {
 			case Protocols.CMD_IS_DEAD: 		string = "IS-DEAD"; break;
 			case Protocols.CMD_JOIN_RESPONSE:	string = "JOIN-RESPONSE"; break;
 			case Protocols.CMD_JOIN_CONFIRM: 	string = "JOIN-CONFIRM"; break;
+			case Protocols.CMD_REPLICATION_PUT:	string = "REPLICATION-PUT"; break;
 		}
 		return string;
 	}

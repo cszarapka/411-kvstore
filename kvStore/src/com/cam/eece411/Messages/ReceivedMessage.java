@@ -167,6 +167,12 @@ public class ReceivedMessage {
 			string += "Value: " + Helper.bytesToHexString(value) + "\n";
 		}
 
+		// Get the value length and value, if there are any 
+		if (command == Protocols.CMD_REPLICATION_PUT) {
+			string += "Value-Length: " + valueLength + "\n";
+			string += "Value: " + Helper.bytesToHexString(value) + "\n";
+		}
+		
 		if (command == Protocols.CMD_JOIN_RESPONSE) {
 			string += "Offered Node Number: " + offeredNodeNumber + "\n";
 			string += "Number of nodes sent: " + numberOfNodes + "\n";

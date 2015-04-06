@@ -22,6 +22,7 @@ public class Protocols {
 	public static final byte CMD_IS_DEAD				= 25;
 	public static final byte CMD_JOIN_RESPONSE			= 26;
 	public static final byte CMD_JOIN_CONFIRM			= 27;
+	public static final byte CMD_REPLICATION_PUT		= 28;
 	
 	// Response codes sent to the user of the DHT-KVStore
 	public static final byte CODE_SUCCESS			= 0;

@@ -56,6 +56,7 @@ public class ResponseHandler implements Runnable {
 			// Determine the command and respond to it
 			switch (rcvdMsg.getCommand()) {
 				case Protocols.APP_CMD_PUT: respondToPUT(); break;
+				case Protocols.CMD_REPLICATION_PUT: respondToPUT_REPLICATION(); break;
 				case Protocols.APP_CMD_GET: respondToGET(); break;
 				case Protocols.APP_CMD_REMOVE: respondToREMOVE(); break;
 				
@@ -74,6 +75,16 @@ public class ResponseHandler implements Runnable {
 	}
 	
 	private void respondToPUT() {
+		byte responseCode;
+		synchronized(KeyValueStore.class) {
+			// Put the key-value pair into our store, or
+			responseCode = KeyValueStore.put(rcvdMsg.getKey(), rcvdMsg.getValue());
+		}
+		// Build the response based on the success of the put, then send it
+		Server.sendMessage(new AppResponse(rcvdMsg, responseCode));
+	}
+	
+	private void respondToPUT_REPLICATION() {
 		byte responseCode;
 		synchronized(KeyValueStore.class) {
 			// Put the key-value pair into our store, or
