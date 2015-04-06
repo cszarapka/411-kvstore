@@ -20,6 +20,7 @@ public class Server {
 
 	public static Node me;
 	public static Integer state = Protocols.OUT_OF_TABLE;
+	public static Object sendingLock = new Object();
 
 	public static void main(String[] args) throws SocketException, IOException {
 		System.out.println("\n\n\n\n\n\n\n");
@@ -45,12 +46,12 @@ public class Server {
 			System.out.println("Messaged received!");
 			// Launch thread based on state we are in
 			switch (state) {
-				case Protocols.OUT_OF_TABLE: (new Thread(new ActivationHandler(packet))).start(); break;
-				case Protocols.IN_TABLE: (new Thread(new ResponseHandler(packet))).start(); break;
-				case Protocols.HANDLING_JOIN: (new Thread(new ResponseHandler(packet))).start(); break;
-				case Protocols.LEFT_TABLE:
-					// TODO: leave system gracefully
-					socket.close();
+			case Protocols.OUT_OF_TABLE: (new Thread(new ActivationHandler(packet))).start(); break;
+			case Protocols.IN_TABLE: (new Thread(new ResponseHandler(packet))).start(); break;
+			case Protocols.HANDLING_JOIN: (new Thread(new ResponseHandler(packet))).start(); break;
+			case Protocols.LEFT_TABLE:
+				// TODO: leave system gracefully
+				socket.close();
 			}
 		}
 	}
@@ -63,36 +64,40 @@ public class Server {
 	 */
 	public static void sendMessage(byte[] data, InetAddress ip, int port) {
 		DatagramSocket socket = null;
-		try {
-			socket = new DatagramSocket(Protocols.SENDING_PORT);
-			DatagramPacket packet = new DatagramPacket(data, data.length, ip, port);
-			socket.send(packet);
-			System.out.println("Sent a " + Helper.byteCodeToString(data[16]) + " to " + ip.toString() + " at " + port);
-			socket.close();
-		} catch (Exception e) {
-			System.out.println("It failed to create a sending socket, so it gave up.");
-			e.printStackTrace();
-			socket.close();
-			return;
+		synchronized(sendingLock) {
+			try {
+				socket = new DatagramSocket(Protocols.SENDING_PORT);
+				DatagramPacket packet = new DatagramPacket(data, data.length, ip, port);
+				socket.send(packet);
+				System.out.println("Sent a " + Helper.byteCodeToString(data[16]) + " to " + ip.toString() + " at " + port);
+				socket.close();
+			} catch (Exception e) {
+				System.out.println("It failed to create a sending socket, so it gave up.");
+				e.printStackTrace();
+				socket.close();
+				return;
+			}
 		}
 	}
 
 	public static void sendMessage(AppResponse msg) {
 		DatagramSocket socket = null;
 		DatagramPacket packet;
-		try {
-			socket = new DatagramSocket(Protocols.SENDING_PORT);
-			packet = new DatagramPacket(msg.buffer, msg.buffer.length, msg.ipToSendTo, msg.portToSendTo);
-			socket.send(packet);
-			System.out.println("- - It responded with:");
-			System.out.print(msg.toString());
-			System.out.println("- - - - - - - - - - - - - - - - - -");
-			socket.close();
-		} catch (Exception e) {
-			System.out.println("It failed to create a sending socket, so it gave up.");
-			e.printStackTrace();
-			socket.close();
-			return;
+		synchronized(sendingLock) {
+			try {
+				socket = new DatagramSocket(Protocols.SENDING_PORT);
+				packet = new DatagramPacket(msg.buffer, msg.buffer.length, msg.ipToSendTo, msg.portToSendTo);
+				socket.send(packet);
+				System.out.println("- - It responded with:");
+				System.out.print(msg.toString());
+				System.out.println("- - - - - - - - - - - - - - - - - -");
+				socket.close();
+			} catch (Exception e) {
+				System.out.println("It failed to create a sending socket, so it gave up.");
+				e.printStackTrace();
+				socket.close();
+				return;
+			}
 		}
 	}
 }
