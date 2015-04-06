@@ -158,8 +158,10 @@ public class MessageBuilder {
 		buffer[index++] = originPort[0];
 		buffer[index++] = originPort[1];
 		
+		
+		
 		// Add the remaining of the rest of the original message
-		for (int i = uniqueID.length; i < data.length; i++) {
+		for (int i = uniqueID.length; index < buffer.length; i++) {
 			buffer[index++] = data[i];
 		}
 		

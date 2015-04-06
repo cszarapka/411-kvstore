@@ -21,7 +21,8 @@ public class MD5HashFunction {
 	 */
 	public static int hash(byte[] key) {
 		try {
-			return MessageDigest.getInstance("MD5").digest(key)[0];
+			//add 128 because byte to int returns -128 to 127
+			return MessageDigest.getInstance("MD5").digest(key)[0] + 128;
 		} catch (NoSuchAlgorithmException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

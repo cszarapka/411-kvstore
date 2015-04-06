@@ -87,6 +87,7 @@ public class Circle {
 	public static Node findNodeFor(byte[] key) {
 		// Hash the key, then find the node that is responsible for the key
 		int keyHash = MD5HashFunction.hash(key);
+		System.out.println("\n keyHash: " + keyHash);
 		if(!circle.containsKey(keyHash)) {
 			// A tail is all the nodes who are greater than or equal to this hash value
 			SortedMap<Integer, Node> tailMap = circle.tailMap(keyHash);
