@@ -35,7 +35,7 @@ public class Circle {
 	public static void add(Node node) {
 		circle.put(node.nodeNumber, node);
 		// Print out the nodes in the circle
-		System.out.println("\nCircle contents:\n" + toText());
+		if(Server.VERBOSE) System.out.println("\nCircle contents:\n" + toText());
 	}
 
 	/**
@@ -49,7 +49,7 @@ public class Circle {
 				add(new Node(Helper.unsignedByteToInt(nodes[index+4]),
 						InetAddress.getByAddress(Arrays.copyOfRange(nodes, index, index+4))));
 			} catch (UnknownHostException e) {
-				System.out.println("Tried to add a node that ain't got no host.");
+				if(Server.VERBOSE) System.out.println("Tried to add a node that ain't got no host.");
 			}
 			index += 5;
 		}
@@ -62,7 +62,7 @@ public class Circle {
 	public static void remove(int nodeID) {
 		circle.remove(nodeID);
 		// Print out the nodes in the circle
-		System.out.println("\nCircle contents:\n" + toText());
+		if(Server.VERBOSE) System.out.println("\nCircle contents:\n" + toText());
 	}
 
 	/**
@@ -87,7 +87,7 @@ public class Circle {
 	public static Node findNodeFor(byte[] key) {
 		// Hash the key, then find the node that is responsible for the key
 		int keyHash = MD5HashFunction.hash(key);
-		System.out.println("\n keyHash: " + keyHash);
+		if(Server.VERBOSE) System.out.println("\n keyHash: " + keyHash);
 		if(!circle.containsKey(keyHash)) {
 			// A tail is all the nodes who are greater than or equal to this hash value
 			SortedMap<Integer, Node> tailMap = circle.tailMap(keyHash);
@@ -113,11 +113,11 @@ public class Circle {
 		if (headMap.isEmpty()) {
 			// if there are no nodes in the head map, get the largest valued node
 			nextNodeNumber = circle.lastKey();
-			System.out.println("head map's empty\n");
+			if(Server.VERBOSE) System.out.println("head map's empty\n");
 		} else {
 			// if there are nodes smaller than us, get the largest one (closest)
 			nextNodeNumber = headMap.lastKey();
-			System.out.println("head map'sn't empty\n");
+			if(Server.VERBOSE) System.out.println("head map'sn't empty\n");
 		}
 		return circle.get(nextNodeNumber);
 	}

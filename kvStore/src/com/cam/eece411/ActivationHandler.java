@@ -60,7 +60,7 @@ public class ActivationHandler implements Runnable {
 			// Close the input stream
 			fin.close();
 		} catch (IOException e) {
-			System.out.println("Unable to read from file");
+			if(Server.VERBOSE) System.out.println("Unable to read from file");
 			e.printStackTrace();
 			System.exit(-1);
 		}
@@ -73,7 +73,7 @@ public class ActivationHandler implements Runnable {
 				}
 			}
 		} catch (UnknownHostException e) {
-			System.err.println("Well shit, ain't no host");;
+			if(Server.VERBOSE) System.err.println("Well shit, ain't no host");;
 			e.printStackTrace();
 		}
 		// Generate the 'start requesting to join' message
@@ -103,7 +103,7 @@ public class ActivationHandler implements Runnable {
 			// Close the input stream
 			fin.close();
 		} catch (IOException e) {
-			System.out.println("Unable to read from file");
+			if(Server.VERBOSE) System.out.println("Unable to read from file");
 			e.printStackTrace();
 			System.exit(-1);
 		}
@@ -138,10 +138,10 @@ public class ActivationHandler implements Runnable {
 			socket.setSoTimeout(Protocols.JOIN_TIMEOUT);
 			socket.receive(packet);
 			socket.close();
-			System.out.println("Received join-response");
+			if(Server.VERBOSE) System.out.println("Received join-response");
 			respondToJOIN_RESPONSE(packet);
 		} catch (SocketTimeoutException e1) {
-			System.out.println("Join request timed out");
+			if(Server.VERBOSE) System.out.println("Join request timed out");
 			socket.close();
 		} catch (IOException e2) {
 			e2.printStackTrace();

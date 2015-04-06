@@ -109,7 +109,7 @@ public class ResponseHandler implements Runnable {
 
 	private void respondToSHUTDOWN() {
 		Server.sendMessage(new AppResponse(rcvdMsg, Protocols.CODE_SUCCESS));
-		System.out.println("It shuts down and simulates a crash now.. :(");
+		if(Server.VERBOSE) System.out.println("It shuts down and simulates a crash now.. :(");
 		System.exit(0);
 	}
 
@@ -137,7 +137,7 @@ public class ResponseHandler implements Runnable {
 	private void respondToJOIN_REQUEST() {
 		int myNumber, nextNodeNumber, offeredNodeNumber;
 		int maxNodeCount = Protocols.MAX_NUMBER_OF_NODES;
-		System.out.println("I'M IN THIS PART NOW\n");
+		if(Server.VERBOSE) System.out.println("I'M IN THIS PART NOW\n");
 		synchronized(Server.state) {
 			synchronized(Circle.class) {
 				Server.state = Protocols.HANDLING_JOIN;
@@ -152,8 +152,8 @@ public class ResponseHandler implements Runnable {
 		} else {
 			offeredNodeNumber = (myNumber - (((myNumber - nextNodeNumber + maxNodeCount) % maxNodeCount) / 2) + maxNodeCount) % maxNodeCount;
 		}
-		System.out.println((myNumber - (((myNumber - nextNodeNumber + maxNodeCount) % maxNodeCount) / 2) + maxNodeCount) % maxNodeCount);
-		System.out.println("My node number: " + myNumber + "\nNext node number: " + nextNodeNumber + "\noffered node number: " + offeredNodeNumber + "\n");
+		if(Server.VERBOSE) System.out.println((myNumber - (((myNumber - nextNodeNumber + maxNodeCount) % maxNodeCount) / 2) + maxNodeCount) % maxNodeCount);
+		if(Server.VERBOSE) System.out.println("My node number: " + myNumber + "\nNext node number: " + nextNodeNumber + "\noffered node number: " + offeredNodeNumber + "\n");
 		// Add this node to our table
 		Node newNode = new Node(offeredNodeNumber, rcvdMsg.getSenderIP());
 		synchronized(Circle.class) {

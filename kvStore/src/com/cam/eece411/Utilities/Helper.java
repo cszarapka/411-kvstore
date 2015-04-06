@@ -43,7 +43,7 @@ public class Helper {
 			// Hash the key
 			hash = MD5HashFunction.hash(currentKey);
 			KeyValueStore.get(currentKey);
-			System.out.println("\nHash: " + hash + " Key: " + bytesToHexString(currentKey) + " Value: " + bytesToHexString(KeyValueStore.get(currentKey)));
+			if(Server.VERBOSE) System.out.println("\nHash: " + hash + " Key: " + bytesToHexString(currentKey) + " Value: " + bytesToHexString(KeyValueStore.get(currentKey)));
 			
 			
 		}
