@@ -73,6 +73,15 @@ public class Circle {
 	public static boolean containsNode(Node node) {
 		return circle.containsValue(node);
 	}
+	
+	/**
+	 * Returns the node associated with the node number, or null if not in circle
+	 * @param nodeNumber the number to check for
+	 * @return the associated node or null
+	 */
+	public static Node getNodeByNumber(int nodeNumber) {
+		return circle.get(nodeNumber);
+	}
 
 	public static Set<Entry<Integer, Node>> getNodes() {
 		return circle.entrySet();

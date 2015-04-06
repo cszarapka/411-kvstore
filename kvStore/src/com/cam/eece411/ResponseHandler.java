@@ -69,8 +69,18 @@ public class ResponseHandler implements Runnable {
 
 	private void respondToISDEAD() {
 		synchronized(Circle.class) {
-			// Put the key-value pair into our store, or
-			Circle.remove(rcvdMsg.getNodeNumber());
+			Node nextNode, previousNode, deadNode;
+			int deadNodeNumber = rcvdMsg.getNodeNumber();
+			deadNode = Circle.getNodeByNumber(deadNodeNumber);
+			nextNode = Circle.getNextNodeOf(deadNode);
+			previousNode = Circle.getPrevNodeOf(deadNode);
+			
+			// Check if we should put its files
+			if (Server.me.nodeNumber == previousNode.nodeNumber || Server.me.nodeNumber == nextNode.nodeNumber) {
+				
+				
+			}
+			Circle.remove(deadNodeNumber);
 		}
 	}
 	
