@@ -27,8 +27,8 @@ public class ResponseHandler implements Runnable {
 	 * a response-message
 	 */
 	public void run() {
-		System.out.println("- - Response thread launched to handle:");
-		System.out.println(rcvdMsg.toString());
+		if(Server.VERBOSE) System.out.println("- - Response thread launched to handle:");
+		if(Server.VERBOSE) System.out.println(rcvdMsg.toString());
 		
 		if (Server.state == Protocols.HANDLING_JOIN) {
 			if (rcvdMsg.getCommand() == Protocols.CMD_JOIN_CONFIRM) {
@@ -187,7 +187,7 @@ public class ResponseHandler implements Runnable {
 			
 			// Hash the key
 			hash = MD5HashFunction.hash(currentKey);
-			System.out.println(currentKey);
+			if(Server.VERBOSE) System.out.println(currentKey);
 			
 			
 			
