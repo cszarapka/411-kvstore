@@ -39,3 +39,7 @@ local.properties
 
 .metadata/
 .recommenders/
+
+.classpath
+
+.project
