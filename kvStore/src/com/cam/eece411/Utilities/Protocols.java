@@ -33,10 +33,10 @@ public class Protocols {
 	public static final byte CODE_UNKNOWN_COMMAND	= 5;
 	
 	// Port numbers
-	public static final int LISTENING_PORT			= 5000;
-	public static final int SENDING_PORT			= 5001;
-	public static final int JOIN_RESPONSE_PORT 		= 5002;
-	public static final int IS_ALIVE_RESPONSE_PORT 	= 5003;
+	public static final int LISTENING_PORT			= 5300;
+	public static final int SENDING_PORT			= 5301;
+	public static final int JOIN_RESPONSE_PORT 		= 5302;
+	public static final int IS_ALIVE_RESPONSE_PORT 	= 5303;
 	
 	// Timeout values
 	public static final int JOIN_TIMEOUT = 5000;

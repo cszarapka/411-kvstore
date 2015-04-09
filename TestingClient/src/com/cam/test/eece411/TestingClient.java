@@ -50,7 +50,7 @@ public class TestingClient {
 			System.out.println("\nX X\nException: " + e.getMessage() + "\nX X\n\nIt ends now.");
 			return;
 		}
-		int serverPort = 5500;
+		int serverPort = 5300;
 
 		// Build some test data
 		byte[] key = Helper.generateRandomByteArray(32);

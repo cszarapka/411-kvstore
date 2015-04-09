@@ -39,7 +39,7 @@ public class Server {
 		byte[] receivedPacket = new byte[Protocols.MAX_MSG_SIZE];
 		DatagramSocket socket = new DatagramSocket(Protocols.LISTENING_PORT);
 		DatagramPacket packet = new DatagramPacket(receivedPacket, receivedPacket.length);
-		(new Thread(new WatchdogThread())).start();
+		//(new Thread(new WatchdogThread())).start();
 
 		// Listen for commands (GET, PUT, REMOVE, SHUTDOWN)
 		while(true) {
