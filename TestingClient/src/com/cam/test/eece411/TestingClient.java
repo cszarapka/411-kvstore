@@ -39,7 +39,7 @@ public class TestingClient {
 		DatagramPacket receivePacket;
 		InetAddress serverIP;
 		try {
-			serverIP = InetAddress.getByName("planetlab2.cs.ubc.ca");
+			serverIP = InetAddress.getByName("pl1.pku.edu.cn");
 		} catch (UnknownHostException e) {
 			System.out.println("\nX X\nException: " + e.getMessage() + "\nX X\n\nIt ends now.");
 			return;
@@ -50,7 +50,7 @@ public class TestingClient {
 			System.out.println("\nX X\nException: " + e.getMessage() + "\nX X\n\nIt ends now.");
 			return;
 		}
-		int serverPort = 5000;
+		int serverPort = 5500;
 
 		// Build some test data
 		byte[] key = Helper.generateRandomByteArray(32);

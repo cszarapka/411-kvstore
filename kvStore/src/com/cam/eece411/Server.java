@@ -21,7 +21,7 @@ public class Server {
 	public static Node me;
 	public static Integer state = Protocols.OUT_OF_TABLE;
 	public static Object sendingLock = new Object();
-	public static boolean VERBOSE = false; //if false, print statements suppressed
+	public static boolean VERBOSE = true; //if false, print statements suppressed
 
 	public static void main(String[] args) throws SocketException, IOException {
 		if(Server.VERBOSE) System.out.println("\n\n\n\n\n\n\n");
