@@ -39,7 +39,7 @@ public class TestingClient {
 		DatagramPacket receivePacket;
 		InetAddress serverIP;
 		try {
-			serverIP = InetAddress.getByName("pl1.pku.edu.cn");
+			serverIP = InetAddress.getByName("planetlab1.cs.ucla.edu");
 		} catch (UnknownHostException e) {
 			System.out.println("\nX X\nException: " + e.getMessage() + "\nX X\n\nIt ends now.");
 			return;
@@ -50,7 +50,7 @@ public class TestingClient {
 			System.out.println("\nX X\nException: " + e.getMessage() + "\nX X\n\nIt ends now.");
 			return;
 		}
-		int serverPort = 5300;
+		int serverPort = 5600;
 
 		// Build some test data
 		byte[] key = Helper.generateRandomByteArray(32);
@@ -59,7 +59,7 @@ public class TestingClient {
 		byte[] key3 = Helper.generateRandomByteArray(32);
 		byte[] value = Helper.generateRandomByteArray(50);
 		byte[][] keys = new byte[98][32];
-		byte[][] values = new byte[98][50];
+		byte[][] values = new byte[98][300];
 		long startTime = 0;
 		long endTime;
 
@@ -72,7 +72,7 @@ public class TestingClient {
 		messages[2] = new RemoveRequest(key);		// should get KEY-DNE back
 		shouldWait[2] = true;
 		for(int i = 3; i < 101; i++) {
-			values[i-3] = Helper.generateRandomByteArray(50);
+			values[i-3] = Helper.generateRandomByteArray(300);
 			keys[i-3] = Helper.generateRandomByteArray(32);
 			messages[i] = new PutRequest(keys[i - 3],values[i-3]);
 			shouldWait[i] = true;

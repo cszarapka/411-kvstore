@@ -1,0 +1,3 @@
+planet-lab2.cs.ucr.edu
+planetlab-1.cs.uic.edu
+planetlab-01.bu.edu

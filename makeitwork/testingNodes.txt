@@ -1,0 +1,3 @@
+planetlab02.cs.washington.edu:5500
+netapp6.cs.kookmin.ac.kr:5500
+planetlab2.cs.du.edu:5500

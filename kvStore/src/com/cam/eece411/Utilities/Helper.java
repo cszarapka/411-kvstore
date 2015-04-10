@@ -18,7 +18,7 @@ public class Helper {
 	/**
 	 * The current number of nodes being used for testing/deployment
 	 */
-	public static int NUM_NODES = 5;
+	public static int NUM_NODES = 3;
 	
 	/**
 	 * Returns an int from the byte array specified, in little endian

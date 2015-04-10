@@ -1,0 +1,3 @@
+planetlab-5.eecs.cwru.edu:5600
+planet-plc-2.mpi-sws.org:5600
+planetlabtwo.ccs.neu.edu:5600
