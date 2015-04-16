@@ -6,7 +6,7 @@ The assignment can be found [here](https://docs.google.com/document/d/1NpzQsif_F
 
 ##Usage
 
-Commands are sent to the system, from any computer, by sending a message to *node-IP:port*. The list of nodes running our code can be found [here](runningNodes.txt)
+Commands are sent to the system, from any computer, by sending a message to *node-IP:port* using the *wire protocol*. The list of nodes running our code can be found [here](runningNodes.txt)
 
 ###Wire Protocol
 
