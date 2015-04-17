@@ -10,8 +10,8 @@ public class ReceivedMessage {
 	public byte responseCode;
 	public byte[] data;
 	
-	public ReceivedMessage(DatagramPacket packet) {
-		data = packet.getData();
+	public ReceivedMessage(Message msg) {
+		data = msg.getData();
 		uniqueID = Arrays.copyOfRange(data, 0, 16);
 		responseCode = data[16];
 	}

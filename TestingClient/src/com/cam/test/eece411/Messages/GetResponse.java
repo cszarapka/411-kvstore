@@ -9,8 +9,8 @@ public class GetResponse extends ReceivedMessage {
 	public int valueLength;
 	public byte[] value;
 	
-	public GetResponse(DatagramPacket packet) {
-		super(packet);
+	public GetResponse(Message msg) {
+		super(msg);
 		valueLength = Helper.valueLengthBytesToInt(Arrays.copyOfRange(data, 17, 19));
 		value = Arrays.copyOfRange(data, 19, 19+valueLength);
 	}
@@ -18,7 +18,7 @@ public class GetResponse extends ReceivedMessage {
 	@Override
 	public String toString() {
 		return 	super.toString() +
-				"Value-Length: " + valueLength + "\n" +
-				"Value: " + Helper.bytesToHexString(value) + "\n";
+				"Value-Length: " + valueLength + "\n"; 
+				//"Value: " + Helper.bytesToHexString(value) + "\n";
 	}
 }

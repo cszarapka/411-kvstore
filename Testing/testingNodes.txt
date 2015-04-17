@@ -1,5 +1,0 @@
-plab3.eece.ksu.edu
-pl2.cs.yale.edu
-pl1.pku.edu.cn
-pl2.6test.edu.cn
-planetlab2.cs.ubc.ca

@@ -1,12 +1,12 @@
-package com.cam.eece411;
+package com.cam.eece411.Structures;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 
-import com.cam.eece411.Utilities.Helper;
-import com.cam.eece411.Utilities.Protocols;
+import com.cam.eece411.Utilities.Commands;
 
 /**
  * A representation of this node's key-value store.
@@ -14,11 +14,14 @@ import com.cam.eece411.Utilities.Protocols;
  * @author cam
  *
  */
-public class KeyValueStore {
+public class KVS {
+	@SuppressWarnings("unused")
+	private static final Logger log = Logger.getLogger(KVS.class.getName());
+	
 	private static ConcurrentHashMap<ByteBuffer, byte[]> store = new ConcurrentHashMap<ByteBuffer, byte[]>();
 	
 	// Obligatory constructor
-	public KeyValueStore() {}
+	public KVS() {}
 	
 	/**
 	 * Puts a value associated with a key into the key-value store
@@ -29,11 +32,10 @@ public class KeyValueStore {
 	 * 					Protocols.CODE_OUT_OF_SPACE
 	 */
 	public static byte put(byte[] key, byte[] value) {
-		byte responseCode = Protocols.CODE_SUCCESS;
+		byte responseCode = Commands.SUCCESS;
 		store.put(ByteBuffer.wrap(key), Arrays.copyOf(value, value.length));
 		// TODO: change the response code if the put fails due to overflow
 		// TODO: test what happens when you set the max heap size, and then overflow it
-		Helper.printKVStore();
 		return responseCode;
 	}
 	
@@ -55,15 +57,19 @@ public class KeyValueStore {
 	 * 					Protocols.CODE_KEY_DNE
 	 */
 	public static byte remove(byte[] key) {
-		byte responseCode = Protocols.CODE_SUCCESS;
+		byte responseCode = Commands.SUCCESS;
 
 		if (store.remove(ByteBuffer.wrap(key)) == null) {
-			responseCode = Protocols.CODE_KEY_DNE;
+			responseCode = Commands.KEY_DNE;
 		}
 		// TODO: add other possible codes
 		return responseCode;
 	}
 	
+	/**
+	 * Returns a Set with all the keys in this KeyValueStore
+	 * @return	a ByteBuffer Set of all local keys
+	 */
 	public static Set<ByteBuffer> getKeys() {
 		return store.keySet();
 	}

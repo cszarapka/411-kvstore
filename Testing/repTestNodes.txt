@@ -1,0 +1,2 @@
+planetlab-2.research.netlab.hut.fi
+pl2.6test.edu.cn

@@ -21,10 +21,11 @@ public class Helper {
 //		return bb.getInt();
 //	}
 	
-	public static int NUM_NODES = 5;
-	
 	public static int valueLengthBytesToInt(byte[] b) {
-		return (int) b[0] + (((int) b[1]) * 256);
+		byte[] a = new byte[4];
+		a[2] = b[0];
+		a[3] = b[1];
+		return byteArrayToInt(a);
 	}
 
 	/**
@@ -51,11 +52,44 @@ public class Helper {
 		return bytes;
 	}
 	
+	public static int randInt(int min, int max) {
+
+	    // NOTE: Usually this should be a field rather than a method
+	    // variable so that it is not re-seeded every call.
+	    Random rand = new Random();
+
+	    // nextInt is normally exclusive of the top value,
+	    // so add 1 to make it inclusive
+	    int randomNum = rand.nextInt((max - min) + 1) + min;
+
+	    return randomNum;
+	}
+	
 	public static String bytesToHexString(byte[] bytes){
 		String string = "";
 		for (int i = 0; i < bytes.length; i++) {
-			string += String.format("%02X", bytes[i]) + " \\ ";
+			string += String.format("%02X", bytes[i]);
 		}
         return string;
     }  
+	
+	public static String cmdToString(byte b) {
+		String string = "UNKNOWN";
+		switch(b) {
+			case TestingClient.PUT: 		string = "PUT"; break;
+			case TestingClient.GET: 		string = "GET"; break;
+			case TestingClient.REMOVE: 		string = "REMOVE"; break;
+			case TestingClient.SHUTDOWN: 	string = "SHUTDOWN"; break;
+			case TestingClient.CREATE_DHT: 	string = "CREATE-DHT"; break;
+			case TestingClient.START_JOIN_REQUESTS: string = "START-JOIN-REQUESTS"; break;
+		}
+		return string;
+	}
+	
+	public static int byteArrayToInt(byte[] b) {
+		final ByteBuffer bb = ByteBuffer.wrap(b);
+		bb.order(ByteOrder.LITTLE_ENDIAN);
+		return bb.getInt();
+	}
+	
 }

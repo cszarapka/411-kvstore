@@ -1,18 +1,22 @@
-package com.cam.eece411;
+package com.cam.eece411.Structures;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import com.cam.eece411.Utilities.Helper;
-import com.cam.eece411.Utilities.MD5HashFunction;
+import com.cam.eece411.Utilities.HashFunction;
+import com.cam.eece411.Utilities.Utils;
 
 /**
  * A representation of our consistent hash - the circle-like structure on which a
@@ -22,20 +26,22 @@ import com.cam.eece411.Utilities.MD5HashFunction;
  * @author cam
  *
  */
-public class Circle {
+public class DHT {
+	private static final Logger log = Logger.getLogger(DHT.class.getName());
+	
 	private static SortedMap<Integer, Node> circle = Collections.synchronizedSortedMap(new  TreeMap<Integer, Node>());
 
 	// Obligatory constructor
-	public Circle() {}
+	public DHT() {}
 
 	/**
 	 * Adds a node to the circle
 	 * @param node	the node to add to the circle
 	 */
 	public static void add(Node node) {
-		circle.put(node.nodeNumber, node);
+		circle.put(node.nodeID, node);
 		// Print out the nodes in the circle
-		if(Server.VERBOSE) System.out.println("\nCircle contents:\n" + toText());
+		log.info("Circle contents after ADD(" + node.nodeID + ")\n" + toText());
 	}
 
 	/**
@@ -46,10 +52,10 @@ public class Circle {
 		int index = 0;
 		while (index < nodes.length) {
 			try {
-				add(new Node(Helper.unsignedByteToInt(nodes[index+4]),
+				add(new Node(Utils.unsignedByteToInt(nodes[index+4]),
 						InetAddress.getByAddress(Arrays.copyOfRange(nodes, index, index+4))));
 			} catch (UnknownHostException e) {
-				if(Server.VERBOSE) System.out.println("Tried to add a node that ain't got no host.");
+				log.log(Level.SEVERE, e.toString(), e);
 			}
 			index += 5;
 		}
@@ -59,10 +65,14 @@ public class Circle {
 	 * Removes the node from the circle
 	 * @param nodeID	the ID of the node to remove
 	 */
-	public static void remove(int nodeID) {
-		circle.remove(nodeID);
-		// Print out the nodes in the circle
-		if(Server.VERBOSE) System.out.println("\nCircle contents:\n" + toText());
+	public static Node remove(int nodeID) {
+		Node removedNode = circle.remove(nodeID);
+		if (removedNode == null) {
+			log.info("Node " + nodeID + " was not here to remove");
+		} else {
+			log.info("Circle contents after REMOVE(" + nodeID + ")\n" + toText());
+		}
+		return removedNode;
 	}
 
 	/**
@@ -79,7 +89,7 @@ public class Circle {
 	 * @param nodeNumber the number to check for
 	 * @return the associated node or null
 	 */
-	public static Node getNodeByNumber(int nodeNumber) {
+	public static Node getNode(int nodeNumber) {
 		return circle.get(nodeNumber);
 	}
 
@@ -95,8 +105,7 @@ public class Circle {
 	 */
 	public static Node findNodeFor(byte[] key) {
 		// Hash the key, then find the node that is responsible for the key
-		int keyHash = MD5HashFunction.hash(key);
-		if(Server.VERBOSE) System.out.println("\n keyHash: " + keyHash);
+		int keyHash = HashFunction.hash(key);
 		if(!circle.containsKey(keyHash)) {
 			// A tail is all the nodes who are greater than or equal to this hash value
 			SortedMap<Integer, Node> tailMap = circle.tailMap(keyHash);
@@ -117,16 +126,14 @@ public class Circle {
 	public static Node getNextNodeOf(Node node) {
 		int nextNodeNumber;
 		// Get all the nodes strictly lower than us, exclusive
-		SortedMap<Integer, Node> headMap = circle.headMap(node.nodeNumber);
+		SortedMap<Integer, Node> headMap = circle.headMap(node.nodeID);
 		
 		if (headMap.isEmpty()) {
 			// if there are no nodes in the head map, get the largest valued node
 			nextNodeNumber = circle.lastKey();
-			if(Server.VERBOSE) System.out.println("head map's empty\n");
 		} else {
 			// if there are nodes smaller than us, get the largest one (closest)
 			nextNodeNumber = headMap.lastKey();
-			if(Server.VERBOSE) System.out.println("head map'sn't empty\n");
 		}
 		return circle.get(nextNodeNumber);
 	}
@@ -139,16 +146,14 @@ public class Circle {
 	public static Node getPrevNodeOf(Node node){
 		int nextNodeNumber;
 		//Get all the nodes strictly higher than us, exclusive
-		SortedMap<Integer, Node> tailMap = circle.tailMap(node.nodeNumber);
+		SortedMap<Integer, Node> tailMap = circle.tailMap(node.nodeID);
 		
 		if(tailMap.isEmpty()){
 			// if there are no nodes in the tail map, get the smallest valued node
 			nextNodeNumber = circle.firstKey();
-			System.out.println("tail map's empty\n");
 		} else {
 			// if there are nodes smaller than us, get the smallest one (closest)
 			nextNodeNumber = tailMap.firstKey();
-			System.out.println("tail map'sn't empty\n");
 		}
 		return circle.get(nextNodeNumber);
 	}
@@ -169,11 +174,11 @@ public class Circle {
 		
 		while(nodes.hasNext()) {
 			node = nodes.next();
-			ip = node.ip.getAddress();
+			ip = node.addr.getAddress();
 			for (int i = 0; i < 4; i++) {
 				buffer[index++] = ip[i];
 			}
-			buffer[index++] = (byte) node.nodeNumber;
+			buffer[index++] = (byte) node.nodeID;
 		}
 		return buffer;
 	}
@@ -193,6 +198,17 @@ public class Circle {
 	public static Collection<Node> nodes() {
 		return circle.values();
 	}
+	
+	public static List<InetAddress> broadcastList() {
+		List<InetAddress> list = new ArrayList<InetAddress>();
+		Iterator<Node> nodes = nodes().iterator();
+		
+		while (nodes.hasNext()) {
+			list.add(nodes.next().addr);
+		}
+		
+		return list;
+	}
 
 	/**
 	 * A toString() for a static member
@@ -206,7 +222,7 @@ public class Circle {
 
 		while (nodes.hasNext()) {
 			currNode = nodes.next();
-			string += "| " + currNode.nodeNumber + " | " + currNode.name + " |\n";
+			string += "| " + currNode.nodeID + " | " + currNode.name + " |\n";
 		}
 
 		return string;

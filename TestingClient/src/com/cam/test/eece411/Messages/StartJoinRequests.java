@@ -4,7 +4,7 @@ import com.cam.test.eece411.TestingClient;
 
 public class StartJoinRequests extends SendMessage {
 
-	public StartJoinRequests(byte[] key) {
+	public StartJoinRequests() {
 		super(TestingClient.START_JOIN_REQUESTS);
 		this.data = new byte[uniqueID.length + 1];
 		assembleData();

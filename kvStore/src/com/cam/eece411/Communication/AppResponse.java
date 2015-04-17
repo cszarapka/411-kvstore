@@ -1,9 +1,9 @@
-package com.cam.eece411.Messages;
+package com.cam.eece411.Communication;
 
 import java.net.InetAddress;
 
-import com.cam.eece411.Utilities.Helper;
-import com.cam.eece411.Utilities.Protocols;
+import com.cam.eece411.Utilities.Utils;
+import com.cam.eece411.Utilities.Commands;
 
 /**
  * Representation of a message that is a response to an app-layer
@@ -26,10 +26,10 @@ public class AppResponse {
 	 * @param msg			the message to respond to (ID, IP, port)
 	 * @param responseCode	the response code to reply with
 	 */
-	public AppResponse(ReceivedMessage msg, byte responseCode) {
-		uniqueID 			= msg.getUniqueID();
-		ipToSendTo 			= msg.getSenderIP();
-		portToSendTo 		= msg.getSenderPort();
+	public AppResponse(Message msg, byte responseCode) {
+		uniqueID 			= msg.getUID();
+		ipToSendTo 			= msg.getReturnAddress();
+		portToSendTo 		= msg.getReturnPort();
 		this.responseCode 	= responseCode;
 		valueLength 		= 0;
 		value 				= null;
@@ -43,11 +43,11 @@ public class AppResponse {
 	 * @param msg	the message to respond to (where we get the ID, IP and port from)
 	 * @param value	the value requested in the original request
 	 */
-	public AppResponse(ReceivedMessage msg, byte[] value) {
-		uniqueID 		= msg.getUniqueID();
-		ipToSendTo 		= msg.getSenderIP();
-		portToSendTo 	= msg.getSenderPort();
-		responseCode 	= Protocols.CODE_SUCCESS;
+	public AppResponse(Message msg, byte[] value) {
+		uniqueID 		= msg.getUID();
+		ipToSendTo 		= msg.getReturnAddress();
+		portToSendTo 	= msg.getReturnPort();
+		responseCode 	= Commands.SUCCESS;
 		valueLength 	= value.length;
 		this.value 		= value;
 		buffer = new byte[uniqueID.length + 1 + 2 + valueLength];
@@ -78,8 +78,8 @@ public class AppResponse {
 	private void assembleValue() {
 		int index = uniqueID.length + 1;
 		// Add the value length
-		buffer[index++] = Helper.intToByteArray(valueLength)[0];
-		buffer[index++] = Helper.intToByteArray(valueLength)[1];
+		buffer[index++] = Utils.intToByteArray(valueLength)[0];
+		buffer[index++] = Utils.intToByteArray(valueLength)[1];
 
 		// Add the value
 		for (int i = 0; i < valueLength; i++) {
@@ -91,13 +91,14 @@ public class AppResponse {
 	 * Return the fields of this message as a string
 	 */
 	public String toString() {
-		String string = "Unique ID: " + Helper.bytesToHexString(uniqueID) + "\n" +
+		String string = "- - - - Response contents:\n" +
+						"Unique ID: " + Utils.bytesToHexString(uniqueID) + "\n" +
 						"Response Code: " + Integer.toHexString(responseCode) + "\n";
 		
 		// If this is a reply to a GET request, we ought to print out those values we got
 		if (valueLength > 0) {
 			string += "Value-Length: " + valueLength + "\n";
-			string += "Value: " + Helper.bytesToHexString(value) + "\n";
+			string += "Value: " + Utils.bytesToHexString(value) + "\n";
 		}
 		return string;
 	}

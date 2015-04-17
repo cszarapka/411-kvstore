@@ -38,7 +38,7 @@ public class SendMessage {
 	@Override
 	public String toString() {
 		return "Unique ID: " + Helper.bytesToHexString(uniqueID) + "\n" +
-				"Command: " + Integer.toHexString(command) + "\n";
+				"Command: " + Helper.cmdToString(command)	 + "\n";
 	}
 }
 

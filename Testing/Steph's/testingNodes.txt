@@ -1,0 +1,2 @@
+planetlab1.cs.colorado.edu
+pl1.eng.monash.edu.au

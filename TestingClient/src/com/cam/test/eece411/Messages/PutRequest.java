@@ -22,6 +22,15 @@ public class PutRequest extends SendMessage {
 		this.data = new byte[uniqueID.length + 1 + key.length + 2 + valueLength];
 		assembleData();
 	}
+	
+	public PutRequest(byte[] key, byte[] value, int valueLength) {
+		super(TestingClient.PUT);
+		this.key = key;
+		this.valueLength = valueLength;
+		this.value = value;
+		this.data = new byte[uniqueID.length + 1 + key.length + 2 + valueLength];
+		assembleData();
+	}
 
 	@Override
 	protected void assembleData() {
@@ -43,7 +52,7 @@ public class PutRequest extends SendMessage {
 	@Override
 	public String toString() {
 		return super.toString() + "Key: " + Helper.bytesToHexString(key) + "\n" +
-				"Value-Length: " + valueLength + "\n" +
-				"Value: " + Helper.bytesToHexString(value) + "\n";
+				"Value-Length: " + valueLength + "\n";
+				//"Value: " + Helper.bytesToHexString(value) + "\n";
 	}
 }

@@ -9,9 +9,9 @@ import java.security.NoSuchAlgorithmException;
  * @author cam
  *
  */
-public class MD5HashFunction {
+public class HashFunction {
 	// Obligatory constructor
-	public MD5HashFunction() {}
+	public HashFunction() {}
 
 	/**
 	 * Returns the hash of a 32 byte key

@@ -1,49 +1,35 @@
 package com.cam.test.eece411;
 
-<<<<<<< HEAD
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.sql.Timestamp;
-import java.util.Arrays;
-import java.sql.Date;
 
-import com.cam.test.eece411.Messages.CreateTableRequest;
 import com.cam.test.eece411.Messages.GetRequest;
 import com.cam.test.eece411.Messages.PutRequest;
-import com.cam.test.eece411.Messages.GetResponse;
 import com.cam.test.eece411.Messages.RemoveRequest;
 import com.cam.test.eece411.Messages.SendMessage;
-import com.cam.test.eece411.Messages.ShutdownRequest;
-import com.cam.test.eece411.Messages.SimpleResponse;
 import com.cam.test.eece411.Messages.StartJoinRequests;
-=======
->>>>>>> replication
 
-public class TestingClient {
+/**
+ * This is the version Steph had before I started doing versions
+ * @author cam
+ *
+ */
+public class Version1 {
+	DatagramSocket socket;
+	DatagramPacket sendPacket;
+	DatagramPacket receivePacket;
+	InetAddress serverIP;
 
-	public static final byte PUT		= 1;
-	public static final byte GET		= 2;
-	public static final byte REMOVE		= 3;
-	public static final byte SHUTDOWN	= 4;
-	public static final byte CREATE_DHT = 20;
-	public static final byte START_JOIN_REQUESTS = 21;
+	public Version1() {}
 
-	public static Boolean proceed = false;
+	public void run() {
 
-
-	public static void main(String[] args) {
-
-<<<<<<< HEAD
-		DatagramSocket socket;
-		DatagramPacket sendPacket;
-		DatagramPacket receivePacket;
-		InetAddress serverIP;
 		try {
-			serverIP = InetAddress.getByName("planetlab1.cs.ucla.edu");
+			serverIP = InetAddress.getByName("pl2.6test.edu.cn");
 		} catch (UnknownHostException e) {
 			System.out.println("\nX X\nException: " + e.getMessage() + "\nX X\n\nIt ends now.");
 			return;
@@ -54,7 +40,7 @@ public class TestingClient {
 			System.out.println("\nX X\nException: " + e.getMessage() + "\nX X\n\nIt ends now.");
 			return;
 		}
-		int serverPort = 5600;
+		int serverPort = 5000;
 
 		// Build some test data
 		byte[] key = Helper.generateRandomByteArray(32);
@@ -63,20 +49,18 @@ public class TestingClient {
 		byte[] key3 = Helper.generateRandomByteArray(32);
 		byte[] value = Helper.generateRandomByteArray(50);
 		byte[][] keys = new byte[98][32];
-		byte[][] values = new byte[98][300];
-		long startTime = 0;
-		long endTime;
+		byte[][] values = new byte[98][50];
 
 		boolean[] shouldWait = new boolean[199];
 		SendMessage[] messages = new SendMessage[199];
-		messages[0] = new CreateTableRequest();
+		messages[0] = new StartJoinRequests();
 		shouldWait[0] = false;
 		messages[1] = new GetRequest(key);			// should get KEY-DNE back
 		shouldWait[1] = true;
 		messages[2] = new RemoveRequest(key);		// should get KEY-DNE back
 		shouldWait[2] = true;
 		for(int i = 3; i < 101; i++) {
-			values[i-3] = Helper.generateRandomByteArray(300);
+			values[i-3] = Helper.generateRandomByteArray(50);
 			keys[i-3] = Helper.generateRandomByteArray(32);
 			messages[i] = new PutRequest(keys[i - 3],values[i-3]);
 			shouldWait[i] = true;
@@ -86,31 +70,28 @@ public class TestingClient {
 			shouldWait[i] = true;
 		}
 		/*
-		messages[3] = new PutRequest(key, value);	// should get SUCCESS back
-		shouldWait[3] = true;
-		messages[4] = new PutRequest(key1,value);					// should get SUCCESS back
-		shouldWait[4] = true;
-		messages[5] = new PutRequest(key2,value);;					// should get KEY-DNE back
-		shouldWait[5] = true;
-		messages[6] = new PutRequest(key3,value);;		// should get SUCCESS back
-		shouldWait[6] = true;
-		messages[7] = new GetRequest(key);					// should get nothing back
-		shouldWait[7] = true;
-		messages[8] = new GetRequest(key1);
-		shouldWait[8] = true;
-		messages[9] = new GetRequest(key2);
-		shouldWait[9] = true;
-		messages[10] = new GetRequest(key3);
-		shouldWait[10] = true;*/
+	messages[3] = new PutRequest(key, value);	// should get SUCCESS back
+	shouldWait[3] = true;
+	messages[4] = new PutRequest(key1,value);					// should get SUCCESS back
+	shouldWait[4] = true;
+	messages[5] = new PutRequest(key2,value);;					// should get KEY-DNE back
+	shouldWait[5] = true;
+	messages[6] = new PutRequest(key3,value);;		// should get SUCCESS back
+	shouldWait[6] = true;
+	messages[7] = new GetRequest(key);					// should get nothing back
+	shouldWait[7] = true;
+	messages[8] = new GetRequest(key1);
+	shouldWait[8] = true;
+	messages[9] = new GetRequest(key2);
+	shouldWait[9] = true;
+	messages[10] = new GetRequest(key3);
+	shouldWait[10] = true;*/
 		System.out.println("It has created the messages.");
 
 		// Send and receive messages
 		for (int i = 0; i < messages.length; i++) {
 			sendPacket = new DatagramPacket(messages[i].data, messages[i].data.length, serverIP, serverPort);
-			if(i == 3) {
-				java.util.Date date= new java.util.Date();
-				startTime = date.getTime();
-			}
+
 			try {
 				socket.send(sendPacket);
 				System.out.println("- - - - - - - - - - - - - - - - - -");
@@ -121,14 +102,14 @@ public class TestingClient {
 				if(shouldWait[i]) { 
 					socket.receive(receivePacket);
 					System.out.println("- - Response:");
-					if (messages[i].command == GET && receivePacket.getData()[16] == 0 && i > 50) {
+					if (messages[i].command == TestingClient.GET && receivePacket.getData()[16] == 0 && i > 50) {
 						boolean correct = true;
 						for(int j = 0; j < 50; j++) {
 							if(receivePacket.getData()[j+19] != values[i - 101][j]) {
 								System.out.println("\npacket " + receivePacket.getData()[j+17+32] + " \nand value " + values[i - 101][j]);
 								correct = false;
 							}
-							
+
 						}
 						System.out.println("\n FILE CONTENTS ARE: " + correct);
 						//System.out.print((new GetResponse(receivePacket)).toString());
@@ -149,22 +130,9 @@ public class TestingClient {
 				}
 			}
 		}
-		java.util.Date date= new java.util.Date();
-		endTime = date.getTime();
 		System.out.println("It finished sending and receiving test messages");
-		System.out.println("\nTime: " + (endTime - startTime));
 		socket.close();
 		System.out.println("It ends.. for now");
 		return;
-=======
-		System.out.println("The client awakens.");
-		//new Thread(new Version1()).start();
-		try {
-			Version3.run();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
->>>>>>> replication
 	}
 }
-
