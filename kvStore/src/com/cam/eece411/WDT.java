@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 import com.cam.eece411.Communication.Builder;
 import com.cam.eece411.Communication.UDPSocket;
 import com.cam.eece411.Structures.DHT;
+import com.cam.eece411.Structures.Node;
 import com.cam.eece411.Utilities.Utils;
 
 /**
@@ -33,9 +34,27 @@ public class WDT implements Runnable {
 			// Broadcast an IsAlive message
 			socket.broadcast(Builder.isAlive(Server.me), DHT.broadcastList(), Utils.MAIN_PORT);
 			
-			// TODO: check all our nodes for some timestamp based on is-alive messages.
-			// TODO: if one of the nodes has a really old timestamp, ping him
-			// TODO: if he doesn't respond, broadcast an IS-DEAD
+			
+			
+			
+			//get current time
+			long currentTimestamp = System.currentTimeMillis() / 1000L;
+			//max difference allowed is 2.5*WDT_TIMEOUT / 1000 [seconds]
+			int maxDiff = Utils.WDT_TIMEOUT * 2500 / 1000;
+			
+			//iterate through each node
+			for (Node node : DHT.nodes()) {
+				//find difference between last time the node was updated and the current time
+				long timestampDiff = currentTimestamp - node.timestamp;
+				
+				// TODO: if one of the nodes has a really old timestamp, ping him <-- needed?
+				
+				//any node with with a timestamp older than maxDiff is declared dead 
+				if(timestampDiff > maxDiff)
+					//broadcast an isDead message
+					socket.broadcast(Builder.isDead(node), DHT.broadcastList(), Utils.MAIN_PORT);
+		    }
+			
 		}
 	}
 	
