@@ -51,6 +51,8 @@ public class WDT implements Runnable {
 				
 				//any node with with a timestamp older than maxDiff is declared dead 
 				if(timestampDiff > maxDiff)
+					//remove node from local dht
+					DHT.remove(node.nodeID);
 					//broadcast an isDead message
 					socket.broadcast(Builder.isDead(node), DHT.broadcastList(), Utils.MAIN_PORT);
 		    }
