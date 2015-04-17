@@ -32,15 +32,9 @@ public class Server {
 	private static final Logger log = Logger.getLogger(Server.class.getName());
 
 	public static Node me;
-<<<<<<< HEAD
-	public static Integer state = Protocols.OUT_OF_TABLE;
-	public static Object sendingLock = new Object();
-	public static boolean VERBOSE = false; //if false, print statements suppressed
-=======
 	public static Integer state;
 	public static UDPSocket socket;
 	public static List<String> nodes = null;
->>>>>>> replication
 
 	public static void main(String[] args) throws SocketException, IOException {
 		log.info("And so it begins.");
@@ -72,27 +66,6 @@ public class Server {
 		// Launch the Watchdog Thread
 		(new Thread(new WDT(Utils.WDT_PORT))).start();
 
-<<<<<<< HEAD
-		// Set up our socket and packet objects
-		byte[] receivedPacket = new byte[Protocols.MAX_MSG_SIZE];
-		DatagramSocket socket = new DatagramSocket(Protocols.LISTENING_PORT);
-		DatagramPacket packet = new DatagramPacket(receivedPacket, receivedPacket.length);
-		//(new Thread(new WatchdogThread())).start();
-
-		// Listen for commands (GET, PUT, REMOVE, SHUTDOWN)
-		while(true) {
-			if(Server.VERBOSE) System.out.println("Waiting for a message...");
-			socket.receive(packet);
-			if(Server.VERBOSE) System.out.println("Messaged received!");
-			// Launch thread based on state we are in
-			switch (state) {
-			case Protocols.OUT_OF_TABLE: (new Thread(new ActivationHandler(packet))).start(); break;
-			case Protocols.IN_TABLE: (new Thread(new ResponseHandler(packet))).start(); break;
-			case Protocols.HANDLING_JOIN: (new Thread(new ResponseHandler(packet))).start(); break;
-			case Protocols.LEFT_TABLE:
-				// TODO: leave system gracefully
-				socket.close();
-=======
 		// Listen for commands
 		while (state == Utils.IN_DHT) {
 			// Wait for a message
@@ -119,7 +92,6 @@ public class Server {
 			else if (cmd == Commands.SHUTDOWN) {
 				respondToSHUTDOWN(msg);
 				System.exit(0);
->>>>>>> replication
 			}
 		}
 
