@@ -28,7 +28,8 @@ public class UpdateHandler implements Runnable {
 	
 	private void handleIS_ALIVE() {
 		if (nodeIsInDHT()) {
-			// TODO: update the timestamp
+			//update the timestamp
+			DHT.getNode(msg.getNodeID()).updateTimestamp();
 			log.info("Node " + msg.getNodeID() + " is already in the local DHT.");
 		}
 		else {
