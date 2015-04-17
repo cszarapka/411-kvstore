@@ -50,6 +50,11 @@ public final class Utils {
 	 * The WDT's port for sending messages
 	 */
 	public static final int WDT_PORT 	= 7050;
+	
+	/**
+	 * The UpdateHandler's port for sending isAlive replication PUTs
+	 */
+	public static final int REP_PORT	= 7060;
 
 	// Timeout values (msec)
 	public static final int JOIN_TIMEOUT = 5000;
