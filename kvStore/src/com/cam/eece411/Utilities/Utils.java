@@ -54,11 +54,7 @@ public final class Utils {
 	/**
 	 * The UpdateHandler's port for sending isAlive replication PUTs
 	 */
-	public static final int REP_PORT	= 7060;
 
-	/**
-	 * The UpdateHandler's port for sending isAlive replication PUTs
-	 */
 	public static final int REP_PORT	= 7060;
 	
 	// Timeout values (msec)
