@@ -31,7 +31,7 @@ public class KVSHandler implements Runnable {
 		// if it is in our key range.
 		if (msg.getCommand() == Commands.REP_PUT) {
 			handleREPLICATED_PUT();
-			socket.close();
+			//socket.close();
 			return;
 		}
 		
@@ -40,7 +40,7 @@ public class KVSHandler implements Runnable {
 		
 		if (servicingNode == null) {
 			log.severe("No node found for key.");
-			socket.close();
+			//socket.close();
 			return;
 		} else {
 			// If I'm responsible for the command
@@ -57,7 +57,7 @@ public class KVSHandler implements Runnable {
 				log.info("ECHOed " + Utils.byteCmdToString(msg.getCommand()) + " sent to " + servicingNode.nodeID + "@" + servicingNode.addr.getHostName() + ":" + Utils.MAIN_PORT);
 			}
 		}
-		socket.close();
+		//socket.close();
 	}
 
 	private AppResponse PUTResponse() {
