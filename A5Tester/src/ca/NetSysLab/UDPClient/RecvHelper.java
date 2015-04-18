@@ -12,7 +12,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class RecvHelper implements Runnable {
-  static boolean DEBUG = false;	
+  static boolean DEBUG = true;	
   DatagramSocket clientSocket = null;
   JSONObject requestBuffer;
   
