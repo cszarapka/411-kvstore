@@ -36,7 +36,7 @@ public class Server {
 	public static UDPSocket socket;
 	public static List<String> nodes = null;
 
-	public static void main(String[] args) throws SocketException, IOException {
+	public static void main(String[] args) throws SocketException, IOException, InterruptedException {
 		log.info("And so it begins.");
 
 		// Instantiate ourself as a node and set our state
@@ -79,7 +79,8 @@ public class Server {
 			// React to message
 			if (Commands.isKVSCommand(cmd)) {
 				// Launch the KVS Handler thread
-				(new Thread(new KVSHandler(msg))).start();
+				(new Thread(new KVSHandler(msg, socket))).start();
+				Thread.sleep(10000);
 			}
 			else if (Commands.isJoinMessage(cmd)) {
 				// Launch the Join Handler thread

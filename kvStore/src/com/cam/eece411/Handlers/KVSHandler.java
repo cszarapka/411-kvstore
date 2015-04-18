@@ -19,9 +19,9 @@ public class KVSHandler implements Runnable {
 	private Message msg;
 	private UDPSocket socket;
 	
-	public KVSHandler(Message msg) {
+	public KVSHandler(Message msg, UDPSocket socket) {
 		this.msg = msg;
-		socket = new UDPSocket(Utils.KVS_PORT);
+		this.socket = socket;//new UDPSocket(Utils.KVS_PORT);
 	}
 
 	public void run() {
