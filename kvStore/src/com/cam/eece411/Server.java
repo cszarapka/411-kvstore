@@ -80,7 +80,7 @@ public class Server {
 			if (Commands.isKVSCommand(cmd)) {
 				// Launch the KVS Handler thread
 				(new Thread(new KVSHandler(msg, socket))).start();
-				Thread.sleep(10000);
+				
 			}
 			else if (Commands.isJoinMessage(cmd)) {
 				// Launch the Join Handler thread
