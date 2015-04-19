@@ -42,5 +42,6 @@ public class JoinHandler implements Runnable {
 		// Respond to the requesting node
 		socket.send(Builder.joinResponse(msg, offeredNodeID), msg.getReturnAddress(), msg.getReturnPort());
 		log.info("JOIN-RESPONSE sent to " + msg.getReturnAddress().getHostName() + ":" + msg.getReturnPort() + " offering node ID: " + offeredNodeID);
+		
 	}
 }

@@ -57,21 +57,29 @@ public class UpdateHandler implements Runnable {
 
 			// check if the new node is a neighbour
 			if (prevNodeID == newNodeID || nextNodeID == newNodeID) {
-				// iterate through all keys
-				for (ByteBuffer key : KVS.getKeys()) {
-					
-					//if this key is supposed to be on our neighbour then send it
-					if(DHT.findNodeFor(key.array()).nodeID == newNodeID){
-						UDPSocket socket = new UDPSocket(Utils.REP_PORT);
-						socket.send(Builder.replicatedPut(msg), DHT.getNode(newNodeID).addr, Utils.MAIN_PORT);
-						// TODO: Do we need to wait for a response?
-						
-					}
-				}
+				sendAllKeysTo(newNodeID, newNodeID);
 			}
 		}
 	}
 
+	public void sendAllKeysTo(int nodeIDToSendTo, int nodeIDRangeToSend) {
+		//sends all keys in the given nodeIDRangeToSend's range to nodeIDToSendTo
+		//nodeIDRangeToSend and nodeIDRangeToSend must be in the table, or no keys will be sent
+		//both params represent a nodeID
+		
+		// iterate through all keys
+		for (ByteBuffer key : KVS.getKeys()) {
+			
+			//if this key is supposed to be on our neighbour then send it
+			if(DHT.findNodeFor(key.array()).nodeID == nodeIDRangeToSend){
+				UDPSocket socket = new UDPSocket(Utils.REP_PORT);
+				socket.send(Builder.replicatedPut(msg), DHT.getNode(nodeIDToSendTo).addr, Utils.MAIN_PORT);
+				// TODO: Do we need to wait for a response?
+				
+			}
+		}
+	}
+	
 	private void handleIS_DEAD() {
 		//we have been messaged saying that some node is dead
 		//need to remove that node from the table
