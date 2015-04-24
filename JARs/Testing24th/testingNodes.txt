@@ -1,0 +1,5 @@
+netapp7.cs.kookmin.ac.kr
+planetlab4.postel.org
+planetlab3.williams.edu
+planetlab1.cs.ucla.edu
+planetlab1.cs.uoregon.edu

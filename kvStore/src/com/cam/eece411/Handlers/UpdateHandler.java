@@ -30,7 +30,12 @@ public class UpdateHandler implements Runnable {
 		log.info("UpdateHandler launched");
 		switch (msg.getCommand()) {
 		case Commands.IS_ALIVE:
-			handleIS_ALIVE();
+			try {
+				handleIS_ALIVE();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			break;
 		case Commands.IS_DEAD:
 			handleIS_DEAD();
@@ -38,7 +43,7 @@ public class UpdateHandler implements Runnable {
 		}
 	}
 
-	private void handleIS_ALIVE() {
+	private void handleIS_ALIVE() throws InterruptedException {
 		if (nodeIsInDHT()) {
 			// update the timestamp
 			DHT.getNode(msg.getNodeID()).updateTimestamp();
@@ -62,20 +67,19 @@ public class UpdateHandler implements Runnable {
 		}
 	}
 
-	public void sendAllKeysTo(int nodeIDToSendTo, int nodeIDRangeToSend) {
+	public void sendAllKeysTo(int nodeIDToSendTo, int nodeIDRangeToSend) throws InterruptedException {
 		//sends all keys in the given nodeIDRangeToSend's range to nodeIDToSendTo
 		//nodeIDRangeToSend and nodeIDRangeToSend must be in the table, or no keys will be sent
 		//both params represent a nodeID
 		
 		// iterate through all keys
 		for (ByteBuffer key : KVS.getKeys()) {
-			
+			UDPSocket socket = new UDPSocket(Utils.REP_PORT);
 			//if this key is supposed to be on our neighbour then send it
 			if(DHT.findNodeFor(key.array()).nodeID == nodeIDRangeToSend){
-				UDPSocket socket = new UDPSocket(Utils.REP_PORT);
 				socket.send(Builder.replicatedPut(msg), DHT.getNode(nodeIDToSendTo).addr, Utils.MAIN_PORT);
 				// TODO: Do we need to wait for a response?
-				
+				Thread.sleep(100);
 			}
 		}
 	}
