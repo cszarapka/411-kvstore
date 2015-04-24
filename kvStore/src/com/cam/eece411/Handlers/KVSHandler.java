@@ -55,8 +55,7 @@ public class KVSHandler implements Runnable {
 				// Send it to the node who is responsible for it
 				socket.send(Builder.echo(msg), servicingNode.addr, Utils.MAIN_PORT);
 				log.info("ECHOed " + Utils.byteCmdToString(msg.getCommand()) + " sent to " + servicingNode.nodeID + "@" + servicingNode.addr.getHostName() + ":" + Utils.MAIN_PORT);
-				//assume a success TODO: not really correct, but works for tests
-				send(PUTResponse());
+				
 			}
 		}
 		//socket.close();
