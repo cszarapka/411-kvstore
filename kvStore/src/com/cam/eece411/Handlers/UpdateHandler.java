@@ -51,6 +51,7 @@ public class UpdateHandler implements Runnable {
 					+ " is already in the local DHT.");
 		} else {
 			DHT.add(new Node(msg.getNodeID(), msg.getNodeAddress()));
+			DHT.getNode(msg.getNodeID()).updateTimestamp();
 			log.info("Node " + msg.getNodeID() + " at "
 					+ msg.getNodeAddress().getHostName()
 					+ " was added to the local DHT.");
