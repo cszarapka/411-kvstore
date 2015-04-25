@@ -168,7 +168,7 @@ public final class Builder {
 		// Determine length of message based on existence of value length
 		if (data[length] > 0) {
 			VL = Utils.byteArrayToShort(Arrays.copyOfRange(data, uniqueID.length+1+8+1, uniqueID.length+1+8+1+2));
-			length = uniqueID.length + 1 + 8 + 1 + 2 + VL;
+			length = uniqueID.length + 1 + 2 + VL;
 		} else {
 			length = uniqueID.length + 1;
 		}
@@ -185,7 +185,7 @@ public final class Builder {
 		
 		// If there is a value length, continue
 		if (VL > 0) {
-			for (int i = uniqueID.length+1+8+1; i < length; i++) {
+			for (int i = uniqueID.length+1+8+1; i < length+1+8+1; i++) {
 				buffer[index++] = data[i];
 			}
 		}
@@ -218,7 +218,7 @@ public final class Builder {
 		}
 		buffer = new byte[length];
 
-
+		
 		//Assemble the buffer
 		// Add the Unique ID
 		for (int i = 0; i < uniqueID.length; i++) {
