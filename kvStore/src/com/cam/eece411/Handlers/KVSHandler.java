@@ -36,6 +36,8 @@ public class KVSHandler implements Runnable {
 		}
 		
 		if(msg.getCommand() == Commands.ECHOED) {
+			//TODO: don't know if it should be handled this way
+			ECHOEDResponse();
 			socket.send(Builder.echo_return(msg), msg.getEchoReturnAddress(), Utils.MAIN_PORT);
 		}
 		
