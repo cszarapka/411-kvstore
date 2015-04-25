@@ -353,7 +353,7 @@ public class TestsAssignmentFive {
 	    clientStats[clientID].errorStatStringPut = getClientTimeStatString(clientID, commandName  + ",error,", getMinLong(errTimes), getMaxLong(errTimes), 
 	    		getAverageLong(errTimes), getStandardDeviationLong(errTimes));
 	    
-	    pause(60);	    
+	    pause(10);	    
 	    
 	    // get requests to the same node
 	    commandName = "GET";
@@ -462,7 +462,7 @@ public class TestsAssignmentFive {
 	    clientStats[clientID].errorStatStringGet = getClientTimeStatString(clientID, commandName  + ",error,", getMinLong(errTimes), getMaxLong(errTimes), 
 	    		getAverageLong(errTimes), getStandardDeviationLong(errTimes)); 
 	    
-	    pause(60);
+	    pause(10);
 	     
 	    // remove requests to the same node
 	    commandName = "REMOVE";
@@ -790,7 +790,7 @@ public class TestsAssignmentFive {
 		    c.close();
 		}
 	    	    
-	    pause(60);
+	    pause(10);
 	    clientStats[clientID].numOfSuccMsgs = successes;
 	    clientStats[clientID].numOfErrMsgs = errors;	
 	    clientStats[clientID].numOfTimedOutMsgs = timedOut;
@@ -911,7 +911,7 @@ public class TestsAssignmentFive {
 	    clientStats[clientID].errorStatStringPut = getClientTimeStatString(clientID, commandName  + " (error)", getMinLong(errTimes), getMaxLong(errTimes), 
 	    		getAverageLong(errTimes), getStandardDeviationLong(errTimes));
 	    
-	    pause(60);
+	    pause(10);
 	    
 	    // get requests to the same node
 	    commandName = "GET";
@@ -965,7 +965,7 @@ public class TestsAssignmentFive {
 	    clientStats[clientID].errorStatStringGet = getClientTimeStatString(clientID, commandName  + " (error)", getMinLong(errTimes), getMaxLong(errTimes), 
 	    		getAverageLong(errTimes), getStandardDeviationLong(errTimes));
 	    
-	    pause(60);
+	    pause(10);
 	     
 	    // remove requests to the same node
 	    commandName = "REMOVE";
@@ -1096,7 +1096,7 @@ public class TestsAssignmentFive {
 		    val++;		    
 		}
 	    	    
-	    pause(60);
+	    pause(10);
 	    clientStats[clientID].numOfSuccMsgs = successes;
 	    clientStats[clientID].numOfErrMsgs = errors;
 	    clientStats[clientID].numOfMsgs = (successes + errors);
@@ -1840,7 +1840,7 @@ public class TestsAssignmentFive {
 	    System.out.println("Put error: " + getErrorPercentageDouble(successes, errors) + "%");
 	    System.out.println("Put success: " + getSuccessPercentageDouble(successes, errors) + "%");
 	    
-	    pause(60);
+	    pause(10);
 	    
 	    // crash some nodes	    
 	    
@@ -1908,7 +1908,7 @@ public class TestsAssignmentFive {
 	    System.out.println("Get error: " + getErrorPercentageDouble(successes, errors) + "%");
 	    System.out.println("Get success: " + getSuccessPercentageDouble(successes, errors) + "%");
 	    
-	    pause(60);	    
+	    pause(10);	    
 	    
 	    // remove requests to random "alive" nodes
 	    errors = 0;	    
@@ -1994,7 +1994,7 @@ public class TestsAssignmentFive {
 	    System.out.println("Put error: " + getErrorPercentageDouble(successes, errors) + "%");
 	    System.out.println("Put success: " + getSuccessPercentageDouble(successes, errors) + "%");
 	    
-	    pause(60);
+	    pause(10);
 	    
 	    // get requests to random "alive" nodes
 	    errors = 0;	   
@@ -2026,7 +2026,7 @@ public class TestsAssignmentFive {
 	    System.out.println("Get error: " + getErrorPercentageDouble(successes, errors) + "%");
 	    System.out.println("Get success: " + getSuccessPercentageDouble(successes, errors) + "%");
 	    
-	    pause(60);
+	    pause(10);
 	    
 	    // crash some nodes	    
 	    
@@ -2094,7 +2094,7 @@ public class TestsAssignmentFive {
 	    System.out.println("Get error: " + getErrorPercentageDouble(successes, errors) + "%");
 	    System.out.println("Get success: " + getSuccessPercentageDouble(successes, errors) + "%");
 	    	    
-	    pause(60);
+	    pause(10);
 	    
 	    // remove requests to random "alive" nodes
 	    errors = 0;	    

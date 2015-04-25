@@ -17,7 +17,7 @@ public final class Utils {
 	private Utils() {}
 
 	// filenames of node lists
-	public static final String NODE_LIST = "/home/ubc_eece411_5/repTestNodes.txt";
+	public static final String NODE_LIST = "repTestNodes.txt";
 
 	/*
 	 * Port Numbers
