@@ -148,6 +148,28 @@ public final class Builder {
 		}	
 		return buffer;
 	}
+	
+	public static byte[] echoedResponseToClient(Message msg) {
+		//takes a message with the echoedResponse command 
+		//and builds a buffer to send to original requester
+		byte[] buffer;
+		byte[] uniqueID = msg.getUID();
+		byte[] data = msg.getData();
+		int length = 0;
+		int index = 0;
+		
+		length = msg.getData().length;
+		buffer = new byte[length];
+		for(int i = 0; i < 16; i++) {
+			buffer[index++] = data[i];
+		}
+		
+		for(int i = 25; i < data.length; i++) {
+			buffer[index++] = data[i];
+		}
+		
+		return buffer;
+	}
 
 	/**
 	 * Builds an echoed app-layer message.

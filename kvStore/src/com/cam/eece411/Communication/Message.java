@@ -128,6 +128,10 @@ public class Message {
 	public byte getCommand() {
 		return this.cmd;
 	}
+	
+	public byte getAppCommand() {
+		return this.appCmd;
+	}
 
 	public int getReturnPort() {
 		return this.srcPort;

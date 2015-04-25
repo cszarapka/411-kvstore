@@ -66,7 +66,7 @@ public class KVSHandler implements Runnable {
 	}
 
 	private AppResponse ECHOEDResponse() {
-		int command = msg.getData()[26];
+		int command = msg.getAppCommand();
 		if(command == Commands.GET) {
 			return GETResponse();
 		} else if(command == Commands.PUT) {
