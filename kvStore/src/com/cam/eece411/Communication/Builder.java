@@ -188,7 +188,7 @@ public final class Builder {
 		
 
 		//Determine the length of the message based on the command
-		if(msg.getCommand() == Commands.GET){
+		if(msg.getAppCommand() == Commands.GET){
 			length = uniqueID.length + 9 + 1 + 2 + msg.getValueLength();
 		} else {
 			length = uniqueID.length + 9 + 1;
@@ -227,7 +227,7 @@ public final class Builder {
 		buffer[index++] = Utils.intToByteArray(valueLength)[1];
 		
 		// Add value if get command
-		if(msg.getCommand() == Commands.GET) {
+		if(msg.getAppCommand() == Commands.GET) {
 			byte[] value = msg.getValue();
 			for(int i = 0; i < msg.getValueLength(); i++){
 				buffer[index++] = value[i];
