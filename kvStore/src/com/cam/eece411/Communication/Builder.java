@@ -178,7 +178,7 @@ public final class Builder {
 	 * @param responseCode	Success or fail of echo'd command, such as 
 	 * @return		byte array of the message<br>
 	 */
-	public static byte[] echo_return(Message msg){
+	public static byte[] echo_return(Message msg, AppResponse ap){
 		byte[] buffer;
 		byte[] uniqueID = msg.getUID();
 		byte[] data = msg.getData();
@@ -188,7 +188,7 @@ public final class Builder {
 
 		//Determine the length of the message based on the command
 		if(msg.getAppCommand() == Commands.GET){
-			length = uniqueID.length + 9 + 1 + 2 + msg.getValueLength();
+			length = uniqueID.length + 9 + 1 + 2 + ap.getValue().length;
 		} else {
 			length = uniqueID.length + 9 + 1;
 		}
@@ -218,7 +218,7 @@ public final class Builder {
 		buffer[index++] = originPort[3];
 		
 		// Add response code TODO should this always be success?
-		buffer[index++] = Commands.SUCCESS;
+		buffer[index++] = ap.responseCode;
 		
 		// Add value length
 		short valueLength = msg.getValueLength();// Add the value length
@@ -227,8 +227,8 @@ public final class Builder {
 		
 		// Add value if get command
 		if(msg.getAppCommand() == Commands.GET) {
-			byte[] value = msg.getValue();
-			for(int i = 0; i < msg.getValueLength(); i++){
+			byte[] value = ap.getValue();
+			for(int i = 0; i < ap.getValue().length; i++){
 				buffer[index++] = value[i];
 			}
 		}
