@@ -244,10 +244,12 @@ public final class Builder {
 		buffer[index++] = originPort[2];
 		buffer[index++] = originPort[3];
 
+
 		// Add rest of app response
 		byte[] bytes = ap.buffer;
 		for (int i = uniqueID.length; i < bytes.length; i++) {
 			buffer[index++] = bytes[i];
+
 		}
 
 		return buffer;
