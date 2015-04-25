@@ -88,6 +88,10 @@ public class Message {
 			// Get the KVS command being echoed
 			appCmd = bytes[index++];
 		}
+		
+		if (cmd == Commands.REP_PUT) {
+			appCmd = Commands.PUT;
+		}
 
 		if (appCmd < Commands.SHUTDOWN) {
 			// Get the key
