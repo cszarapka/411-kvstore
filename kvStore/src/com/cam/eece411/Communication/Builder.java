@@ -221,7 +221,7 @@ public final class Builder {
 		buffer[index++] = ap.responseCode;
 		
 		// Add value length
-		short valueLength = msg.getValueLength();// Add the value length
+		int valueLength = ap.getValue().length;// Add the value length
 		buffer[index++] = Utils.intToByteArray(valueLength)[0];
 		buffer[index++] = Utils.intToByteArray(valueLength)[1];
 		
