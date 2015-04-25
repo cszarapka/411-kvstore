@@ -205,7 +205,7 @@ public final class Builder {
 		buffer[index++] = Commands.ECHO_RETURN;
 		
 		// Add the IP (4 byte array)
-		byte[] originIP = msg.getReturnAddress().getAddress();
+		byte[] originIP = msg.getEchoReturnAddress().getAddress();
 		for (int i = 0; i < 4; i++) {
 			buffer[index++] = originIP[i];
 		}
