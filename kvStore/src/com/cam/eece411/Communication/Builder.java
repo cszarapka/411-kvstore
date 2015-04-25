@@ -169,7 +169,7 @@ public final class Builder {
 		log.info("Value length reading these bytes: " + Utils.bytesToHexString(Arrays.copyOfRange(data, uniqueID.length+1+8+1, uniqueID.length+1+8+1+2)));
 		log.info("Byte array to short reads that as: " + Utils.byteArrayToShort(Arrays.copyOfRange(data, uniqueID.length+1+8+1, uniqueID.length+1+8+1+2)));
 		if (Utils.byteArrayToShort(Arrays.copyOfRange(data, uniqueID.length+1+8+1, uniqueID.length+1+8+1+2)) > 0) {
-			VL = Utils.byteArrayToShort(Arrays.copyOfRange(data, uniqueID.length+1+8+1-1, uniqueID.length+1+8+1+2-1));
+			VL = Utils.byteArrayToShort(Arrays.copyOfRange(data, uniqueID.length+1+8+1, uniqueID.length+1+8+1+2));
 
 			length = uniqueID.length + 1 + 2 + VL;
 
@@ -189,14 +189,16 @@ public final class Builder {
 		// Add the response code
 		buffer[index++] = data[uniqueID.length + 1 + 8];
 		
+		log.info("Message Length: " + length + "\n" + "Value Length: " + VL + "\nValue: " );
+		
 		// If there is a value length, continue
 		if (VL > 0) {
-			for (int i = uniqueID.length+8+1; i < length; i++) {
+			for (int i = uniqueID.length + 1 + 8 + 1; i < length + 1 + 8 + 1 - 1; i++) {
 				buffer[index++] = data[i];
 			}
 		}
 
-		log.info("Message Length: " + length + "\n" + "Value Length: " + VL + "\nValue: " );
+		
 
 		return buffer;
 	}
