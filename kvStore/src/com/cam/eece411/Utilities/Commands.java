@@ -95,7 +95,7 @@ public class Commands {
 
 	public static boolean isKVSCommand(byte command) {
 		if (command == GET || command == PUT || command == REMOVE ||
-			command == ECHOED || command == REP_PUT) {
+			command == ECHOED || command == REP_PUT || command == ECHO_RETURN) {
 			return true;
 		}
 		return false;
