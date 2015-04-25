@@ -191,7 +191,7 @@ public final class Builder {
 		
 		// If there is a value length, continue
 		if (VL > 0) {
-			for (int i = uniqueID.length+1+8+1; i < length+1+8+1; i++) {
+			for (int i = uniqueID.length+8+1; i < length; i++) {
 				buffer[index++] = data[i];
 			}
 		}
