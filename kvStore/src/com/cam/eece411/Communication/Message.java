@@ -79,7 +79,7 @@ public class Message {
 
 	private void parseKVSCommand() {
 		// In the echoed case, get the address info about the source of the request
-		if (cmd == Commands.ECHOED) {
+		if (cmd == Commands.ECHOED || cmd == Commands.ECHO_RETURN) {
 			// Get the source of the app-level command
 			returnAddress = Arrays.copyOfRange(bytes, index, index+4); index += 4;
 			returnPortBytes = Arrays.copyOfRange(bytes, index, index+4); index += 4;

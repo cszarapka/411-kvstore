@@ -44,8 +44,8 @@ public class KVSHandler implements Runnable {
 		}
 		
 		if(msg.getCommand() == Commands.ECHO_RETURN) {
-			socket.send(Builder.echoedResponseToClient(msg), msg.getReturnAddress(), msg.getReturnPort());
-			log.info("Echo_Return received");
+			socket.send(Builder.echoedResponseToClient(msg), msg.getEchoReturnAddress(), msg.getEchoReturnPort());
+			log.info("Echo_Return received and sent to " +  msg.getEchoReturnAddress() + ":" + msg.getEchoReturnPort());
 			return;
 		}
 		
