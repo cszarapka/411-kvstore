@@ -166,12 +166,14 @@ public final class Builder {
 		int index = 0;
 		//log.info("message received: " + Utils.bytesToHexString(data));
 		// Determine length of message based on existence of value length
-		if (data[length] > 0) {
-			VL = Utils.byteArrayToShort(Arrays.copyOfRange(data, uniqueID.length+1+8+1, uniqueID.length+1+8+1+2));
+		log.info("Value length reading these bytes: " + Utils.bytesToHexString(Arrays.copyOfRange(data, uniqueID.length+1+8+1, uniqueID.length+1+8+1+2)));
+		log.info("Byte array to short reads that as: " + Utils.byteArrayToShort(Arrays.copyOfRange(data, uniqueID.length+1+8+1, uniqueID.length+1+8+1+2)));
+		if (Utils.byteArrayToShort(Arrays.copyOfRange(data, uniqueID.length+1+8+1, uniqueID.length+1+8+1+2)) > 0) {
+			VL = Utils.byteArrayToShort(Arrays.copyOfRange(data, uniqueID.length+1+8+1-1, uniqueID.length+1+8+1+2-1));
 
 			length = uniqueID.length + 1 + 2 + VL;
 
-			log.info("Value length reading these bytes: " + Utils.bytesToHexString(Arrays.copyOfRange(data, uniqueID.length+1+8+1, uniqueID.length+1+8+1+2)));
+			
 
 		} else {
 			length = uniqueID.length + 1;
