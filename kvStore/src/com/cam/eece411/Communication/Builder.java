@@ -1,11 +1,12 @@
 package com.cam.eece411.Communication;
 
+import java.util.Arrays;
 import java.util.logging.Logger;
 
 import com.cam.eece411.Structures.DHT;
 import com.cam.eece411.Structures.Node;
-import com.cam.eece411.Utilities.Utils;
 import com.cam.eece411.Utilities.Commands;
+import com.cam.eece411.Utilities.Utils;
 
 /**
  * This class is for building messages to be sent between nodes.
@@ -148,36 +149,53 @@ public final class Builder {
 		}	
 		return buffer;
 	}
-	
 
+
+	/**
+	 * Returns a byte[] buffer of an AppResponse message resulting
+	 * from an echoed TA AppRequest
+	 * @param msg	the app-response from the servicing node
+	 * @return		app-response byte[] to be sent to TA
+	 */
 	public static byte[] echoedResponseToClient(Message msg) {
-		//takes a message with the echoedResponse command 
-		//and builds a buffer to send to original requester
-		byte[] buffer;
-		byte[] uniqueID = msg.getUID();
-		byte[] data = msg.getData();
-		int length = 17;
+		byte[] buffer;					// bytes of the app response to be sent to TA
+		byte[] uniqueID = msg.getUID();	// Unique ID of the echoed app response
+		byte[] data = msg.getData();	// raw byte data of the echoed app response
+		int length = uniqueID.length + 1;
+		short VL = 0;
 		int index = 0;
-		byte[] valueLength = new byte[2];
-		valueLength[0] = msg.getData()[26];
-		valueLength[1] = msg.getData()[27];
-		length += Utils.byteArrayToShort(valueLength);
-		log.info("Message Length: " + length);
+
+		// Determine length of message based on existence of value length
+		if (data[length] > 0) {
+			VL = Utils.byteArrayToShort(Arrays.copyOfRange(data, uniqueID.length+1+8+1, uniqueID.length+1+8+1+2));
+			length = uniqueID.length + 1 + 8 + 1 + 2 + VL;
+		} else {
+			length = uniqueID.length + 1;
+		}
 		buffer = new byte[length];
-		for(int i = 0; i < 16; i++) {
-			buffer[index++] = data[i];
+
+		// Assemble the buffer
+		// Add the unique ID
+		for (int i = 0; i < uniqueID.length; i++) {
+			buffer[index++] = uniqueID[i];
 		}
 		
-		for(int i = 25; i < length + 9; i++) {
-			buffer[index++] = data[i];
+		// Add the response code
+		buffer[index++] = data[uniqueID.length + 1 + 8];
+		
+		// If there is a value length, continue
+		if (VL > 0) {
+			for (int i = uniqueID.length+1+8+1; i < length; i++) {
+				buffer[index++] = data[i];
+			}
 		}
-		buffer[16] = Commands.SUCCESS;
-		//log.info("sending message: " + Utils.bytesToHexString(buffer));
+
+		log.info("Message Length: " + length + "\n" + "Value Length: " + VL);
+
 		return buffer;
-		
 	}
-	
-	
+
+
 	/**
 	 * Builds an echo response app-layer message.
 	 * @param msg	the response to echo
@@ -190,7 +208,7 @@ public final class Builder {
 		byte[] data = msg.getData();
 		int length = 0;
 		int index = 0;
-		
+
 
 		//Determine the length of the message based on the command
 		if(msg.getAppCommand() == Commands.GET){
@@ -199,17 +217,17 @@ public final class Builder {
 			length = uniqueID.length + 9 + 1;
 		}
 		buffer = new byte[length];
-		
-		
+
+
 		//Assemble the buffer
 		// Add the Unique ID
 		for (int i = 0; i < uniqueID.length; i++) {
 			buffer[index++] = uniqueID[i];
 		}
-		
+
 		// Add the command		
 		buffer[index++] = Commands.ECHO_RETURN;
-		
+
 		// Add the IP (4 byte array)
 		byte[] originIP = msg.getEchoReturnAddress().getAddress();
 		for (int i = 0; i < 4; i++) {
@@ -222,27 +240,27 @@ public final class Builder {
 		buffer[index++] = originPort[1];
 		buffer[index++] = originPort[2];
 		buffer[index++] = originPort[3];
-		
+
 		// Add response code TODO should this always be success?
 		buffer[index++] = ap.responseCode;
-		
 
-		
+
+
 		// Add value if get command
 		if(msg.getAppCommand() == Commands.GET) {
 			// Add value length
 			int valueLength = ap.getValue().length;// Add the value length
 			buffer[index++] = Utils.intToByteArray(valueLength)[0];
 			buffer[index++] = Utils.intToByteArray(valueLength)[1];
-			
+
 			byte[] value = ap.getValue();
 			log.info("Value is " + Utils.bytesToHexString(value));
 			for(int i = 0; i < ap.getValue().length; i++){
 				buffer[index++] = value[i];
 			}
 		}
-		
-				
+
+
 		return buffer;
 	}
 
