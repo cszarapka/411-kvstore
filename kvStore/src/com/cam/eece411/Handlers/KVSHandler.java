@@ -123,6 +123,17 @@ public class KVSHandler implements Runnable {
 		return new AppResponse(msg, responseCode);
 	}
 	
+	private void REP_PUTResponse(){
+		byte responseCode;
+		String output;
+		synchronized (KVS.class) {
+			// Update/add the key-value pair into our store
+			responseCode = KVS.put(msg.getKey(), msg.getValue());
+		}
+		log.info("[REPLICATED PUT]: received from " + msg.getNodeAddress());
+		log.info("[REPLICATED PUT]: response code: " + responseCode);
+	}
+	
 	private AppResponse GETResponse() {
 		// Get the value from our key-value pair
 		byte[] value = KVS.get(msg.getKey());
@@ -146,7 +157,7 @@ public class KVSHandler implements Runnable {
 	}
 	
 	private void handleREPLICATED_PUT() {
-		PUTResponse();
+		REP_PUTResponse();
 	}
 	
 	private void send(AppResponse r) {
