@@ -149,26 +149,15 @@ public final class Builder {
 		return buffer;
 	}
 	
-<<<<<<< HEAD
+
 	public static byte[] echoedResponseToClient(Message msg) {
 		//takes a message with the echoedResponse command 
 		//and builds a buffer to send to original requester
-=======
-	/**
-	 * Builds an echo response app-layer message.
-	 * @param msg	the response to echo
-	 * @param responseCode	Success or fail of echo'd command, such as 
-	 * @return		byte array of the message<br>
-	 */
-	public static byte[] echo_return(Message msg){
->>>>>>> origin/development
 		byte[] buffer;
 		byte[] uniqueID = msg.getUID();
 		byte[] data = msg.getData();
 		int length = 0;
 		int index = 0;
-		
-<<<<<<< HEAD
 		length = msg.getData().length;
 		buffer = new byte[length];
 		for(int i = 0; i < 16; i++) {
@@ -180,7 +169,24 @@ public final class Builder {
 		}
 		
 		return buffer;
-=======
+	}
+	
+	
+	/**
+	 * Builds an echo response app-layer message.
+	 * @param msg	the response to echo
+	 * @param responseCode	Success or fail of echo'd command, such as 
+	 * @return		byte array of the message<br>
+	 */
+	public static byte[] echo_return(Message msg){
+
+		byte[] buffer;
+		byte[] uniqueID = msg.getUID();
+		byte[] data = msg.getData();
+		int length = 0;
+		int index = 0;
+		
+
 		//Determine the length of the message based on the command
 		if(msg.getCommand() == Commands.GET){
 			length = uniqueID.length + 9 + 1 + 2 + msg.getValueLength();
@@ -230,8 +236,6 @@ public final class Builder {
 		
 				
 		return buffer;
-		
->>>>>>> origin/development
 	}
 
 	/**
