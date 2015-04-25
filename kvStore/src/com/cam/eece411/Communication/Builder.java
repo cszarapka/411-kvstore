@@ -187,11 +187,11 @@ public final class Builder {
 		}
 		
 		// Add the response code
-		buffer[index++] = data[uniqueID.length + 1 + 8];
+		buffer[index++] = data[25];
 		
 		// If there is a value length, continue
 		if (VL > 0) {
-			for (int i = uniqueID.length+8+1; i < length; i++) {
+			for (int i = uniqueID.length+9; i < length+9; i++) {
 				buffer[index++] = data[i];
 			}
 		}
