@@ -220,13 +220,15 @@ public final class Builder {
 		// Add response code TODO should this always be success?
 		buffer[index++] = ap.responseCode;
 		
-		// Add value length
-		int valueLength = ap.getValue().length;// Add the value length
-		buffer[index++] = Utils.intToByteArray(valueLength)[0];
-		buffer[index++] = Utils.intToByteArray(valueLength)[1];
+
 		
 		// Add value if get command
 		if(msg.getAppCommand() == Commands.GET) {
+			// Add value length
+			int valueLength = ap.getValue().length;// Add the value length
+			buffer[index++] = Utils.intToByteArray(valueLength)[0];
+			buffer[index++] = Utils.intToByteArray(valueLength)[1];
+			
 			byte[] value = ap.getValue();
 			for(int i = 0; i < ap.getValue().length; i++){
 				buffer[index++] = value[i];
