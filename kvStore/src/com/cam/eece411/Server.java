@@ -74,7 +74,7 @@ public class Server {
 			msg = socket.receive();
 			cmd = msg.getCommand();
 			log.info(Utils.byteCmdToString(cmd) + " received from " + msg.getReturnAddress() + ":" + msg.getReturnPort());
-
+			//log.info("Message received: " + Utils.bytesToHexString(msg.getData()));
 			// TODO: Send back an acknowledgement?
 
 			// React to message
