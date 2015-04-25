@@ -23,6 +23,10 @@ public class Message {
 	private byte[] srcPortBytes;
 	private byte[] srcAddr;
 
+	private int returnPort;
+	private byte[] returnAddress;
+	private byte[] returnPortBytes;
+	
 	private int nid;	// node ID
 	private byte[] nAddr;	// node address
 	private int numNodes;
@@ -77,9 +81,9 @@ public class Message {
 		// In the echoed case, get the address info about the source of the request
 		if (cmd == Commands.ECHOED) {
 			// Get the source of the app-level command
-			srcAddr = Arrays.copyOfRange(bytes, index, index+4); index += 4;
-			srcPortBytes = Arrays.copyOfRange(bytes, index, index+4); index += 4;
-			srcPort = Utils.byteArrayToInt(srcPortBytes);
+			returnAddress = Arrays.copyOfRange(bytes, index, index+4); index += 4;
+			returnPortBytes = Arrays.copyOfRange(bytes, index, index+4); index += 4;
+			returnPort = Utils.byteArrayToInt(returnPortBytes);
 
 			// Get the KVS command being echoed
 			appCmd = bytes[index++];
@@ -136,7 +140,18 @@ public class Message {
 	public int getReturnPort() {
 		return this.srcPort;
 	}
+	
+	public int getEchoReturnPort() {
+		return this.returnPort;
+	}
 
+	public InetAddress getEchoReturnAddress() {
+		try { return InetAddress.getByAddress(this.returnAddress); }
+		catch (UnknownHostException e) { log.log(Level.SEVERE, e.toString(), e); }
+		
+		return null;
+	}
+	
 	public InetAddress getReturnAddress() {
 		try { return InetAddress.getByAddress(this.srcAddr); }
 		catch (UnknownHostException e) { log.log(Level.SEVERE, e.toString(), e); }
