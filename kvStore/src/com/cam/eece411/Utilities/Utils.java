@@ -187,6 +187,7 @@ public final class Utils {
 			case Commands.IS_DEAD: 		string = "IS-DEAD"; break;
 			case Commands.JOIN_RESPONSE:	string = "JOIN-RESPONSE"; break;
 			case Commands.REP_PUT:	string = "REPLICATION-PUT"; break;
+			case Commands.ECHO_RETURN: string = "ECHO-RETURN"; break;
 		}
 		return string;
 	}
