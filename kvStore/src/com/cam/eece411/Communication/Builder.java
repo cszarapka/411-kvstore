@@ -246,7 +246,7 @@ public final class Builder {
 
 		// Add rest of app response
 		byte[] bytes = ap.buffer;
-		for (int i = uniqueID.length+1+8; i < length; i++) {
+		for (int i = uniqueID.length; i < length; i++) {
 			buffer[index++] = bytes[i];
 		}
 
