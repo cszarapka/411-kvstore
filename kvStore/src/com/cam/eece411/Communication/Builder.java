@@ -179,7 +179,6 @@ public final class Builder {
 	 * @return		byte array of the message<br>
 	 */
 	public static byte[] echo_return(Message msg){
-
 		byte[] buffer;
 		byte[] uniqueID = msg.getUID();
 		byte[] data = msg.getData();
