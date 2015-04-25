@@ -236,6 +236,7 @@ public final class Builder {
 			buffer[index++] = Utils.intToByteArray(valueLength)[1];
 			
 			byte[] value = ap.getValue();
+			log.info("Value is " + Utils.bytesToHexString(value));
 			for(int i = 0; i < ap.getValue().length; i++){
 				buffer[index++] = value[i];
 			}

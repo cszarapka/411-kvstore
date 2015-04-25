@@ -1,1 +1,1 @@
-netapp7.cs.kookmin.ac.kr:7010
+pl2.cs.yale.edu:7010

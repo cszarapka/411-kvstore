@@ -1,5 +1,5 @@
-netapp7.cs.kookmin.ac.kr:7010
-planetlab4.postel.org:7010
+pl2.cs.yale.edu:7010
+planetlab-01.bu.edu:7010
 planetlab3.williams.edu:7010
 planetlab1.cs.ucla.edu:7010
 planetlab1.cs.uoregon.edu:7010
