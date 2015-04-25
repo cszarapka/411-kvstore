@@ -187,13 +187,14 @@ public final class Builder {
 		}
 		
 		// Add the response code
-		buffer[index++] = data[uniqueID.length + 1 + 8];
+		buffer[index++] = data[25];
 		
 		log.info("Message Length: " + length + "\n" + "Value Length: " + VL + "\nValue: " );
 		
 		// If there is a value length, continue
 		if (VL > 0) {
 			for (int i = uniqueID.length + 1 + 8 + 1; i < length + 1 + 8 + 1 - 1; i++) {
+
 				buffer[index++] = data[i];
 			}
 		}
