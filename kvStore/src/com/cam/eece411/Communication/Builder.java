@@ -209,17 +209,16 @@ public final class Builder {
 		int length = 0;
 		int index = 0;
 
-
 		//Determine the length of the message based on the command
 		if(msg.getAppCommand() == Commands.GET){
-			length = uniqueID.length + 9 + 1 + 2 + ap.getValue().length;
+			length = uniqueID.length + 1 + 8 + 1 + 2 + ap.getValue().length;
 		} else {
-			length = uniqueID.length + 9 + 1;
+			length = uniqueID.length + 1 + 8 + 1;
 		}
 		buffer = new byte[length];
 
-		
 		//Assemble the buffer
+		
 		// Add the Unique ID
 		for (int i = 0; i < uniqueID.length; i++) {
 			buffer[index++] = uniqueID[i];
@@ -241,25 +240,11 @@ public final class Builder {
 		buffer[index++] = originPort[2];
 		buffer[index++] = originPort[3];
 
-		// Add response code TODO should this always be success?
-		buffer[index++] = ap.responseCode;
-
-
-
-		// Add value if get command
-		if(msg.getAppCommand() == Commands.GET) {
-			// Add value length
-			int valueLength = ap.getValue().length;// Add the value length
-			buffer[index++] = Utils.intToByteArray(valueLength)[0];
-			buffer[index++] = Utils.intToByteArray(valueLength)[1];
-
-			byte[] value = ap.getValue();
-			log.info("Value is " + Utils.bytesToHexString(value));
-			for(int i = 0; i < ap.getValue().length; i++){
-				buffer[index++] = value[i];
-			}
+		// Add rest of app response
+		byte[] bytes = ap.buffer;
+		for (int i = uniqueID.length+1+8; i < length; i++) {
+			buffer[index++] = bytes[i];
 		}
-
 
 		return buffer;
 	}
