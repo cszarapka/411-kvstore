@@ -167,8 +167,9 @@ public final class Builder {
 		for(int i = 25; i < data.length; i++) {
 			buffer[index++] = data[i];
 		}
-		
+		//log.info("sending message: " + Utils.bytesToHexString(buffer));
 		return buffer;
+		
 	}
 	
 	
@@ -211,7 +212,7 @@ public final class Builder {
 		}
 
 		// Add the port
-		byte[] originPort = Utils.intToByteArray(msg.getReturnPort());
+		byte[] originPort = Utils.intToByteArray(msg.getEchoReturnPort());
 		buffer[index++] = originPort[0];
 		buffer[index++] = originPort[1];
 		buffer[index++] = originPort[2];
