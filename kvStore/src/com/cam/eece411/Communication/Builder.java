@@ -215,9 +215,9 @@ public final class Builder {
 
 		//Determine the length of the message based on the command
 		if(msg.getAppCommand() == Commands.GET){
-			length = uniqueID.length + 8 + 1 + 2 + ap.getValue().length;
+			length = uniqueID.length + 1 + 8 + 1 + 2 + ap.getValue().length;
 		} else {
-			length = uniqueID.length + 8 + 1;
+			length = uniqueID.length + 1 + 8 + 1;
 		}
 		buffer = new byte[length];
 
