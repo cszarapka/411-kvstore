@@ -149,15 +149,26 @@ public final class Builder {
 		return buffer;
 	}
 	
+<<<<<<< HEAD
 	public static byte[] echoedResponseToClient(Message msg) {
 		//takes a message with the echoedResponse command 
 		//and builds a buffer to send to original requester
+=======
+	/**
+	 * Builds an echo response app-layer message.
+	 * @param msg	the response to echo
+	 * @param responseCode	Success or fail of echo'd command, such as 
+	 * @return		byte array of the message<br>
+	 */
+	public static byte[] echo_return(Message msg){
+>>>>>>> origin/development
 		byte[] buffer;
 		byte[] uniqueID = msg.getUID();
 		byte[] data = msg.getData();
 		int length = 0;
 		int index = 0;
 		
+<<<<<<< HEAD
 		length = msg.getData().length;
 		buffer = new byte[length];
 		for(int i = 0; i < 16; i++) {
@@ -169,6 +180,58 @@ public final class Builder {
 		}
 		
 		return buffer;
+=======
+		//Determine the length of the message based on the command
+		if(msg.getCommand() == Commands.GET){
+			length = uniqueID.length + 9 + 1 + 2 + msg.getValueLength();
+		} else {
+			length = uniqueID.length + 9 + 1;
+		}
+		buffer = new byte[length];
+		
+		
+		//Assemble the buffer
+		// Add the Unique ID
+		for (int i = 0; i < uniqueID.length; i++) {
+			buffer[index++] = uniqueID[i];
+		}
+		
+		// Add the command		
+		buffer[index++] = Commands.ECHO_RETURN;
+		
+		// Add the IP (4 byte array)
+		byte[] originIP = msg.getReturnAddress().getAddress();
+		for (int i = 0; i < 4; i++) {
+			buffer[index++] = originIP[i];
+		}
+
+		// Add the port
+		byte[] originPort = Utils.intToByteArray(msg.getReturnPort());
+		buffer[index++] = originPort[0];
+		buffer[index++] = originPort[1];
+		buffer[index++] = originPort[2];
+		buffer[index++] = originPort[3];
+		
+		// Add response code TODO should this always be success?
+		buffer[index++] = Commands.SUCCESS;
+		
+		// Add value length
+		short valueLength = msg.getValueLength();// Add the value length
+		buffer[index++] = Utils.intToByteArray(valueLength)[0];
+		buffer[index++] = Utils.intToByteArray(valueLength)[1];
+		
+		// Add value if get command
+		if(msg.getCommand() == Commands.GET) {
+			byte[] value = msg.getValue();
+			for(int i = 0; i < msg.getValueLength(); i++){
+				buffer[index++] = value[i];
+			}
+		}
+		
+				
+		return buffer;
+		
+>>>>>>> origin/development
 	}
 
 	/**

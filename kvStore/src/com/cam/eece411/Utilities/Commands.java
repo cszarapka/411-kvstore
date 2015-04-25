@@ -39,6 +39,11 @@ public class Commands {
 	 * A replicated put command...
 	 */
 	public static final byte REP_PUT	= 21;
+	
+	/**
+	 * Returned echo response
+	 */
+	public static final byte ECHO_RETURN = 26;
 
 	/*
 	 * DHT Commands
