@@ -8,8 +8,10 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.cam.eece411.Communication.AppResponse;
 import com.cam.eece411.Communication.Builder;
@@ -29,7 +31,7 @@ import com.cam.eece411.Utilities.Utils;
  *
  */
 public class Server {
-	private static final Logger log = Logger.getLogger(Server.class.getName());
+	private static final Logger log = LogManager.getLogger(Server.class.getName());
 
 	public static Node me;
 	public static Integer state;
@@ -103,7 +105,7 @@ public class Server {
 	public static void setup() {
 		// Instantiate ourself as a node
 		try { me = new Node(Utils.MAX_NODE_NUMBER, InetAddress.getLocalHost()); }
-		catch (UnknownHostException e) { log.log(Level.SEVERE, e.toString(), e); }
+		catch (UnknownHostException e) { log.log(Level.FATAL, e.toString(), e); }
 
 		// Initially our state will always be OUT_OF_TABLE
 		state = Utils.OUT_OF_DHT;
@@ -127,11 +129,11 @@ public class Server {
 				nodes.add(currentLine.trim());
 			}
 		} catch (IOException e) {
-			log.log(Level.SEVERE, e.toString(), e);
+			log.log(Level.FATAL, e.toString(), e);
 		} finally {
 			// Cloase the file if it was opened
 			try { if (br != null) br.close(); }
-			catch (IOException e) { log.log(Level.SEVERE, e.toString(), e); }
+			catch (IOException e) { log.log(Level.FATAL, e.toString(), e); }
 			log.info("Finished reading from " + file);
 		}
 	}
@@ -182,7 +184,7 @@ public class Server {
 			try {
 				addr = InetAddress.getByName(nodes.get(random));
 			} catch (UnknownHostException e) {
-				log.log(Level.SEVERE, e.toString(), e);
+				log.log(Level.FATAL, e.toString(), e);
 			}
 			socket.send(Builder.joinRequest(), addr, Utils.MAIN_PORT);
 			log.info("JOIN-REQUEST sent to " + addr.getHostName() + ":" + Utils.MAIN_PORT);
