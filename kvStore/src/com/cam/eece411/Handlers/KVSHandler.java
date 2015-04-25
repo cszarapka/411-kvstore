@@ -130,7 +130,7 @@ public class KVSHandler implements Runnable {
 			// Update/add the key-value pair into our store
 			responseCode = KVS.put(msg.getKey(), msg.getValue());
 		}
-		log.info("[REPLICATED PUT]: received from " + msg.getNodeAddress());
+		log.info("[REPLICATED PUT]: received from " + msg.getReturnAddress());
 		log.info("[REPLICATED PUT]: response code: " + responseCode);
 	}
 	
