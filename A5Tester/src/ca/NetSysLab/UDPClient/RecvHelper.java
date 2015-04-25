@@ -32,7 +32,7 @@ public class RecvHelper implements Runnable {
       try {
         DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
         this.clientSocket.receive(receivePacket);        
-        if (DEBUG) System.out.println("RECV: " + DatatypeConverter.printHexBinary(receiveData));
+		if (DEBUG) System.out.println("RECV: " + DatatypeConverter.printHexBinary(receiveData));
       } catch (IOException e) { continue; }
       ByteBuffer bb = ByteBuffer.wrap(receiveData);
       try {

@@ -43,7 +43,9 @@ public class KVSHandler implements Runnable {
 			return;
 		}
 		
-		if(msg.getCommand() == Commands.ECHO_RETURN) {
+		if(msg.getCommand() == Commands.ECHO_RETURN) { //
+			log.info("Sending message: " + Utils.bytesToHexString(Builder.echoedResponseToClient(msg)));
+			byte[] x = {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
 			socket.send(Builder.echoedResponseToClient(msg), msg.getEchoReturnAddress(), msg.getEchoReturnPort());
 			log.info("Echo_Return received and sent to " +  msg.getEchoReturnAddress() + ":" + msg.getEchoReturnPort());
 			return;
@@ -60,6 +62,7 @@ public class KVSHandler implements Runnable {
 			// If I'm responsible for the command
 			if (Server.me.nodeID == servicingNode.nodeID) {
 				// Respond to the command appropriately
+				
 				switch (msg.getCommand()) {
 					case Commands.PUT: send(PUTResponse()); break;
 					case Commands.GET: send(GETResponse()); break;
@@ -67,9 +70,10 @@ public class KVSHandler implements Runnable {
 				}
 			} else {
 				// Send it to the node who is responsible for it
-				socket.send(Builder.echo(msg), servicingNode.addr, Utils.MAIN_PORT);
+				UDPSocket newSocket = new UDPSocket(Utils.KVS_PORT);
+				newSocket.send(Builder.echo(msg), servicingNode.addr, Utils.MAIN_PORT);
 				log.info("ECHOed " + Utils.byteCmdToString(msg.getCommand()) + " sent to " + servicingNode.nodeID + "@" + servicingNode.addr.getHostName() + ":" + Utils.MAIN_PORT);
-				
+				newSocket.close();
 			}
 		}
 		//socket.close();
@@ -147,6 +151,7 @@ public class KVSHandler implements Runnable {
 	
 	private void send(AppResponse r) {
 		socket.send(r.buffer, r.ipToSendTo, r.portToSendTo);
+		log.info("Sending message: " + Utils.bytesToHexString(r.buffer));
 		log.info("Response: " + Utils.byteCodeToString(r.responseCode) + " sent to " + r.ipToSendTo.getHostName() + ":" + r.portToSendTo);
 	}
 }

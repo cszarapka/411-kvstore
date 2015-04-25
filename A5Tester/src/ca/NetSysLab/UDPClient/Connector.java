@@ -116,7 +116,7 @@ public class Connector {
     long temp = bb.getLong();
     byte[] receiveData = rh.request(temp);
 
-    if (DEBUG) System.out.println("RECV: " + DatatypeConverter.printHexBinary(receiveData));
+    if (DEBUG) System.out.println("RECV2: " + DatatypeConverter.printHexBinary(receiveData));
     return receiveData;
   }
   

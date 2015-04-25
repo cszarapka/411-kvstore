@@ -156,17 +156,22 @@ public final class Builder {
 		byte[] buffer;
 		byte[] uniqueID = msg.getUID();
 		byte[] data = msg.getData();
-		int length = 0;
+		int length = 17;
 		int index = 0;
-		length = msg.getData().length;
+		byte[] valueLength = new byte[2];
+		valueLength[0] = msg.getData()[26];
+		valueLength[1] = msg.getData()[27];
+		length += Utils.byteArrayToShort(valueLength);
+		log.info("Message Length: " + length);
 		buffer = new byte[length];
 		for(int i = 0; i < 16; i++) {
 			buffer[index++] = data[i];
 		}
 		
-		for(int i = 25; i < data.length; i++) {
+		for(int i = 25; i < length + 9; i++) {
 			buffer[index++] = data[i];
 		}
+		buffer[16] = Commands.SUCCESS;
 		//log.info("sending message: " + Utils.bytesToHexString(buffer));
 		return buffer;
 		
