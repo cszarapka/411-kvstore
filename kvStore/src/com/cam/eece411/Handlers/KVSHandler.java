@@ -35,6 +35,10 @@ public class KVSHandler implements Runnable {
 			return;
 		}
 		
+		if(msg.getCommand() == Commands.ECHOED) {
+			send(ECHOEDResponse());
+		}
+		
 		// Find the node who is responsible for servicing this command
 		Node servicingNode = DHT.findNodeFor(msg.getKey());
 		
@@ -61,6 +65,19 @@ public class KVSHandler implements Runnable {
 		//socket.close();
 	}
 
+	private AppResponse ECHOEDResponse() {
+		int command = msg.getData()[26];
+		if(command == Commands.GET) {
+			return GETResponse();
+		} else if(command == Commands.PUT) {
+			return PUTResponse();
+		} else if(command == Commands.REMOVE) {
+			return REMOVEResponse();
+		} else {
+			return null;
+		}
+	}
+	
 	private AppResponse PUTResponse() {
 		byte responseCode;
 		String output;
