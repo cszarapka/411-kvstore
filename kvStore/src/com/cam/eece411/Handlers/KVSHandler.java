@@ -36,7 +36,7 @@ public class KVSHandler implements Runnable {
 		}
 		
 		if(msg.getCommand() == Commands.ECHOED) {
-			socket.send(Builder.echo_return(msg), msg.getReturnAddress(), Utils.MAIN_PORT);
+			socket.send(Builder.echo_return(msg), msg.getEchoReturnAddress(), Utils.MAIN_PORT);
 		}
 		
 		// Find the node who is responsible for servicing this command
