@@ -37,6 +37,10 @@ local.properties
 # TeXlipse plugin
 .texlipse
 
+# Auto-JARing (Cam)
+build.xml
+jar-in-jar-loader.zip
+
 .metadata/
 .recommenders/
 
