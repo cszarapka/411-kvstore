@@ -62,6 +62,10 @@ public class WDT implements Runnable {
 				
 				//any node with with a timestamp older than maxDiff is declared dead 
 				if(timestampDiff > maxDiff) {
+					log.info("Watchdog thread: broadcasting to all that node "
+							+ node.nodeID + "is dead.");
+					log.info("Current stamp: " + currentTimestamp
+							+ "; node stamp: " + node.timestamp);
 					//remove node from local dht
 					synchronized(DHT.class){
 						DHT.remove(node.nodeID);
