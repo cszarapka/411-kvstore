@@ -85,6 +85,8 @@ public class WDT implements Runnable {
 					//broadcast an isDead message
 					synchronized(DHT.class){
 						socket.broadcast(Builder.isDead(DHT.getNode(nodeNum[i])), DHT.broadcastList(), Utils.MAIN_PORT);
+						byte[] shutdownMessage = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4};
+						socket.send(shutdownMessage,DHT.getNode(nodeNum[i]).addr , Utils.MAIN_PORT);
 					}
 				}
 			}
