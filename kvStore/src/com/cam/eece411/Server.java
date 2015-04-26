@@ -203,11 +203,12 @@ public class Server {
 		if (!me.name.equals(nodes.get(random))) {
 			try {
 				addr = InetAddress.getByName(nodes.get(random));
+				socket.send(Builder.joinRequest(), addr, Utils.MAIN_PORT);
+				log.info("JOIN-REQUEST sent to " + addr.getHostName() + ":" + Utils.MAIN_PORT);
 			} catch (UnknownHostException e) {
 				log.log(Level.SEVERE, e.toString(), e);
 			}
-			socket.send(Builder.joinRequest(), addr, Utils.MAIN_PORT);
-			log.info("JOIN-REQUEST sent to " + addr.getHostName() + ":" + Utils.MAIN_PORT);
+			
 		}
 	}
 	

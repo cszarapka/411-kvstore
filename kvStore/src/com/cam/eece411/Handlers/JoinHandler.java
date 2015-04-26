@@ -38,6 +38,8 @@ public class JoinHandler implements Runnable {
 		// and our next node
 		if(myID == nextNodeID) {
 			offeredNodeID = (myID - (maxNodeCount / 2) + maxNodeCount) % maxNodeCount;
+		} else if(nextNodeID == myID - 1 || (myID == 0 && nextNodeID == 255)){
+			return;
 		} else {
 			offeredNodeID = (myID - (((myID - nextNodeID + maxNodeCount) % maxNodeCount) / 2) + maxNodeCount) % maxNodeCount;
 		}
