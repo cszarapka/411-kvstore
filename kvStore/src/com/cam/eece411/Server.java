@@ -162,6 +162,7 @@ public class Server {
 				// Add ourself to our DHT
 				DHT.add(me);
 				
+
 				//give each node a timestamp
 				for (Node node : DHT.nodes()) {
 					node.updateTimestamp();
