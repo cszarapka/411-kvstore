@@ -53,19 +53,27 @@ public class UpdateHandler implements Runnable {
 		log.setLevel(Protocols.LOGGER_LEVEL);
 		if (nodeIsInDHT()) {
 			// update the timestamp
-			DHT.getNode(msg.getNodeID()).updateTimestamp();
+			synchronized(DHT.class){
+				DHT.getNode(msg.getNodeID()).updateTimestamp();
+			}
 			log.info("Node " + msg.getNodeID()
 					+ " is already in the local DHT.");
 		} else {
-			DHT.add(new Node(msg.getNodeID(), msg.getNodeAddress()));
-			DHT.getNode(msg.getNodeID()).updateTimestamp();
+			synchronized(DHT.class){
+				DHT.add(new Node(msg.getNodeID(), msg.getNodeAddress()));
+				DHT.getNode(msg.getNodeID()).updateTimestamp();
+			}
 			log.info("Node " + msg.getNodeID() + " at "
 					+ msg.getNodeAddress().getHostName()
 					+ " was added to the local DHT.");
-
+			
+			int prevNodeID;
+			int nextNodeID;
 			// get this node's neighbours
-			int prevNodeID = DHT.getPrevNodeOf(Server.me).nodeID;
-			int nextNodeID = DHT.getNextNodeOf(Server.me).nodeID;
+			synchronized(DHT.class){
+				prevNodeID = DHT.getPrevNodeOf(Server.me).nodeID;
+				nextNodeID = DHT.getNextNodeOf(Server.me).nodeID;
+			}
 			int newNodeID = msg.getNodeID();
 
 			// check if the new node is a neighbour
