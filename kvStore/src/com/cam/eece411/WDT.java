@@ -69,10 +69,10 @@ public class WDT implements Runnable {
 					if(node.nodeID != DHT.getNextNodeOf(Server.me).nodeID 
 							&& node.nodeID != DHT.getPrevNodeOf(Server.me).nodeID){
 						// if not our responsibility, update timestamp
-						nodeTimestamp[i] = currentTimestamp;
-					} else {
-						nodeTimestamp[i] = node.timestamp;
+						node.updateTimestamp();
 					}
+
+					nodeTimestamp[i] = node.timestamp;
 					i++;
 				}
 			}
