@@ -1,5 +1,8 @@
 package com.cam.eece411.Utilities;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  * The constants used for commands at the app-layer and 
  * the node-layer of our system, and response codes.
@@ -54,4 +57,6 @@ public class Protocols {
 	public static final int IN_TABLE = 1;
 	public static final int LEFT_TABLE = 2;
 	public static final int HANDLING_JOIN = 3;
+	
+	public static final Level LOGGER_LEVEL = java.util.logging.Level.OFF;
 }

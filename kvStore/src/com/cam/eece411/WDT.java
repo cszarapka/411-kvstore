@@ -8,6 +8,7 @@ import com.cam.eece411.Communication.Builder;
 import com.cam.eece411.Communication.UDPSocket;
 import com.cam.eece411.Structures.DHT;
 import com.cam.eece411.Structures.Node;
+import com.cam.eece411.Utilities.Protocols;
 import com.cam.eece411.Utilities.Utils;
 
 /**
@@ -27,6 +28,7 @@ public class WDT implements Runnable {
 	}
 
 	public void run() {
+		log.setLevel(Protocols.LOGGER_LEVEL);
 		log.info("Watchdog Thread launched");
 		while (true) {
 			// Wait for a bit
