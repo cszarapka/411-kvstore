@@ -58,5 +58,5 @@ public class Protocols {
 	public static final int LEFT_TABLE = 2;
 	public static final int HANDLING_JOIN = 3;
 	
-	public static final Level LOGGER_LEVEL = java.util.logging.Level.OFF;
+	public static Level LOGGER_LEVEL = java.util.logging.Level.OFF;
 }

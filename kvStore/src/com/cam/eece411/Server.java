@@ -22,6 +22,7 @@ import com.cam.eece411.Handlers.UpdateHandler;
 import com.cam.eece411.Structures.DHT;
 import com.cam.eece411.Structures.Node;
 import com.cam.eece411.Utilities.Commands;
+import com.cam.eece411.Utilities.Protocols;
 import com.cam.eece411.Utilities.Utils;
 
 /**
@@ -31,6 +32,7 @@ import com.cam.eece411.Utilities.Utils;
  */
 public class Server {
 	private static final Logger log = Logger.getLogger(Server.class.getName());
+	
 
 	public static Node me;
 	public static Integer state;
@@ -38,6 +40,7 @@ public class Server {
 	public static List<String> nodes = null;
 
 	public static void main(String[] args) throws SocketException, IOException, InterruptedException {
+		
 		log.info("And so it begins.");
 
 		// Instantiate ourself as a node and set our state
@@ -51,13 +54,18 @@ public class Server {
 		byte cmd;
 
 		// Check if we were given the CREATE-DHT command
-		if (args.length == 1) {
+		if (args.length >= 1) {
 			log.info(args[0]);
 			if (args[0].equalsIgnoreCase("create")) {
 				createDHT();
 			}
+			if(args.length == 2) {
+				if(args[1].equalsIgnoreCase("log")) {
+					Protocols.LOGGER_LEVEL = java.util.logging.Level.ALL;
+				}
+			}
 		}
-
+		log.setLevel(Protocols.LOGGER_LEVEL);
 		// Try to join the DHT
 		readFrom(Utils.NODE_LIST);
 		while (state == Utils.OUT_OF_DHT) {
