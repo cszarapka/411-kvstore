@@ -39,6 +39,11 @@ public class Commands {
 	 * A replicated put command...
 	 */
 	public static final byte REP_PUT	= 21;
+	
+	/**
+	 * Returned echo response
+	 */
+	public static final byte ECHO_RETURN = 26;
 
 	/*
 	 * DHT Commands
@@ -89,8 +94,8 @@ public class Commands {
 	 */
 
 	public static boolean isKVSCommand(byte command) {
-		if (command == GET || command == PUT ||
-				command == REMOVE || command == ECHOED) {
+		if (command == GET || command == PUT || command == REMOVE ||
+			command == ECHOED || command == REP_PUT || command == ECHO_RETURN) {
 			return true;
 		}
 		return false;

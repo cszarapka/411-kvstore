@@ -17,7 +17,7 @@ public final class Utils {
 	private Utils() {}
 
 	// filenames of node lists
-	public static final String NODE_LIST = "/home/ubc_eece411_5/repTestNodes.txt";
+	public static final String NODE_LIST = "repTestNodes.txt";
 
 	/*
 	 * Port Numbers
@@ -50,10 +50,16 @@ public final class Utils {
 	 * The WDT's port for sending messages
 	 */
 	public static final int WDT_PORT 	= 7050;
+	
+	/**
+	 * The UpdateHandler's port for sending isAlive replication PUTs
+	 */
 
+	public static final int REP_PORT	= 7060;
+	
 	// Timeout values (msec)
 	public static final int JOIN_TIMEOUT = 5000;
-	public static final int WDT_TIMEOUT = 500000; // 8 minutes ish
+	public static final int WDT_TIMEOUT = 30000; // 8 minutes ish
 
 	// Max message size
 	public static final int MAX_MSG_SIZE	= 15100;
@@ -181,6 +187,7 @@ public final class Utils {
 			case Commands.IS_DEAD: 		string = "IS-DEAD"; break;
 			case Commands.JOIN_RESPONSE:	string = "JOIN-RESPONSE"; break;
 			case Commands.REP_PUT:	string = "REPLICATION-PUT"; break;
+			case Commands.ECHO_RETURN: string = "ECHO-RETURN"; break;
 		}
 		return string;
 	}

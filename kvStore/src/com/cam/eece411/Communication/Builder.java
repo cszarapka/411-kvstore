@@ -1,11 +1,13 @@
 package com.cam.eece411.Communication;
 
+import java.util.Arrays;
 import java.util.logging.Logger;
 
 import com.cam.eece411.Structures.DHT;
 import com.cam.eece411.Structures.Node;
-import com.cam.eece411.Utilities.Utils;
 import com.cam.eece411.Utilities.Commands;
+import com.cam.eece411.Utilities.Protocols;
+import com.cam.eece411.Utilities.Utils;
 
 /**
  * This class is for building messages to be sent between nodes.
@@ -146,6 +148,130 @@ public final class Builder {
 				buffer[index++] = circleView[i];
 			}
 		}	
+		return buffer;
+	}
+
+
+	/**
+	 * Returns a byte[] buffer of an AppResponse message resulting
+	 * from an echoed TA AppRequest
+	 * @param msg	the app-response from the servicing node
+	 * @return		app-response byte[] to be sent to TA
+	 */
+	public static byte[] echoedResponseToClient(Message msg) {
+		log.setLevel(Protocols.LOGGER_LEVEL);
+		byte[] buffer;					// bytes of the app response to be sent to TA
+		byte[] uniqueID = msg.getUID();	// Unique ID of the echoed app response
+		byte[] data = msg.getData();	// raw byte data of the echoed app response
+		int length = uniqueID.length + 1;
+		short VL = 0;
+		int index = 0;
+		//log.info("message received: " + Utils.bytesToHexString(data));
+		// Determine length of message based on existence of value length
+		log.info("Value length reading these bytes: " + Utils.bytesToHexString(Arrays.copyOfRange(data, uniqueID.length+1+8+1, uniqueID.length+1+8+1+2)));
+		log.info("Byte array to short reads that as: " + Utils.byteArrayToShort(Arrays.copyOfRange(data, uniqueID.length+1+8+1, uniqueID.length+1+8+1+2)));
+		if (Utils.byteArrayToShort(Arrays.copyOfRange(data, uniqueID.length+1+8+1, uniqueID.length+1+8+1+2)) > 0) {
+			VL = Utils.byteArrayToShort(Arrays.copyOfRange(data, uniqueID.length+1+8+1, uniqueID.length+1+8+1+2));
+
+			length = uniqueID.length + 1 + 2 + VL;
+
+			
+
+		} else {
+			length = uniqueID.length + 1;
+		}
+		buffer = new byte[length];
+
+		// Assemble the buffer
+		// Add the unique ID
+		for (int i = 0; i < uniqueID.length; i++) {
+			buffer[index++] = uniqueID[i];
+		}
+		
+		// Add the response code
+		buffer[index++] = data[25];
+		
+		log.info("Message Length: " + length + "\n" + "Value Length: " + VL + "\nValue: " );
+		
+		// If there is a value length, continue
+		if (VL > 0) {
+			for (int i = uniqueID.length + 1 + 8 + 1; i < length + 1 + 8 + 1 - 1; i++) {
+
+				buffer[index++] = data[i];
+			}
+		}
+
+		
+
+		return buffer;
+	}
+
+
+	/**
+	 * Builds an echo response app-layer message.
+	 * @param msg	the response to echo
+	 * @param responseCode	Success or fail of echo'd command, such as 
+	 * @return		byte array of the message<br>
+	 */
+	public static byte[] echo_return(Message msg, AppResponse ap){
+		log.setLevel(Protocols.LOGGER_LEVEL);
+		byte[] buffer;
+		byte[] uniqueID = msg.getUID();
+		byte[] data = msg.getData();
+		int length = 0;
+		int index = 0;
+
+		//Determine the length of the message based on the command
+		if(msg.getAppCommand() == Commands.GET){
+			length = uniqueID.length + 1 + 8 + 1 + 2 + ap.getValue().length;
+		} else {
+			length = uniqueID.length + 1 + 8 + 1;
+		}
+		buffer = new byte[length];
+
+		//Assemble the buffer
+		
+		// Add the Unique ID
+		for (int i = 0; i < uniqueID.length; i++) {
+			buffer[index++] = uniqueID[i];
+		}
+
+		// Add the command		
+		buffer[index++] = Commands.ECHO_RETURN;
+
+		// Add the IP (4 byte array)
+		byte[] originIP = msg.getEchoReturnAddress().getAddress();
+		for (int i = 0; i < 4; i++) {
+			buffer[index++] = originIP[i];
+		}
+
+		// Add the port
+		byte[] originPort = Utils.intToByteArray(msg.getEchoReturnPort());
+		buffer[index++] = originPort[0];
+		buffer[index++] = originPort[1];
+		buffer[index++] = originPort[2];
+		buffer[index++] = originPort[3];
+
+
+		// Add response code TODO should this always be success?
+		buffer[index++] = ap.responseCode;
+
+
+
+		// Add value if get command
+		if(msg.getAppCommand() == Commands.GET) {
+			// Add value length
+			int valueLength = ap.getValue().length;// Add the value length
+			buffer[index++] = Utils.intToByteArray(valueLength)[0];
+			buffer[index++] = Utils.intToByteArray(valueLength)[1];
+
+			byte[] value = ap.getValue();
+			log.info("Value is " + Utils.bytesToHexString(value));
+			for(int i = 0; i < ap.getValue().length; i++){
+				buffer[index++] = value[i];
+			}
+		}
+
 		return buffer;
 	}
 

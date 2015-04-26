@@ -16,6 +16,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import com.cam.eece411.Utilities.HashFunction;
+import com.cam.eece411.Utilities.Protocols;
 import com.cam.eece411.Utilities.Utils;
 
 /**
@@ -39,6 +40,7 @@ public class DHT {
 	 * @param node	the node to add to the circle
 	 */
 	public static void add(Node node) {
+		log.setLevel(Protocols.LOGGER_LEVEL);
 		circle.put(node.nodeID, node);
 		// Print out the nodes in the circle
 		log.info("Circle contents after ADD(" + node.nodeID + ")\n" + toText());
@@ -49,6 +51,7 @@ public class DHT {
 	 * @param nodes	the nodes to add to the circle
 	 */
 	public static void add(byte[] nodes)  {
+		log.setLevel(Protocols.LOGGER_LEVEL);
 		int index = 0;
 		while (index < nodes.length) {
 			try {
@@ -66,6 +69,7 @@ public class DHT {
 	 * @param nodeID	the ID of the node to remove
 	 */
 	public static Node remove(int nodeID) {
+		log.setLevel(Protocols.LOGGER_LEVEL);
 		Node removedNode = circle.remove(nodeID);
 		if (removedNode == null) {
 			log.info("Node " + nodeID + " was not here to remove");

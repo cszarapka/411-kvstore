@@ -9,6 +9,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import com.cam.eece411.Communication.AppResponse;
@@ -21,6 +22,7 @@ import com.cam.eece411.Handlers.UpdateHandler;
 import com.cam.eece411.Structures.DHT;
 import com.cam.eece411.Structures.Node;
 import com.cam.eece411.Utilities.Commands;
+import com.cam.eece411.Utilities.Protocols;
 import com.cam.eece411.Utilities.Utils;
 
 /**
@@ -30,13 +32,18 @@ import com.cam.eece411.Utilities.Utils;
  */
 public class Server {
 	private static final Logger log = Logger.getLogger(Server.class.getName());
+	
 
 	public static Node me;
 	public static Integer state;
 	public static UDPSocket socket;
+	public static UDPSocket joinSocket;
+	public static UDPSocket repSocket;
+	public static UDPSocket updateSocket;
 	public static List<String> nodes = null;
 
-	public static void main(String[] args) throws SocketException, IOException {
+	public static void main(String[] args) throws SocketException, IOException, InterruptedException {
+		
 		log.info("And so it begins.");
 
 		// Instantiate ourself as a node and set our state
@@ -44,19 +51,27 @@ public class Server {
 
 		// Setup the main listening socket
 		socket = new UDPSocket(Utils.MAIN_PORT);
+		joinSocket = new UDPSocket(Utils.JOIN_PORT);
+		updateSocket = new UDPSocket(Utils.UPDATE_PORT);
+		repSocket = new UDPSocket(Utils.REP_PORT);
 
 		// Setup some local variables
 		Message msg;
 		byte cmd;
 
 		// Check if we were given the CREATE-DHT command
-		if (args.length == 1) {
+		if (args.length >= 1) {
 			log.info(args[0]);
 			if (args[0].equalsIgnoreCase("create")) {
 				createDHT();
 			}
+			if(args.length == 2) {
+				if(args[1].equalsIgnoreCase("log")) {
+					Protocols.LOGGER_LEVEL = java.util.logging.Level.ALL;
+				}
+			}
 		}
-
+		log.setLevel(Protocols.LOGGER_LEVEL);
 		// Try to join the DHT
 		readFrom(Utils.NODE_LIST);
 		while (state == Utils.OUT_OF_DHT) {
@@ -73,21 +88,22 @@ public class Server {
 			msg = socket.receive();
 			cmd = msg.getCommand();
 			log.info(Utils.byteCmdToString(cmd) + " received from " + msg.getReturnAddress() + ":" + msg.getReturnPort());
-
+			//log.info("Message received: " + Utils.bytesToHexString(msg.getData()));
 			// TODO: Send back an acknowledgement?
 
 			// React to message
 			if (Commands.isKVSCommand(cmd)) {
 				// Launch the KVS Handler thread
-				(new Thread(new KVSHandler(msg))).start();
+				(new Thread(new KVSHandler(msg, socket))).start();
+				
 			}
 			else if (Commands.isJoinMessage(cmd)) {
 				// Launch the Join Handler thread
-				(new Thread(new JoinHandler(msg))).start();
+				(new Thread(new JoinHandler(msg, joinSocket))).start();
 			}
 			else if (Commands.isUpdate(cmd)) {
 				// Launch the Update Handler thread
-				(new Thread(new UpdateHandler(msg))).start();
+				(new Thread(new UpdateHandler(msg, repSocket, updateSocket))).start();
 			}
 			else if (cmd == Commands.SHUTDOWN) {
 				respondToSHUTDOWN(msg);
@@ -156,8 +172,15 @@ public class Server {
 				// Copy the DHT
 				DHT.add(msg.getNodes());
 				
+				
 				// Add ourself to our DHT
 				DHT.add(me);
+				
+
+				//give each node a timestamp
+				for (Node node : DHT.nodes()) {
+					node.updateTimestamp();
+				}
 				
 				// Set our state to IN DHT
 				state = Utils.IN_DHT;

@@ -7,6 +7,7 @@ import com.cam.eece411.Communication.Builder;
 import com.cam.eece411.Communication.Message;
 import com.cam.eece411.Communication.UDPSocket;
 import com.cam.eece411.Structures.DHT;
+import com.cam.eece411.Utilities.Protocols;
 import com.cam.eece411.Utilities.Utils;
 
 public class JoinHandler implements Runnable {
@@ -14,18 +15,20 @@ public class JoinHandler implements Runnable {
 	private Message msg;
 	private UDPSocket socket;
 
-	public JoinHandler(Message msg) {
+	public JoinHandler(Message msg, UDPSocket s) {
 		this.msg = msg;
-		socket = new UDPSocket(Utils.JOIN_PORT);
+		this.socket = s;
 	}
 
-	public void run() {
+	public synchronized void run() {
+		log.setLevel(Protocols.LOGGER_LEVEL);
 		log.info("JoinHandler launched");
 		respondToJOIN_REQUEST();
-		socket.close();
+		//socket.close();
 	}
 
 	private void respondToJOIN_REQUEST() {
+		log.setLevel(Protocols.LOGGER_LEVEL);
 		int myID = Server.me.nodeID;
 		int nextNodeID = DHT.getNextNodeOf(Server.me).nodeID;
 		int maxNodeCount = Utils.MAX_NUMBER_OF_NODES;
@@ -42,5 +45,6 @@ public class JoinHandler implements Runnable {
 		// Respond to the requesting node
 		socket.send(Builder.joinResponse(msg, offeredNodeID), msg.getReturnAddress(), msg.getReturnPort());
 		log.info("JOIN-RESPONSE sent to " + msg.getReturnAddress().getHostName() + ":" + msg.getReturnPort() + " offering node ID: " + offeredNodeID);
+		
 	}
 }

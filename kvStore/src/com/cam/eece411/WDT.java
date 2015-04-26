@@ -1,43 +1,99 @@
 package com.cam.eece411;
 
+import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.cam.eece411.Communication.Builder;
 import com.cam.eece411.Communication.UDPSocket;
 import com.cam.eece411.Structures.DHT;
+import com.cam.eece411.Structures.Node;
+import com.cam.eece411.Utilities.Protocols;
 import com.cam.eece411.Utilities.Utils;
 
 /**
- * The Watchdog Thread - simply broadcasts an IS-ALIVE
- * message every now and then.
+ * The Watchdog Thread - simply broadcasts an IS-ALIVE message every now and
+ * then.
+ * 
  * @author cam
  *
  */
 public class WDT implements Runnable {
 	private static final Logger log = Logger.getLogger(WDT.class.getName());
-	
+
 	private UDPSocket socket;
-	
+
 	public WDT(int port) {
 		socket = new UDPSocket(port);
 	}
 
 	public void run() {
+		log.setLevel(Protocols.LOGGER_LEVEL);
 		log.info("Watchdog Thread launched");
 		while (true) {
 			// Wait for a bit
-			try { Thread.sleep(Utils.WDT_TIMEOUT); }
-			catch (InterruptedException e) { log.log(Level.SEVERE, e.toString(), e); }
-			
+			try {
+				Thread.sleep(Utils.WDT_TIMEOUT);
+			} catch (InterruptedException e) {
+				log.log(Level.SEVERE, e.toString(), e);
+			}
+
 			// Broadcast an IsAlive message
-			socket.broadcast(Builder.isAlive(Server.me), DHT.broadcastList(), Utils.MAIN_PORT);
+			socket.broadcast(Builder.isAlive(Server.me), DHT.broadcastList(),
+					Utils.MAIN_PORT);
+
+			// get current time
+			long currentTimestamp = System.currentTimeMillis() / 1000L;
+
+			//max difference allowed is 2.5*WDT_TIMEOUT / 1000 / 1000 [seconds]
+			int maxDiff = ((Utils.WDT_TIMEOUT * 2500) / 1000) / 1000;
 			
-			// TODO: check all our nodes for some timestamp based on is-alive messages.
-			// TODO: if one of the nodes has a really old timestamp, ping him
-			// TODO: if he doesn't respond, broadcast an IS-DEAD
+			
+			
+			int numNodes;
+			int[] nodeNum;
+			long[] nodeTimestamp;
+			
+			
+			synchronized(DHT.class){
+				numNodes = DHT.getSize();
+				nodeNum = new int[numNodes];
+				nodeTimestamp = new long[numNodes];
+				int i = 0;
+				for(Node node : DHT.nodes()){
+					nodeNum[i] = node.nodeID;
+					nodeTimestamp[i] = node.timestamp;
+					i++;
+				}
+			}
+			
+			//iterate through each node
+			for (int i = 0; i < numNodes; i++) {
+				//find difference between last time the node was updated and the current time
+				long timestampDiff = currentTimestamp - nodeTimestamp[i];
+				
+				// TODO: if one of the nodes has a really old timestamp, ping him <-- needed?
+				
+				//any node with with a timestamp older than maxDiff is declared dead 
+				if(timestampDiff > maxDiff) {
+					log.info("Watchdog thread: broadcasting to all that node "
+							+ nodeNum[i] + "is dead.");
+					log.info("Current stamp: " + currentTimestamp
+							+ "; node stamp: " + nodeTimestamp[i]);
+					//remove node from local dht
+					/*synchronized(DHT.class){
+						DHT.remove(node.nodeID);
+					}*/
+					//broadcast an isDead message
+					synchronized(DHT.class){
+						socket.broadcast(Builder.isDead(DHT.getNode(nodeNum[i])), DHT.broadcastList(), Utils.MAIN_PORT);
+						byte[] shutdownMessage = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4};
+						socket.send(shutdownMessage,DHT.getNode(nodeNum[i]).addr , Utils.MAIN_PORT);
+					}
+				}
+			}
+			
+
 		}
 	}
-	
-	
 }

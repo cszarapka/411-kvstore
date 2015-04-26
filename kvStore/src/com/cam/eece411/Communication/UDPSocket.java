@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.cam.eece411.Utilities.Protocols;
 import com.cam.eece411.Utilities.Utils;
 
 /**
@@ -36,6 +37,7 @@ public class UDPSocket {
 	 * @param port	the port to bind to
 	 */
 	private void setup(int port) {
+		log.setLevel(Protocols.LOGGER_LEVEL);
 		try { socket = new DatagramSocket(port); }
 		catch (SocketException e) { log.log(Level.SEVERE, e.toString(), e); }
 	}
@@ -47,6 +49,7 @@ public class UDPSocket {
 	 * @param destPort	port to send to
 	 */
 	public void send(byte[] sendData, InetAddress destAddr, int destPort) {
+		log.setLevel(Protocols.LOGGER_LEVEL);
 		DatagramPacket packet = new DatagramPacket(sendData, sendData.length, destAddr, destPort);
 		try { socket.send(packet); }
 		catch (IOException e) { log.log(Level.SEVERE, e.toString(), e); }
@@ -59,6 +62,7 @@ public class UDPSocket {
 	 * @param destPort		port to send to
 	 */
 	public void broadcast(byte[] sendData, List<InetAddress> destAddrs, int destPort) {
+		log.setLevel(Protocols.LOGGER_LEVEL);
 		for (int i = 0; i < destAddrs.size(); i++) {
 			DatagramPacket packet = new DatagramPacket(sendData, sendData.length, destAddrs.get(i), destPort);
 			try { socket.send(packet); }
@@ -71,6 +75,7 @@ public class UDPSocket {
 	 * @return	the data received
 	 */
 	public Message receive() {
+		log.setLevel(Protocols.LOGGER_LEVEL);
 		byte[] data = new byte[MAX_SIZE];
 		DatagramPacket packet = new DatagramPacket(data, data.length);
 		
@@ -87,6 +92,7 @@ public class UDPSocket {
 	 * @param msec	value to set the socket timeout to (milliseconds)
 	 */
 	public void setTimeout(int msec) {
+		log.setLevel(Protocols.LOGGER_LEVEL);
 		try { socket.setSoTimeout(msec); }
 		catch (SocketException e) { log.log(Level.SEVERE, e.toString(), e); }
 	}
