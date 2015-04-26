@@ -161,6 +161,8 @@ public class Server {
 				// Add ourself to our DHT
 				DHT.add(me);
 				
+				
+				
 				// Set our state to IN DHT
 				state = Utils.IN_DHT;
 				
