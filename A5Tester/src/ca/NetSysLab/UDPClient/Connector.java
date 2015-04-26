@@ -104,6 +104,7 @@ public class Connector {
     DatagramPacket dpack = null;
     try {
       dpack = new DatagramPacket(pack, pack.length, InetAddress.getByName(testAddy), testPort);
+      if (DEBUG) System.out.println("SENDING TO: " + InetAddress.getByName(testAddy));
     } catch (UnknownHostException e) { e.printStackTrace(); }
 
     if (DEBUG) System.out.println("SEND: " + DatatypeConverter.printHexBinary(pack));
