@@ -39,9 +39,13 @@ public class WDT implements Runnable {
 			}
 
 			// Broadcast an IsAlive message
-			socket.broadcast(Builder.isAlive(Server.me), DHT.broadcastList(),
-					Utils.MAIN_PORT);
-
+			//socket.broadcast(Builder.isAlive(Server.me), DHT.broadcastList(),
+			//		Utils.MAIN_PORT);
+			
+			
+			socket.send(Builder.isAlive(Server.me), DHT.getNextNodeOf(Server.me).addr, Utils.MAIN_PORT);
+			socket.send(Builder.isAlive(Server.me), DHT.getPrevNodeOf(Server.me).addr, Utils.MAIN_PORT);
+			
 			// get current time
 			long currentTimestamp = System.currentTimeMillis() / 1000L;
 
@@ -62,7 +66,13 @@ public class WDT implements Runnable {
 				int i = 0;
 				for(Node node : DHT.nodes()){
 					nodeNum[i] = node.nodeID;
-					nodeTimestamp[i] = node.timestamp;
+					if(node.nodeID != DHT.getNextNodeOf(Server.me).nodeID 
+							&& node.nodeID != DHT.getPrevNodeOf(Server.me).nodeID){
+						// if not our responsibility, update timestamp
+						nodeTimestamp[i] = currentTimestamp;
+					} else {
+						nodeTimestamp[i] = node.timestamp;
+					}
 					i++;
 				}
 			}
@@ -75,7 +85,7 @@ public class WDT implements Runnable {
 				// TODO: if one of the nodes has a really old timestamp, ping him <-- needed?
 				
 				//any node with with a timestamp older than maxDiff is declared dead 
-				if(timestampDiff > maxDiff) {
+				if(timestampDiff > maxDiff ) {
 					log.info("Watchdog thread: broadcasting to all that node "
 							+ nodeNum[i] + "is dead.");
 					log.info("Current stamp: " + currentTimestamp
