@@ -23,12 +23,12 @@ public class UpdateHandler implements Runnable {
 
 	public UpdateHandler(Message msg) {
 		this.msg = msg;
-		updateSocket = new UDPSocket(Utils.UPDATE_PORT);
-		repSocket = new UDPSocket(Utils.REP_PORT);
 	}
 
-	public void run() {
+	public synchronized void run() {
 		log.info("UpdateHandler launched");
+		updateSocket = new UDPSocket(Utils.UPDATE_PORT);
+		repSocket = new UDPSocket(Utils.REP_PORT);
 		switch (msg.getCommand()) {
 		case Commands.IS_ALIVE:
 			try {

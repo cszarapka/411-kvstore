@@ -16,11 +16,11 @@ public class JoinHandler implements Runnable {
 
 	public JoinHandler(Message msg) {
 		this.msg = msg;
-		socket = new UDPSocket(Utils.JOIN_PORT);
 	}
 
-	public void run() {
+	public synchronized void run() {
 		log.info("JoinHandler launched");
+		socket = new UDPSocket(Utils.JOIN_PORT);
 		respondToJOIN_REQUEST();
 		socket.close();
 	}
