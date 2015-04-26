@@ -37,6 +37,9 @@ public class Server {
 	public static Node me;
 	public static Integer state;
 	public static UDPSocket socket;
+	public static UDPSocket joinSocket;
+	public static UDPSocket repSocket;
+	public static UDPSocket updateSocket;
 	public static List<String> nodes = null;
 
 	public static void main(String[] args) throws SocketException, IOException, InterruptedException {
@@ -48,6 +51,9 @@ public class Server {
 
 		// Setup the main listening socket
 		socket = new UDPSocket(Utils.MAIN_PORT);
+		joinSocket = new UDPSocket(Utils.JOIN_PORT);
+		updateSocket = new UDPSocket(Utils.UPDATE_PORT);
+		repSocket = new UDPSocket(Utils.REP_PORT);
 
 		// Setup some local variables
 		Message msg;
@@ -93,11 +99,11 @@ public class Server {
 			}
 			else if (Commands.isJoinMessage(cmd)) {
 				// Launch the Join Handler thread
-				(new Thread(new JoinHandler(msg))).start();
+				(new Thread(new JoinHandler(msg, joinSocket))).start();
 			}
 			else if (Commands.isUpdate(cmd)) {
 				// Launch the Update Handler thread
-				(new Thread(new UpdateHandler(msg))).start();
+				(new Thread(new UpdateHandler(msg, repSocket, updateSocket))).start();
 			}
 			else if (cmd == Commands.SHUTDOWN) {
 				respondToSHUTDOWN(msg);
