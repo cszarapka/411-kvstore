@@ -18,12 +18,13 @@ public class UpdateHandler implements Runnable {
 			.getName());
 
 	private Message msg;
-
-	// private UDPSocket socket;
+	private UDPSocket updateSocket;
+	private UDPSocket repSocket;
 
 	public UpdateHandler(Message msg) {
 		this.msg = msg;
-		// socket = new UDPSocket(Utils.UPDATE_PORT);
+		updateSocket = new UDPSocket(Utils.UPDATE_PORT);
+		repSocket = new UDPSocket(Utils.REP_PORT);
 	}
 
 	public void run() {
@@ -41,6 +42,8 @@ public class UpdateHandler implements Runnable {
 			handleIS_DEAD();
 			break;
 		}
+		updateSocket.close();
+		repSocket.close();
 	}
 
 	private void handleIS_ALIVE() throws InterruptedException {
@@ -75,10 +78,9 @@ public class UpdateHandler implements Runnable {
 		
 		// iterate through all keys
 		for (ByteBuffer key : KVS.getKeys()) {
-			UDPSocket socket = new UDPSocket(Utils.REP_PORT);
 			//if this key is supposed to be on our neighbour then send it
 			if(DHT.findNodeFor(key.array()).nodeID == nodeIDRangeToSend){
-				socket.send(Builder.replicatedPut(msg), DHT.getNode(nodeIDToSendTo).addr, Utils.MAIN_PORT);
+				repSocket.send(Builder.replicatedPut(msg), DHT.getNode(nodeIDToSendTo).addr, Utils.MAIN_PORT);
 				// TODO: Do we need to wait for a response?
 				Thread.sleep(100);
 			}
@@ -97,8 +99,7 @@ public class UpdateHandler implements Runnable {
                 
                 //if this key was the responsibility of the dead node
                 if(DHT.findNodeFor(key.array()).nodeID == msg.getNodeID()){
-                    UDPSocket socket = new UDPSocket(Utils.REP_PORT);
-                    socket.send(Builder.replicatedPut(msg),myPreviousNode.addr, Utils.MAIN_PORT);
+                    repSocket.send(Builder.replicatedPut(msg),myPreviousNode.addr, Utils.MAIN_PORT);
                     // then we need to put it on our previous node for replication.
                     
                 }
