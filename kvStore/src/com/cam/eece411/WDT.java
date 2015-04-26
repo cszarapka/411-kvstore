@@ -1,5 +1,6 @@
 package com.cam.eece411;
 
+import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -41,9 +42,16 @@ public class WDT implements Runnable {
 			long currentTimestamp = System.currentTimeMillis() / 1000L;
 			//max difference allowed is 2.5*WDT_TIMEOUT / 1000 [seconds]
 			int maxDiff = Utils.WDT_TIMEOUT * 2500 / 1000;
+			Collection<Node> nodeList;
+			
+			
+			
+			synchronized(DHT.class){
+				nodeList = DHT.nodes();
+			}
 			
 			//iterate through each node
-			for (Node node : DHT.nodes()) {
+			for (Node node : nodeList) {
 				//find difference between last time the node was updated and the current time
 				long timestampDiff = currentTimestamp - node.timestamp;
 				
@@ -52,8 +60,11 @@ public class WDT implements Runnable {
 				//any node with with a timestamp older than maxDiff is declared dead 
 				if(timestampDiff > maxDiff)
 					//remove node from local dht
-					DHT.remove(node.nodeID);
+					synchronized(DHT.class){
+						DHT.remove(node.nodeID);
+					}
 					//broadcast an isDead message
+					
 					socket.broadcast(Builder.isDead(node), DHT.broadcastList(), Utils.MAIN_PORT);
 		    }
 			
