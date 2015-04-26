@@ -16,12 +16,12 @@ Commands are sent to the system, from any computer, by sending a message to *nod
 Messages (requests) sent to the system must conform to the protocol below. The commands for these operations are shown in the next section: App-Layer Commands.
 
 
-####Put
+####Put Message
 Command | Key       | Value-Length                      | Value
 ------- | --------- | --------------------------------- | -----
 1 byte  | 1 byte    | 2 bytes   | up to 15,000 bytes
 
-####Get and Remove
+####Get and Remove Message
 Command | Key 
 ------- | ---
 1 byte  | 1 byte
@@ -32,11 +32,12 @@ Response Code | Value-Length                | Value
 ------------- | --------------------------- | -----
 1 byte | Integer; 2 bytes; little endian    | up to 15,000 bytes
 
-####Shutdown
+####Shutdown Message
 
 Command |
 ------- |
 1 byte  |
+
 
 
 
@@ -64,30 +65,46 @@ Upon making a request to the system, you will *should* receive a response.
 Our DHT code is made up of 16 files:
 
 ###Main  
-* Server.java         //Main code. Initializes datatypes and tries to join DHT.
-* WDT.java            //WatchDogThread broadcasts isAlive messages to other nodes.
+* Server.java         
+    >Main code. Initializes datatypes and tries to join DHT.
+* WDT.java            
+    >WatchDogThread broadcasts isAlive messages to other nodes.
 
 ###Communication
-* UDPSocket.java      //Creates UDP sockets for communication.
-* Builder.java        //Builds byte array to be sent to other nodes.
-* Message.java        //Converts received byte array into readable message.
-* AppResponse.java    //Builds response to message.
+* UDPSocket.java    
+    >Creates UDP sockets for communication.
+* Builder.java        
+    >Builds byte array to be sent to other nodes.
+* Message.java        
+    >Converts received byte array into readable message.
+* AppResponse.java
+    >Builds response to message.
 
 ###Handlers
-* JoinHandler.java    //Thread handles requests from other nodes to join DHT.
-* KVSHandler.java     //Thread handles forwarded GET and PUT requests.
-* UpdateHandler.java  //Thread handles notifications from nodes regarding status of others.
+* JoinHandler.java    
+    >Thread handles requests from other nodes to join DHT.
+* KVSHandler.java     
+    >Thread handles forwarded GET and PUT requests.
+* UpdateHandler.java  
+    >Thread handles notifications from nodes regarding status of others.
 
 ###Structures 
-* Node.java           //Node class containing host address and local timestamp.
-* DHT.java            //DHT circle containing nodes.
-* KVS.java            //Storage for key/value pair.
+* Node.java           
+    >Node class containing host address and local timestamp.
+* DHT.java           
+    >DHT circle containing nodes.
+* KVS.java            
+    >Storage for key/value pair.
 
 ###Utilities
-* Commands.java       //Determines the type of command being issued.
-* HashFunction.java   //MD5 hash function.
-* Protocols.java      //List of OPcodes and important values used throught execution.
-* Utils.java          //Helper functions for byte level operations.
+* Commands.java       
+    >Determines the type of command being issued.
+* HashFunction.java   
+    >MD5 hash function.
+* Protocols.java      
+    >List of OPcodes and important values used throught execution.
+* Utils.java          
+    >Helper functions for byte level operations.
 
 
 
