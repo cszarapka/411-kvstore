@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 import com.cam.eece411.Structures.DHT;
 import com.cam.eece411.Structures.Node;
 import com.cam.eece411.Utilities.Commands;
+import com.cam.eece411.Utilities.Protocols;
 import com.cam.eece411.Utilities.Utils;
 
 /**
@@ -158,6 +159,7 @@ public final class Builder {
 	 * @return		app-response byte[] to be sent to TA
 	 */
 	public static byte[] echoedResponseToClient(Message msg) {
+		log.setLevel(Protocols.LOGGER_LEVEL);
 		byte[] buffer;					// bytes of the app response to be sent to TA
 		byte[] uniqueID = msg.getUID();	// Unique ID of the echoed app response
 		byte[] data = msg.getData();	// raw byte data of the echoed app response
@@ -212,6 +214,7 @@ public final class Builder {
 	 * @return		byte array of the message<br>
 	 */
 	public static byte[] echo_return(Message msg, AppResponse ap){
+		log.setLevel(Protocols.LOGGER_LEVEL);
 		byte[] buffer;
 		byte[] uniqueID = msg.getUID();
 		byte[] data = msg.getData();

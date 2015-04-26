@@ -11,6 +11,7 @@ import com.cam.eece411.Structures.DHT;
 import com.cam.eece411.Structures.KVS;
 import com.cam.eece411.Structures.Node;
 import com.cam.eece411.Utilities.Commands;
+import com.cam.eece411.Utilities.Protocols;
 import com.cam.eece411.Utilities.Utils;
 
 public class UpdateHandler implements Runnable {
@@ -26,6 +27,7 @@ public class UpdateHandler implements Runnable {
 	}
 
 	public synchronized void run() {
+		log.setLevel(Protocols.LOGGER_LEVEL);
 		log.info("UpdateHandler launched");
 		updateSocket = new UDPSocket(Utils.UPDATE_PORT);
 		repSocket = new UDPSocket(Utils.REP_PORT);
@@ -47,6 +49,7 @@ public class UpdateHandler implements Runnable {
 	}
 
 	private void handleIS_ALIVE() throws InterruptedException {
+		log.setLevel(Protocols.LOGGER_LEVEL);
 		if (nodeIsInDHT()) {
 			// update the timestamp
 			DHT.getNode(msg.getNodeID()).updateTimestamp();
@@ -106,6 +109,7 @@ public class UpdateHandler implements Runnable {
             }
 		}
 		if (DHT.remove(msg.getNodeID()) != null) {
+			log.setLevel(Protocols.LOGGER_LEVEL);
 			// after taking care of that, remove the node from our circle.
 			log.info("Node " + msg.getNodeID() + " at " + msg.getNodeAddress().getHostName() + " was removed from the local DHT.");
 

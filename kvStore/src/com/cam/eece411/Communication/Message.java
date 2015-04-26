@@ -8,6 +8,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.cam.eece411.Utilities.Commands;
+import com.cam.eece411.Utilities.Protocols;
 import com.cam.eece411.Utilities.Utils;
 
 public class Message {
@@ -150,6 +151,7 @@ public class Message {
 	}
 
 	public InetAddress getEchoReturnAddress() {
+		log.setLevel(Protocols.LOGGER_LEVEL);
 		try { return InetAddress.getByAddress(this.returnAddress); }
 		catch (UnknownHostException e) { log.log(Level.SEVERE, e.toString(), e); }
 		
@@ -157,6 +159,7 @@ public class Message {
 	}
 	
 	public InetAddress getReturnAddress() {
+		log.setLevel(Protocols.LOGGER_LEVEL);
 		try { return InetAddress.getByAddress(this.srcAddr); }
 		catch (UnknownHostException e) { log.log(Level.SEVERE, e.toString(), e); }
 		
@@ -168,6 +171,7 @@ public class Message {
 	}
 	
 	public InetAddress getNodeAddress() {
+		log.setLevel(Protocols.LOGGER_LEVEL);
 		try { return InetAddress.getByAddress(this.nAddr); }
 		catch (UnknownHostException e) { log.log(Level.SEVERE, e.toString(), e); }
 		

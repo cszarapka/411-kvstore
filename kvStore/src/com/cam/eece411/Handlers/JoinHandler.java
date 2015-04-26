@@ -7,6 +7,7 @@ import com.cam.eece411.Communication.Builder;
 import com.cam.eece411.Communication.Message;
 import com.cam.eece411.Communication.UDPSocket;
 import com.cam.eece411.Structures.DHT;
+import com.cam.eece411.Utilities.Protocols;
 import com.cam.eece411.Utilities.Utils;
 
 public class JoinHandler implements Runnable {
@@ -19,6 +20,7 @@ public class JoinHandler implements Runnable {
 	}
 
 	public synchronized void run() {
+		log.setLevel(Protocols.LOGGER_LEVEL);
 		log.info("JoinHandler launched");
 		socket = new UDPSocket(Utils.JOIN_PORT);
 		respondToJOIN_REQUEST();
@@ -26,6 +28,7 @@ public class JoinHandler implements Runnable {
 	}
 
 	private void respondToJOIN_REQUEST() {
+		log.setLevel(Protocols.LOGGER_LEVEL);
 		int myID = Server.me.nodeID;
 		int nextNodeID = DHT.getNextNodeOf(Server.me).nodeID;
 		int maxNodeCount = Utils.MAX_NUMBER_OF_NODES;

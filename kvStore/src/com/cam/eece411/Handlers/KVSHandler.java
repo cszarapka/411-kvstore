@@ -11,6 +11,7 @@ import com.cam.eece411.Structures.DHT;
 import com.cam.eece411.Structures.KVS;
 import com.cam.eece411.Structures.Node;
 import com.cam.eece411.Utilities.Commands;
+import com.cam.eece411.Utilities.Protocols;
 import com.cam.eece411.Utilities.Utils;
 
 public class KVSHandler implements Runnable {
@@ -25,6 +26,7 @@ public class KVSHandler implements Runnable {
 	}
 
 	public void run() {
+		log.setLevel(Protocols.LOGGER_LEVEL);
 		log.info("KVSHandler launched");
 		
 		// If it is a replicated PUT command we don't bother checking
@@ -93,6 +95,7 @@ public class KVSHandler implements Runnable {
 	}
 	
 	private AppResponse PUTResponse() {
+		log.setLevel(Protocols.LOGGER_LEVEL);
 		byte responseCode;
 		String output;
 		synchronized (KVS.class) {
@@ -124,6 +127,7 @@ public class KVSHandler implements Runnable {
 	}
 	
 	private void REP_PUTResponse(){
+		log.setLevel(Protocols.LOGGER_LEVEL);
 		byte responseCode;
 		String output;
 		log.info("[REPLICATED PUT]: key is " + msg.getKey());
@@ -163,6 +167,7 @@ public class KVSHandler implements Runnable {
 	}
 	
 	private void send(AppResponse r) {
+		log.setLevel(Protocols.LOGGER_LEVEL);
 		socket.send(r.buffer, r.ipToSendTo, r.portToSendTo);
 		log.info("Sending message: " + Utils.bytesToHexString(r.buffer));
 		log.info("Response: " + Utils.byteCodeToString(r.responseCode) + " sent to " + r.ipToSendTo.getHostName() + ":" + r.portToSendTo);
