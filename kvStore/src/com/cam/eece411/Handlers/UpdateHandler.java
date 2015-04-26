@@ -45,8 +45,8 @@ public class UpdateHandler implements Runnable {
 			handleIS_DEAD();
 			break;
 		}
-		updateSocket.close();
-		repSocket.close();
+		//updateSocket.close();
+		//repSocket.close();
 	}
 
 	private void handleIS_ALIVE() throws InterruptedException {

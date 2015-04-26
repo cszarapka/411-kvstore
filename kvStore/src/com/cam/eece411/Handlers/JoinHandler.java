@@ -24,7 +24,7 @@ public class JoinHandler implements Runnable {
 		log.setLevel(Protocols.LOGGER_LEVEL);
 		log.info("JoinHandler launched");
 		respondToJOIN_REQUEST();
-		socket.close();
+		//socket.close();
 	}
 
 	private void respondToJOIN_REQUEST() {
