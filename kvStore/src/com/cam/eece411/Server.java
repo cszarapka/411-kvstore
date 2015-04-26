@@ -158,10 +158,15 @@ public class Server {
 				// Copy the DHT
 				DHT.add(msg.getNodes());
 				
+				
 				// Add ourself to our DHT
 				DHT.add(me);
 				
-				
+
+				//give each node a timestamp
+				for (Node node : DHT.nodes()) {
+					node.updateTimestamp();
+				}
 				
 				// Set our state to IN DHT
 				state = Utils.IN_DHT;
