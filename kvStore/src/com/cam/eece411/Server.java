@@ -45,7 +45,7 @@ public class Server {
 
 	public static void main(String[] args) throws SocketException, IOException, InterruptedException {
 		
-		log.info("And so it begins. (V23)");
+		log.info("And so it begins. (V24)");
 
 		// Instantiate ourself as a node and set our state
 		setup();
