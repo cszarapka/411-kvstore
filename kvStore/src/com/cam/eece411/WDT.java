@@ -39,77 +39,83 @@ public class WDT implements Runnable {
 			}
 
 			// Broadcast an IsAlive message
-			//socket.broadcast(Builder.isAlive(Server.me), DHT.broadcastList(),
-			//		Utils.MAIN_PORT);
-			
-			
-			socket.send(Builder.isAlive(Server.me), DHT.getNextNodeOf(Server.me).addr, Utils.MAIN_PORT);
-			socket.send(Builder.isAlive(Server.me), DHT.getPrevNodeOf(Server.me).addr, Utils.MAIN_PORT);
-			
+			// socket.broadcast(Builder.isAlive(Server.me), DHT.broadcastList(),
+			// Utils.MAIN_PORT);
+
+			socket.send(Builder.isAlive(Server.me),
+					DHT.getNextNodeOf(Server.me).addr, Utils.MAIN_PORT);
+			socket.send(Builder.isAlive(Server.me),
+					DHT.getPrevNodeOf(Server.me).addr, Utils.MAIN_PORT);
+
 			// get current time
 			long currentTimestamp = System.currentTimeMillis() / 1000L;
 
-			//max difference allowed is 2.5*WDT_TIMEOUT / 1000 / 1000 [seconds]
+			// max difference allowed is 2.5*WDT_TIMEOUT / 1000 / 1000 [seconds]
 			int maxDiff = ((Utils.WDT_TIMEOUT * 2500) / 1000) / 1000;
-			
-			
-			
+
 			int numNodes;
 			int[] nodeNum;
 			long[] nodeTimestamp;
 			int prevNode;
 			int nextNode;
-			
-			synchronized(DHT.class){
+
+			synchronized (DHT.class) {
 				numNodes = DHT.getSize();
 				nodeNum = new int[numNodes];
 				nodeTimestamp = new long[numNodes];
 				prevNode = DHT.getPrevNodeOf(Server.me).nodeID;
 				nextNode = DHT.getNextNodeOf(Server.me).nodeID;
 				int i = 0;
-				for(Node node : DHT.nodes()){
+				for (Node node : DHT.nodes()) {
 					nodeNum[i] = node.nodeID;
-					//if(node.nodeID != prevNode 
-					//		&& node.nodeID != nextNode){
-						// if not our responsibility, update timestamp
+					// if(node.nodeID != prevNode
+					// && node.nodeID != nextNode){
+					// if not our responsibility, update timestamp
 
-						node.timestamp = currentTimestamp;
+					node.timestamp = currentTimestamp;
 
-					//}
-					
+					// }
+
 					nodeTimestamp[i] = node.timestamp;
 					i++;
 				}
 			}
-			
-			//iterate through each node
+
+			// iterate through each node
 			for (int i = 0; i < numNodes; i++) {
-				//find difference between last time the node was updated and the current time
+				// find difference between last time the node was updated and
+				// the current time
 				long timestampDiff = currentTimestamp - nodeTimestamp[i];
-				
-				// TODO: if one of the nodes has a really old timestamp, ping him <-- needed?
+
+				// TODO: if one of the nodes has a really old timestamp, ping
+				// him <-- needed?
 				log.info("TIMESTAMP DIFF:" + timestampDiff);
 				log.info("MAX DIFF: " + maxDiff);
-				//any node with with a timestamp older than maxDiff is declared dead 
-				if(timestampDiff > maxDiff && (nodeNum[i] == prevNode || nodeNum[i] == nextNode) ) {
-					
+				// any node with with a timestamp older than maxDiff is declared
+				// dead
+				if (timestampDiff > maxDiff
+						&& (nodeNum[i] == prevNode || nodeNum[i] == nextNode)) {
+
 					log.info("Watchdog thread: broadcasting to all that node "
 							+ nodeNum[i] + "is dead.");
 					log.info("Current stamp: " + currentTimestamp
 							+ "; node stamp: " + nodeTimestamp[i]);
-					//remove node from local dht
-					/*synchronized(DHT.class){
-						DHT.remove(node.nodeID);
-					}*/
-					//broadcast an isDead message
-					synchronized(DHT.class){
-						socket.broadcast(Builder.isDead(DHT.getNode(nodeNum[i])), DHT.broadcastList(), Utils.MAIN_PORT);
-						byte[] shutdownMessage = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4};
-						socket.send(shutdownMessage,DHT.getNode(nodeNum[i]).addr , Utils.MAIN_PORT);
+					// remove node from local dht
+					/*
+					 * synchronized(DHT.class){ DHT.remove(node.nodeID); }
+					 */
+					// broadcast an isDead message
+					synchronized (DHT.class) {
+						socket.broadcast(
+								Builder.isDead(DHT.getNode(nodeNum[i])),
+								DHT.broadcastList(), Utils.MAIN_PORT);
+						byte[] shutdownMessage = { 0, 0, 0, 0, 0, 0, 0, 0, 0,
+								0, 0, 0, 0, 0, 0, 0, 4 };
+						socket.send(shutdownMessage,
+								DHT.getNode(nodeNum[i]).addr, Utils.MAIN_PORT);
 					}
 				}
 			}
-			
 
 		}
 	}
