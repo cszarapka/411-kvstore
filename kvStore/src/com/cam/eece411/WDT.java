@@ -1,11 +1,12 @@
 package com.cam.eece411;
 
-import java.net.InetAddress;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.cam.eece411.Communication.Builder;
 import com.cam.eece411.Communication.UDPSocket;
+import com.cam.eece411.Structures.DHT;
+import com.cam.eece411.Structures.Node;
 import com.cam.eece411.Utilities.Protocols;
 import com.cam.eece411.Utilities.Utils;
 
@@ -56,8 +57,8 @@ public class WDT implements Runnable {
 			
 			for (int i = 0; i < missedACKs.length; i++) {
 				if (missedACKs[i] >= 3) {
-					// TODO how to correlate the position with node id...
-					//socket.broadcast(Builder.isDead(node), destAddrs, destPort);
+					Node deadNode = DHT.getNodeByAddr(Server.broadcastAddresses.get(i).getHostAddress());
+					socket.broadcast(Builder.isDead(deadNode), Server.broadcastAddresses, Utils.MAIN_PORT);
 				}
 			}
 		}
