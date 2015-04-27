@@ -151,17 +151,14 @@ public class DHT {
 	public static Node getPrevNodeOf(Node node){
 		int nextNodeNumber;
 		//Get all the nodes strictly higher than us, exclusive
-		SortedMap<Integer, Node> tailMap = circle.tailMap(node.nodeID);
+		SortedMap<Integer, Node> tailMap = circle.tailMap(node.nodeID+1);
 		
 		if(tailMap.size() == 1){
 			// if there are no nodes in the tail map, get the smallest valued node
 			nextNodeNumber = circle.firstKey();
 		} else {
-			//remove self from tail map
-			tailMap.remove(Server.me.nodeID);
-			
-			// if there are nodes smaller than us, get the smallest one (closest)
-			nextNodeNumber = tailMap.firstKey();
+			// if there are nodes greater than us, get the smallest one (closest)
+            nextNodeNumber = tailMap.firstKey();
 		}
 		return circle.get(nextNodeNumber);
 	}
