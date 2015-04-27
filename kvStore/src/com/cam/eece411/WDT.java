@@ -68,13 +68,13 @@ public class WDT implements Runnable {
 				int i = 0;
 				for (Node node : DHT.nodes()) {
 					nodeNum[i] = node.nodeID;
-					// if(node.nodeID != prevNode
-					// && node.nodeID != nextNode){
+					 if(node.nodeID != prevNode
+					 && node.nodeID != nextNode){
 					// if not our responsibility, update timestamp
 
 					node.timestamp = currentTimestamp;
 
-					// }
+					 }
 
 					nodeTimestamp[i] = node.timestamp;
 					i++;
