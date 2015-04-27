@@ -38,10 +38,13 @@ public class WDT implements Runnable {
 			socket.broadcast(Builder.isAlive(Server.me), Server.broadcastAddresses,
 			 Utils.MAIN_PORT);
 			synchronized(DHT.class){
-				//socket.send(Builder.isAlive(Server.me),
-				//		DHT.getNextNodeOf(Server.me).addr, Utils.MAIN_PORT);
-				//socket.send(Builder.isAlive(Server.me),
-				//		DHT.getPrevNodeOf(Server.me).addr, Utils.MAIN_PORT);
+				for(int i = 0; i < 3; i++) {
+				socket.send(Builder.isAlive(Server.me),
+						DHT.getNextNodeOf(Server.me).addr, Utils.MAIN_PORT);
+				socket.send(Builder.isAlive(Server.me),
+						DHT.getPrevNodeOf(Server.me).addr, Utils.MAIN_PORT);
+				sleep(1000);
+				}
 				log.info("SENDING IS-ALIVE TO: "+ DHT.getNextNodeOf(Server.me).addr);
 				log.info("NODE-ID: "+ DHT.getNextNodeOf(Server.me).nodeID);
 				log.info("SENDING IS-ALIVE TO: "+ DHT.getPrevNodeOf(Server.me).addr);
@@ -112,14 +115,14 @@ public class WDT implements Runnable {
 					 */
 					// broadcast an isDead message
 					synchronized (DHT.class) {
-						//socket.broadcast(
+						socket.broadcast(
 								
-								//Builder.isDead(DHT.getNode(nodeNum[i])),
-								//DHT.broadcastList(), Utils.MAIN_PORT);
-						//byte[] shutdownMessage = { 0, 0, 0, 0, 0, 0, 0, 0, 0,
-								//0, 0, 0, 0, 0, 0, 0, 4 };
-						//socket.send(shutdownMessage,
-								//DHT.getNode(nodeNum[i]).addr, Utils.MAIN_PORT);
+								Builder.isDead(DHT.getNode(nodeNum[i])),
+								DHT.broadcastList(), Utils.MAIN_PORT);
+						byte[] shutdownMessage = { 0, 0, 0, 0, 0, 0, 0, 0, 0,
+								0, 0, 0, 0, 0, 0, 0, 4 };
+						socket.send(shutdownMessage,
+								DHT.getNode(nodeNum[i]).addr, Utils.MAIN_PORT);
 					}
 				}
 			}
