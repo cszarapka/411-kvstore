@@ -47,7 +47,9 @@ public class WDT implements Runnable {
 				socket.send(Builder.isAlive(Server.me),
 						DHT.getPrevNodeOf(Server.me).addr, Utils.MAIN_PORT);
 				log.info("SENDING IS-ALIVE TO: "+ DHT.getNextNodeOf(Server.me).addr);
+				log.info("NODE-ID: "+ DHT.getNextNodeOf(Server.me).nodeID);
 				log.info("SENDING IS-ALIVE TO: "+ DHT.getPrevNodeOf(Server.me).addr);
+				log.info("NODE-ID: "+ DHT.getPrevNodeOf(Server.me).nodeID);
 			}
 			
 			
