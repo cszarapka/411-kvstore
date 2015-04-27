@@ -30,7 +30,7 @@ public class Node {
 
 		this.id = nodeID;
 		this.addr = addr;
-		this.name = addr.getHostName();
+		this.name = addr.getHostAddress();
 		this.missedACKs = 0;
 		updateTimestamp();
 	}
