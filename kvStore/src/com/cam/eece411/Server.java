@@ -41,7 +41,7 @@ public class Server {
 	public static UDPSocket repSocket;
 	public static UDPSocket updateSocket;
 	public static List<String> nodes = null;
-	public static List<InetAddress> broadcastAddresses = null;
+	public static List<InetAddress> broadcastList = null;
 
 	public static void main(String[] args) throws SocketException, IOException, InterruptedException {
 		
@@ -78,7 +78,7 @@ public class Server {
 		while (state == Utils.OUT_OF_DHT) {
 			attemptToJoin();
 		}
-		buildNodeList();
+		//buildNodeList();
 		// Launch the Watchdog Thread
 		(new Thread(new WDT(Utils.WDT_PORT))).start();
 
@@ -129,6 +129,8 @@ public class Server {
 	public static void readFrom(String file) {
 		// Declare the list object
 		nodes = new ArrayList<String>();
+		broadcastList = new ArrayList<InetAddress>();
+		int i = 0;
 		
 		BufferedReader br = null;
 		try {
@@ -141,7 +143,7 @@ public class Server {
 			while ((currentLine = br.readLine()) != null) {
 				// Add each line to our list
 				nodes.add(currentLine.trim());
-				
+				broadcastList.add(InetAddress.getByName(nodes.get(i++)));
 			}
 		} catch (IOException e) {
 			log.log(Level.SEVERE, e.toString(), e);
@@ -214,16 +216,16 @@ public class Server {
 		}
 	}
 	
-	public static void buildNodeList() {
-		for(int i = 0; i < nodes.size(); i++) {
-			try {
-				broadcastAddresses.add(InetAddress.getByName(nodes.get(i)));
-			} catch (UnknownHostException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-	}
+//	public static void buildNodeList() {
+//		for(int i = 0; i < nodes.size(); i++) {
+//			try {
+//				broadcastList.add(InetAddress.getByName(nodes.get(i)));
+//			} catch (UnknownHostException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		}
+//	}
 	
 	public static Message receiveJoinResponse() {
 		socket.setTimeout(Utils.JOIN_TIMEOUT);
