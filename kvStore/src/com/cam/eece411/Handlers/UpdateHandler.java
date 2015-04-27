@@ -55,18 +55,16 @@ public class UpdateHandler implements Runnable {
 				DHT.add(newNode);
 				DHT.getNode(msg.getNodeID()).updateTimestamp();
 				
-				// Update our neighbors
+				// Update our neighbors (because they may have changed with the addition)
 				Server.me.nextID = DHT.getNextNodeOf(newNode).id;
 				Server.me.prevID = DHT.getPrevNodeOf(newNode).id;
-				
 			}
 			log.info("Node " + msg.getNodeID() + " at " + msg.getNodeAddress().getHostName() + " was added to the local DHT.");
 
-			int newNodeID = msg.getNodeID();
-
-			// check if the new node is a neighbour
-			if (prevNodeID == newNodeID || nextNodeID == newNodeID) {
-				sendAllKeysTo(newNodeID, newNodeID);
+			// If the new node is a neighbor, send keys to him
+			if (Server.me.isNeighbor(newNode)) {
+				// TODO: Don't think this function is correct
+				sendAllKeysTo(newNode.id, newNode.id);
 			}
 		}
 	}
