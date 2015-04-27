@@ -66,7 +66,7 @@ public class UpdateHandler implements Runnable {
 			log.info("Node " + msg.getNodeID() + " at "
 					+ msg.getNodeAddress().getHostName()
 					+ " was added to the local DHT.");
-			
+
 			int prevNodeID;
 			int nextNodeID;
 			// get this node's neighbours
@@ -87,7 +87,7 @@ public class UpdateHandler implements Runnable {
 		//sends all keys in the given nodeIDRangeToSend's range to nodeIDToSendTo
 		//nodeIDRangeToSend and nodeIDRangeToSend must be in the table, or no keys will be sent
 		//both params represent a nodeID
-		
+
 		// iterate through all keys
 		for (ByteBuffer key : KVS.getKeys()) {
 			//if this key is supposed to be on our neighbour then send it
@@ -98,7 +98,7 @@ public class UpdateHandler implements Runnable {
 			}
 		}
 	}
-	
+
 	private void handleIS_DEAD() {
 		//we have been messaged saying that some node is dead
 		//need to remove that node from the table
@@ -108,14 +108,14 @@ public class UpdateHandler implements Runnable {
 			Node myPreviousNode = DHT.getPrevNodeOf(Server.me);
 			for (ByteBuffer key : KVS.getKeys()) {
 				//for each key in the table
-                
-                //if this key was the responsibility of the dead node
-                if(DHT.findNodeFor(key.array()).nodeID == msg.getNodeID()){
-                    repSocket.send(Builder.replicatedPut(msg),myPreviousNode.addr, Utils.MAIN_PORT);
-                    // then we need to put it on our previous node for replication.
-                    
-                }
-            }
+
+				//if this key was the responsibility of the dead node
+				if(DHT.findNodeFor(key.array()).nodeID == msg.getNodeID()){
+					repSocket.send(Builder.replicatedPut(msg),myPreviousNode.addr, Utils.MAIN_PORT);
+					// then we need to put it on our previous node for replication.
+
+				}
+			}
 		}
 		if (DHT.remove(msg.getNodeID()) != null) {
 			log.setLevel(Protocols.LOGGER_LEVEL);
