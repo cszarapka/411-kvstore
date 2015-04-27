@@ -25,6 +25,7 @@ public class WDT implements Runnable {
 	public WDT(int port) {
 		log.setLevel(Protocols.LOGGER_LEVEL);
 		socket = new UDPSocket(port);
+		
 		// Set the timeout for receiving ACKS
 		socket.setTimeout(Utils.WDT_TIMEOUT);
 		
@@ -45,7 +46,7 @@ public class WDT implements Runnable {
 				// Send the IS-ALIVE message
 				socket.send(Builder.isAlive(Server.me), Server.broadcastAddresses.get(i), Utils.MAIN_PORT);
 				
-				// Wait for the ACK and adjust the count accordingly
+				// Wait for the ACK and adjust the count accordingly, timeout was set in constructor
 				if (socket.receive() == null) {
 					missedACKs[i]++;
 				} else {
@@ -55,7 +56,8 @@ public class WDT implements Runnable {
 			
 			for (int i = 0; i < missedACKs.length; i++) {
 				if (missedACKs[i] >= 3) {
-					// TODO: broadcast an isdead
+					// TODO how to correlate the position with node id...
+					//socket.broadcast(Builder.isDead(node), destAddrs, destPort);
 				}
 			}
 		}

@@ -37,8 +37,8 @@ public class UpdateHandler implements Runnable {
 			case Commands.IS_DEAD: handleIS_DEAD(); break;
 		}
 
-		updateSocket.close();
-		repSocket.close();
+		//updateSocket.close();
+		//repSocket.close();
 	}
 
 	private void handleIS_ALIVE() {
@@ -72,7 +72,8 @@ public class UpdateHandler implements Runnable {
 				}
 			}
 		}
-		// TODO: send an ACK back to the WDT port
+		// Send an ACK back to the WDT port
+		updateSocket.send(Builder.isAlive(Server.me), msg.getReturnAddress(), Utils.WDT_PORT);
 	}
 
 	/**
