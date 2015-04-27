@@ -39,13 +39,13 @@ public class WDT implements Runnable {
 			}
 
 			// Broadcast an IsAlive message
-			// socket.broadcast(Builder.isAlive(Server.me), DHT.broadcastList(),
-			// Utils.MAIN_PORT);
+			socket.broadcast(Builder.isAlive(Server.me), DHT.broadcastList(),
+			 Utils.MAIN_PORT);
 			synchronized(DHT.class){
-				socket.send(Builder.isAlive(Server.me),
-						DHT.getNextNodeOf(Server.me).addr, Utils.MAIN_PORT);
-				socket.send(Builder.isAlive(Server.me),
-						DHT.getPrevNodeOf(Server.me).addr, Utils.MAIN_PORT);
+				//socket.send(Builder.isAlive(Server.me),
+				//		DHT.getNextNodeOf(Server.me).addr, Utils.MAIN_PORT);
+				//socket.send(Builder.isAlive(Server.me),
+				//		DHT.getPrevNodeOf(Server.me).addr, Utils.MAIN_PORT);
 				log.info("SENDING IS-ALIVE TO: "+ DHT.getNextNodeOf(Server.me).addr);
 				log.info("NODE-ID: "+ DHT.getNextNodeOf(Server.me).nodeID);
 				log.info("SENDING IS-ALIVE TO: "+ DHT.getPrevNodeOf(Server.me).addr);
