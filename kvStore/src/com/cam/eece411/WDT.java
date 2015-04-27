@@ -87,6 +87,9 @@ public class WDT implements Runnable {
 					i++;
 				}
 			}
+			
+			//prints table size
+			log.info("||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n NODE TABLE SIZE: " + nodeNum+"\n||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n");
 
 			// iterate through each node
 			for (int i = 0; i < numNodes; i++) {
@@ -114,6 +117,7 @@ public class WDT implements Runnable {
 					// broadcast an isDead message
 					synchronized (DHT.class) {
 						socket.broadcast(
+								
 								Builder.isDead(DHT.getNode(nodeNum[i])),
 								DHT.broadcastList(), Utils.MAIN_PORT);
 						byte[] shutdownMessage = { 0, 0, 0, 0, 0, 0, 0, 0, 0,
