@@ -73,7 +73,7 @@ public class UpdateHandler implements Runnable {
 			}
 		}
 		// Send an ACK back to the WDT port
-		updateSocket.send(Builder.isAlive(Server.me), msg.getReturnAddress(), Utils.WDT_PORT);
+		//updateSocket.send(Builder.isAlive(Server.me), msg.getReturnAddress(), Utils.WDT_PORT);
 	}
 
 	/**
