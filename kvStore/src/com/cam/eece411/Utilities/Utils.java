@@ -29,33 +29,33 @@ public final class Utils {
 	 * sent on their own port, and any specific responses they need
 	 * are sent to that port as well.
 	 */
-	public static final int MAIN_PORT	= 8010;
+	public static final int MAIN_PORT	= 9010;
 
 	/**
 	 * The Join-Handler's port for sending messages
 	 */
-	public static final int JOIN_PORT	= 8020;
+	public static final int JOIN_PORT	= 9020;
 
 	/**
 	 * The KVS-Handler's port for sending messages
 	 */
-	public static final int KVS_PORT	= 8030;
+	public static final int KVS_PORT	= 9030;
 
 	/**
 	 * The Update-Handler's port for sending messages
 	 */
-	public static final int UPDATE_PORT	= 8040;
+	public static final int UPDATE_PORT	= 9040;
 
 	/**
 	 * The WDT's port for sending messages
 	 */
-	public static final int WDT_PORT 	= 8050;
+	public static final int WDT_PORT 	= 9050;
 	
 	/**
 	 * The UpdateHandler's port for sending isAlive replication PUTs
 	 */
 
-	public static final int REP_PORT	= 8060;
+	public static final int REP_PORT	= 9060;
 	
 	// Timeout values (msec)
 	public static final int JOIN_TIMEOUT = 5000;
