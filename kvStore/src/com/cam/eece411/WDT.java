@@ -54,7 +54,7 @@ public class WDT implements Runnable {
 			long currentTimestamp = System.currentTimeMillis() / 1000L;
 
 			// max difference allowed is 2.5*WDT_TIMEOUT / 1000 / 1000 [seconds]
-			int maxDiff = ((Utils.WDT_TIMEOUT * 5000) / 1000) / 1000;
+			int maxDiff = ((Utils.WDT_TIMEOUT * 3000) / 1000) / 1000;
 
 			int numNodes;
 			int[] nodeNum;

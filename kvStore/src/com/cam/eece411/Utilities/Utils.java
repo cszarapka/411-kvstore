@@ -59,7 +59,7 @@ public final class Utils {
 	
 	// Timeout values (msec)
 	public static final int JOIN_TIMEOUT = 5000;
-	public static final int WDT_TIMEOUT = 10000; // 8 minutes ish
+	public static final int WDT_TIMEOUT = 30000; // 8 minutes ish
 
 	// Max message size
 	public static final int MAX_MSG_SIZE	= 15100;
