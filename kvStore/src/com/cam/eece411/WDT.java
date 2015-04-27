@@ -58,7 +58,9 @@ public class WDT implements Runnable {
 			for (int i = 0; i < missedACKs.length; i++) {
 				if (missedACKs[i] >= 3) {
 					Node deadNode = DHT.getNodeByAddr(Server.broadcastAddresses.get(i).getHostAddress());
-					socket.broadcast(Builder.isDead(deadNode), Server.broadcastAddresses, Utils.MAIN_PORT);
+					if (deadNode != null) {
+						socket.broadcast(Builder.isDead(deadNode), Server.broadcastAddresses, Utils.MAIN_PORT);
+					}
 				}
 			}
 		}
