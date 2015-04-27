@@ -13,6 +13,9 @@ public class Node {
 	public InetAddress addr;
 	public String name;
 	public long timestamp;
+	
+	public int nextID;
+	public int prevID;
 
 	/**
 	 * Constructs a new node with the specified fields
@@ -37,5 +40,19 @@ public class Node {
 	 */
 	public void updateTimestamp() {
 		this.timestamp = System.currentTimeMillis() / 1000L;
+	}
+	
+	/**
+	 * Returns true if the specified node is a neighbor of this node.
+	 * Neighbor means the node is immediately CCW or CW of this node
+	 * @param node	the node to consider
+	 * @return		true if it is a neighbor, false otherwise
+	 */
+	public boolean isNeighbor(Node node) {
+		int nID = node.nodeID;
+		if (nID == nextID || nID == prevID) {
+			return true;
+		}
+		return false;
 	}
 }
