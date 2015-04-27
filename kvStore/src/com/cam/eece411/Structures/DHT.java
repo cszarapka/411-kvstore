@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import com.cam.eece411.Server;
 import com.cam.eece411.Utilities.HashFunction;
 import com.cam.eece411.Utilities.Protocols;
 import com.cam.eece411.Utilities.Utils;
@@ -152,10 +153,13 @@ public class DHT {
 		//Get all the nodes strictly higher than us, exclusive
 		SortedMap<Integer, Node> tailMap = circle.tailMap(node.nodeID);
 		
-		if(tailMap.isEmpty()){
+		if(tailMap.size() == 1){
 			// if there are no nodes in the tail map, get the smallest valued node
 			nextNodeNumber = circle.firstKey();
 		} else {
+			//remove self from tail map
+			tailMap.remove(Server.me.nodeID);
+			
 			// if there are nodes smaller than us, get the smallest one (closest)
 			nextNodeNumber = tailMap.firstKey();
 		}
