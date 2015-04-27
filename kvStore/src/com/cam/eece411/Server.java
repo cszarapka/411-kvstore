@@ -45,7 +45,7 @@ public class Server {
 
 	public static void main(String[] args) throws SocketException, IOException, InterruptedException {
 		
-		log.info("And so it begins. (V16)");
+		log.info("And so it begins. (V17)");
 
 		// Instantiate ourself as a node and set our state
 		setup();
@@ -78,7 +78,7 @@ public class Server {
 		while (state == Utils.OUT_OF_DHT) {
 			attemptToJoin();
 		}
-		
+		buildNodeList();
 		// Launch the Watchdog Thread
 		(new Thread(new WDT(Utils.WDT_PORT))).start();
 
