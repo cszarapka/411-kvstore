@@ -13,6 +13,7 @@ public class Node {
 	public InetAddress addr;
 	public String name;
 	public long timestamp;
+	public int missedACKs;
 	
 	public int nextID;
 	public int prevID;
@@ -30,6 +31,7 @@ public class Node {
 		this.id = nodeID;
 		this.addr = addr;
 		this.name = addr.getHostName();
+		this.missedACKs = 0;
 		updateTimestamp();
 	}
 
