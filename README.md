@@ -1,141 +1,25 @@
 #Group 11 : Key-Value Distributed System
 Monitoring Service: http://104.236.25.77:3000/
 
-##Getting Started
-To start the DHT, load a textfile called nodes.txt to each server which contains the name of every other node that will be included in the DHT. DO SOMETHING HERE MAX. Then start the jar (java -jar kvStore.jar) on every server except the server you wish to initialize the table from. Now on your intended starting server, use the command kvStore
+##Design Overview
+This is a distributed key-value store based on consistent hashing. The system is distributed across 100 planetlab nodes, whom exhibit lossy channels, bandwidth issues, and crash regularly. Our design goal was to maximize request servicing time while keeping bandwidth usage low, in a manner that took advantage of the scale of our system. With 100 nodes, it was reasonable to have each node be aware of every node in the network and communicate with each other. A node receiving a request will either satisfy the request, or only have to pass it to one node in order to satisfy it. To maintain the correctness of each node's view of the system, frequent "isAlive" messages are broadcasted. A timestamp based on the "isAlive" messages is used to determine when a node has died.
 
-##Overview
-This is a fully functioning Distributed Hash Table. It allows a user to store up to 256 key-value pairs which are then replicated across a number of nodes. Requests for values can be sent to any node, which will either return the the value if it is contained within its Key-Value Store, or will ask the correct node for the value and return that value.
+##Initialization
+There are two modes of operation for a node. One node, chosen by us, will be the instigator. Passing this node the "create" command when launching the JAR will cause it to create a hash table with itself as node 255, and then listen for app commands, join requests, and "isAlive" messages. All other nodes will start without any specified command, which causes them to begin sending "join-requests" to a random node from the node_list.txt file.
 
-When the jar is run, it initializes a node. The DHT table is started when one server's jar is initializes with the create argument. All other nodes pings various nodes in the hopes of a response that that node belongs to a DHT, which starts the DHT joining process. When the DHT node receives a ping from a table-less node, it splits its node range in half and gives the new node it's higher range. 
+##Key Partitioning
+When a node boots, it sends join requests to random nodes from the node_list.txt file until one responds within a given timeout. To determine the node ID of the requesting node the node already in the table does the following:
+- determine the node ID halfway in between itself and the closest CCW node
+- offers this node ID to the requesting node, along with its current view of the system
+Upon receival of this information the requesting node constructs its table, adds itself, and then broadcasts an "isAlive" message to all nodes it is aware of.
 
-##Files
-Each node contains the following files:
-* kvs.jar             
->Our project code
-* monitor.jar         
->The node's monitoring service
-* javaCheck.jar       
->Runs once every 3 minutes and reboots kvs.jar if it is not running
-* monitorCheck.jar    
->Runs once every 3 minutes and reboots monitor.jar if it is not running
+##Membership
+Membership is managed through the use of "isAlive" and "isDead" messages.
+Upon receipt of an "isAlive" message, a node will check if it already has this node in its table, if so, it will update a timestamp for said node, if not in our table, it will be added. If a node being added to the table is to become one of our neighbors, some replication will take place, which will be discussed later.
+Upon receipt of an "isDead" message, a node will remove the node from its table, and perform replication if the dead node was an immediate neighbor.
+Through the use of a WatchdogThread (WDT) we discover the death of a node and keep other nodes up-to-date on our liveliness. The WDT periodically broadcasts an "isAlive" message to all nodes, which will cause them to update their timestamp for said node. Then, the WDT scans through all known nodes, considers their timestamp against the current time, determining if it is greater than a predefined allowed max difference. If the difference is too great the node is assumed dead, and an isDead message is broadcasted to all nodes.
 
-##MESSAGE FORMAT
-Commands are sent to the system, from any computer, by sending a message to *node-IP:port* using the *wire protocol*. The list of nodes running our code can be found [here](runningNodes.txt).
+##Application Layer Requests (PUT, GET, REMOVE)
+Upon receipt of an application layer request, the node will first determine if it should service this request. It should service this request if the specified key is in its range. If so, the request is performed and response sent to the requester. Should the key not fall in our range, the node refers to the local table and finds who is responsible for the key, and then "echos" the application request to the servicing node. The servicing node performs the requested operation, returns an "echoed response" to the node that echoed it the request, who then passes this "echoed response" back to the original requester. With this scheme we can achieve speedy lookups with minimal bandwidth usage.
+We originally had the servicing node reply directly to the orginal requester, but those messages would not be received for some reason. We concluded responses must be received from the node that received the corresponding request.
 
-###Wire Protocol
-Messages (requests) sent to the system must conform to the protocol below. The commands for these operations are shown in the next section: App-Layer Commands.
-
-
-####Put Message
-Command | Key       | Value-Length                      | Value
-------- | --------- | --------------------------------- | -----
-1 byte  | 1 byte    | 2 bytes   | up to 15,000 bytes
-
-####Get and Remove Message
-Command | Key 
-------- | ---
-1 byte  | 1 byte
-
-####Get Response
-
-Response Code | Value-Length                | Value
-------------- | --------------------------- | -----
-1 byte | Integer; 2 bytes; little endian    | up to 15,000 bytes
-
-####Shutdown Message
-
-Command |
-------- |
-1 byte  |
-
-
-
-
-##App-Layer Commands
-
-- **0x01:** put(*key*, *value*)
-- Puts some value into the store. The value can be later retrieved using the key. If there is already a value corresponding to the key then the value is overwritten.
-- **0x02:** get(*key*)
-- Returns the value that is associated with the key. If there is no such key in our store, an error - not found - is returned.
-- **0x03:** remove(*key*)
-- Removes the value that is associated with the key. If there is no such key the store returns an error to the user.
-
-## App-Layer Responses
-
-Upon making a request to the system, you will *should* receive a response.
-
-- **0x00:** The operation was successful
-- **0x01:** Non-existent key requested in a get or remove operation
-- **0x02:** Out of space (no room for a _put_)
-- **0x03:** System overload
-- **0x04:** Internal KVStore failure
-- **0x05:** Unrecognized command
-
-##In Depth 
-Our DHT code is made up of 16 files:
-
-###Main  
-* Server.java         
->Main code. Initializes datatypes and tries to join DHT.
-* WDT.java            
->WatchDogThread broadcasts isAlive messages to other nodes.
-
-###Communication
-* UDPSocket.java    
->Creates UDP sockets for communication.
-* Builder.java        
->Builds byte array to be sent to other nodes.
-* Message.java        
->Converts received byte array into readable message.
-* AppResponse.java
->Builds response to message.
-
-###Handlers
-* JoinHandler.java    
->Thread handles requests from other nodes to join DHT.
-* KVSHandler.java     
->Thread handles forwarded GET and PUT requests.
-* UpdateHandler.java  
->Thread handles notifications from nodes regarding status of others.
-
-###Structures 
-* Node.java           
->Node class containing host address and local timestamp.
-* DHT.java           
->DHT circle containing nodes.
-* KVS.java            
->Storage for key/value pair.
-
-###Utilities
-* Commands.java       
->Determines the type of command being issued.
-* HashFunction.java   
->MD5 hash function.
-* Protocols.java      
->List of OPcodes and important values used throught execution.
-* Utils.java          
->Helper functions for byte level operations.
-
-
-
-
-
-
-##Node-Layer Commands/Requests
-
-These are messages sent between nodes, such as a lookup, in order to accomplish the functionality of a distributed KVStore.
-
-_Todo:_ list commands here
-
-##System Details
-
-- **Scale:** this system will be deployed on 80-100 nodes when it is fully completed
-- **Correctness:** tested through correct responses following sequences of gets, puts and removes
-- **Robustness:** our service continues to operate in spite of node failures
-- **Data durability:** our system does not lose data to node failures (_not yet implemented_)
-- **Performance:** responsiveness (time to reply to requests) and throughput have been tested
-- _Todo:_ list the results
-- **Data availability:** if a request is not served in 5 seconds, it is considered failed
-- **Persistence:** no data is persisted on disk
-- **Memory usage:** the space on each node is limited by at most 100,000 key/value pairs _or_ 64MB of space (including any replication data)
