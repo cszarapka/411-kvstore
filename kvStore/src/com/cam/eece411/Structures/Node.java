@@ -9,7 +9,7 @@ import java.net.InetAddress;
  *
  */
 public class Node {
-	public int nodeID;
+	public int id;
 	public InetAddress addr;
 	public String name;
 	public long timestamp;
@@ -27,7 +27,7 @@ public class Node {
 	 */
 	public Node(int nodeID, InetAddress addr) {
 
-		this.nodeID = nodeID;
+		this.id = nodeID;
 		this.addr = addr;
 		this.name = addr.getHostName();
 		updateTimestamp();
@@ -49,7 +49,7 @@ public class Node {
 	 * @return		true if it is a neighbor, false otherwise
 	 */
 	public boolean isNeighbor(Node node) {
-		int nID = node.nodeID;
+		int nID = node.id;
 		if (nID == nextID || nID == prevID) {
 			return true;
 		}

@@ -66,7 +66,7 @@ public final class Builder {
 		buffer[index++] = Commands.IS_ALIVE;
 
 		// Add the node ID
-		buffer[index++] = (byte) node.nodeID;
+		buffer[index++] = (byte) node.id;
 
 		// Add the node's IP to the buffer
 		ip = node.addr.getAddress();
@@ -100,7 +100,7 @@ public final class Builder {
 		buffer[index++] = Commands.IS_DEAD;
 
 		// Add the node ID
-		buffer[index++] = (byte) node.nodeID;
+		buffer[index++] = (byte) node.id;
 
 		// Add the node's IP to the buffer
 		ip = node.addr.getAddress();

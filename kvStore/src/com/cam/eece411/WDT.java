@@ -64,11 +64,11 @@ public class WDT implements Runnable {
 				numNodes = DHT.getSize();
 				nodeNum = new int[numNodes];
 				nodeTimestamp = new long[numNodes];
-				prevNode = DHT.getPrevNodeOf(Server.me).nodeID;
-				nextNode = DHT.getNextNodeOf(Server.me).nodeID;
+				prevNode = DHT.getPrevNodeOf(Server.me).id;
+				nextNode = DHT.getNextNodeOf(Server.me).id;
 				int i = 0;
 				for(Node node : DHT.nodes()){
-					nodeNum[i] = node.nodeID;
+					nodeNum[i] = node.id;
 					//if(node.nodeID != DHT.getNextNodeOf(Server.me).nodeID 
 					//		&& node.nodeID != DHT.getPrevNodeOf(Server.me).nodeID){
 						// if not our responsibility, update timestamp
