@@ -62,7 +62,7 @@ public class KVSHandler implements Runnable {
 			return;
 		} else {
 			// If I'm responsible for the command
-			if (Server.me.nodeID == servicingNode.nodeID) {
+			if (Server.me.id == servicingNode.id) {
 				// Respond to the command appropriately
 				
 				switch (msg.getCommand()) {
@@ -74,7 +74,7 @@ public class KVSHandler implements Runnable {
 				// Send it to the node who is responsible for it
 				UDPSocket newSocket = new UDPSocket(Utils.KVS_PORT);
 				newSocket.send(Builder.echo(msg), servicingNode.addr, Utils.MAIN_PORT);
-				log.info("ECHOed " + Utils.byteCmdToString(msg.getCommand()) + " sent to " + servicingNode.nodeID + "@" + servicingNode.addr.getHostName() + ":" + Utils.MAIN_PORT);
+				log.info("ECHOed " + Utils.byteCmdToString(msg.getCommand()) + " sent to " + servicingNode.id + "@" + servicingNode.addr.getHostName() + ":" + Utils.MAIN_PORT);
 				newSocket.close();
 			}
 		}
@@ -111,14 +111,14 @@ public class KVSHandler implements Runnable {
 			
 			// Replicate this PUT if they are not you and are distinct
 			
-			if (cw.nodeID != Server.me.nodeID) {
+			if (cw.id != Server.me.id) {
 				socket.send(Builder.replicatedPut(msg), cw.addr, Utils.MAIN_PORT);
-				output += "and REPLICATED to " + cw.nodeID + "@" + cw.addr.getHostName() + ":" + Utils.MAIN_PORT;
+				output += "and REPLICATED to " + cw.id + "@" + cw.addr.getHostName() + ":" + Utils.MAIN_PORT;
 			}
 			
-			if (ccw.nodeID != Server.me.nodeID && ccw.nodeID != cw.nodeID) {
+			if (ccw.id != Server.me.id && ccw.id != cw.id) {
 				socket.send(Builder.replicatedPut(msg), ccw.addr, Utils.MAIN_PORT);
-				output += " and to " + ccw.nodeID + "@" + ccw.addr.getHostName() + ":" + Utils.MAIN_PORT;
+				output += " and to " + ccw.id + "@" + ccw.addr.getHostName() + ":" + Utils.MAIN_PORT;
 			}
 			log.info(output);
 		}

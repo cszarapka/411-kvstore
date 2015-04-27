@@ -169,7 +169,7 @@ public class Server {
 		if (msg != null) {
 			if (msg.getCommand() == Commands.JOIN_RESPONSE) {
 				// Set our node ID
-				me.nodeID = msg.getNodeID();
+				me.id = msg.getNodeID();
 				
 				// Copy the DHT
 				DHT.add(msg.getNodes());
@@ -189,7 +189,7 @@ public class Server {
 				
 				// Broadcast an IS ALIVE message 
 				socket.broadcast(Builder.isAlive(me), DHT.broadcastList(), Utils.MAIN_PORT);
-				log.info("Joined table as node " + me.nodeID + " and broadcasted the fact");
+				log.info("Joined table as node " + me.id + " and broadcasted the fact");
 			}
 		}
 	}

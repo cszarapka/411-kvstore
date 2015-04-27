@@ -1,9 +1,11 @@
 package com.cam.eece411.Communication;
 
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.logging.Logger;
 
 import com.cam.eece411.Structures.DHT;
+import com.cam.eece411.Structures.KVS;
 import com.cam.eece411.Structures.Node;
 import com.cam.eece411.Utilities.Commands;
 import com.cam.eece411.Utilities.Protocols;
@@ -66,7 +68,7 @@ public final class Builder {
 		buffer[index++] = Commands.IS_ALIVE;
 
 		// Add the node ID
-		buffer[index++] = (byte) node.nodeID;
+		buffer[index++] = (byte) node.id;
 
 		// Add the node's IP to the buffer
 		ip = node.addr.getAddress();
@@ -100,7 +102,7 @@ public final class Builder {
 		buffer[index++] = Commands.IS_DEAD;
 
 		// Add the node ID
-		buffer[index++] = (byte) node.nodeID;
+		buffer[index++] = (byte) node.id;
 
 		// Add the node's IP to the buffer
 		ip = node.addr.getAddress();
@@ -332,5 +334,49 @@ public final class Builder {
 	public static byte[] replicatedPut(Message msg) {
 		msg.setCommand(Commands.REP_PUT);
 		return msg.getData();
+	}
+	
+	public static byte[] replicatedPut(ByteBuffer bb, Node node) {
+		byte[] buffer = put(bb, node);
+		buffer[16] = Commands.REP_PUT;
+		return buffer;
+	}
+	
+	public static byte[] put(ByteBuffer bb, Node node) {
+		byte[] buffer;
+		byte[] key = bb.array();
+		byte[] value = KVS.get(key);
+		int index = 0;
+		
+		// Get a new random Unique ID
+		byte[] uid = Utils.generateRandomByteArray(16);
+		
+		buffer = new byte[uid.length + 1 + key.length + 2 + value.length];
+		
+		// Assemble the buffer
+		
+		// Add the unique ID
+		for (int i = 0; i < uid.length; i++) {
+			buffer[index++] = uid[i];
+		}
+		
+		// Add the command
+		buffer[index++] = Commands.PUT;
+		
+		// Add the key
+		for (int i = 0; i < key.length; i++) {
+			buffer[index++] = key[i];
+		}
+		
+		// Add the value length
+		buffer[index++] = Utils.intToByteArray(value.length)[0];
+		buffer[index++] = Utils.intToByteArray(value.length)[1];
+		
+		// Add the value
+		for (int i = 0; i < value.length; i++) {
+			buffer[index++] = value[i];
+		}
+		
+		return buffer;
 	}
 }

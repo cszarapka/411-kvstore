@@ -1,6 +1,7 @@
 package com.cam.eece411.Handlers;
 
 import java.nio.ByteBuffer;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.cam.eece411.Server;
@@ -15,113 +16,130 @@ import com.cam.eece411.Utilities.Protocols;
 import com.cam.eece411.Utilities.Utils;
 
 public class UpdateHandler implements Runnable {
-	private static final Logger log = Logger.getLogger(UpdateHandler.class
-			.getName());
+	private static final Logger log = Logger.getLogger(UpdateHandler.class.getName());
 
 	private Message msg;
 	private UDPSocket updateSocket;
 	private UDPSocket repSocket;
 
 	public UpdateHandler(Message msg, UDPSocket repS, UDPSocket updS) {
+		log.setLevel(Protocols.LOGGER_LEVEL);
 		this.msg = msg;
 		this.updateSocket = updS;
 		this.repSocket = repS;
 	}
 
 	public synchronized void run() {
-		log.setLevel(Protocols.LOGGER_LEVEL);
 		log.info("UpdateHandler launched");
 
 		switch (msg.getCommand()) {
-		case Commands.IS_ALIVE:
-			try {
-				handleIS_ALIVE();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
-		case Commands.IS_DEAD:
-			handleIS_DEAD();
-			break;
+			case Commands.IS_ALIVE: handleIS_ALIVE(); break;
+			case Commands.IS_DEAD: handleIS_DEAD(); break;
 		}
-		//updateSocket.close();
-		//repSocket.close();
+
+		updateSocket.close();
+		repSocket.close();
 	}
 
-	private void handleIS_ALIVE() throws InterruptedException {
-		log.setLevel(Protocols.LOGGER_LEVEL);
+	private void handleIS_ALIVE() {
 		if (nodeIsInDHT()) {
-			// update the timestamp
-			synchronized(DHT.class){
+			// Only update the timestamp in this case
+			synchronized (DHT.class){
 				DHT.getNode(msg.getNodeID()).updateTimestamp();
 			}
-			log.info("Node " + msg.getNodeID()
-					+ " is already in the local DHT.");
+			log.info("Node " + msg.getNodeID() + " is already in the local DHT - timestamp updated.");
 		} else {
-			synchronized(DHT.class){
-				DHT.add(new Node(msg.getNodeID(), msg.getNodeAddress()));
+			Node newNode = new Node(msg.getNodeID(), msg.getNodeAddress());
+			synchronized (DHT.class) {
+				// Add the new node to our table and update its timestamp
+				DHT.add(newNode);
 				DHT.getNode(msg.getNodeID()).updateTimestamp();
-			}
-			log.info("Node " + msg.getNodeID() + " at "
-					+ msg.getNodeAddress().getHostName()
-					+ " was added to the local DHT.");
-			
-			int prevNodeID;
-			int nextNodeID;
-			// get this node's neighbours
-			synchronized(DHT.class){
-				prevNodeID = DHT.getPrevNodeOf(Server.me).nodeID;
-				nextNodeID = DHT.getNextNodeOf(Server.me).nodeID;
-			}
-			int newNodeID = msg.getNodeID();
+				log.info("Node " + msg.getNodeID() + " at " + msg.getNodeAddress().getHostName() + " was added to the local DHT.");
 
-			// check if the new node is a neighbour
-			if (prevNodeID == newNodeID || nextNodeID == newNodeID) {
-				sendAllKeysTo(newNodeID, newNodeID);
+				// Update our neighbors (because they may have changed with the addition)
+				Server.me.nextID = DHT.getNextNodeOf(Server.me).id;
+				Server.me.prevID = DHT.getPrevNodeOf(Server.me).id;
+
+				// If the new node is a neighbor
+				if (Server.me.isNeighbor(newNode)) {
+					// If the new node is CCW of us
+					if (newNode.id == Server.me.nextID) {
+						// Send him keys from our KVStore that he will now be responsible for
+						unloadKeysTo(newNode);
+					}
+					// Replicate our own keys to him as well
+					repKeysTo(newNode);
+				}
 			}
 		}
+		// TODO: send an ACK back to the WDT port
 	}
 
-	public void sendAllKeysTo(int nodeIDToSendTo, int nodeIDRangeToSend) throws InterruptedException {
-		//sends all keys in the given nodeIDRangeToSend's range to nodeIDToSendTo
-		//nodeIDRangeToSend and nodeIDRangeToSend must be in the table, or no keys will be sent
-		//both params represent a nodeID
-		
-		// iterate through all keys
+	/**
+	 * PUT's and REMOVE's all keys that we have that we no
+	 * longer are responsible for.
+	 * @param node	the node to dump our load onto 
+	 */
+	public void unloadKeysTo(Node node) {
+		int count = 0;
+		// Iterate through all our keys
 		for (ByteBuffer key : KVS.getKeys()) {
-			//if this key is supposed to be on our neighbour then send it
-			if(DHT.findNodeFor(key.array()).nodeID == nodeIDRangeToSend){
-				repSocket.send(Builder.replicatedPut(msg), DHT.getNode(nodeIDToSendTo).addr, Utils.MAIN_PORT);
-				// TODO: Do we need to wait for a response?
-				Thread.sleep(100);
+			// If the new node is responsible for this key
+			if(DHT.findNodeFor(key.array()) == node){
+				// Send the node a PUT with the key
+				updateSocket.send(Builder.put(key, node), node.addr, Utils.MAIN_PORT);
+				count++;
+
+				// Remove the key from our local key value store now
+				KVS.remove(key.array());
+
+				// Sleep for a tiny amount
+				try { Thread.sleep(100); }
+				catch (InterruptedException e) { log.log(Level.SEVERE, e.toString(), e); }
 			}
 		}
+		log.info(count + " keys were PUT to new node " + node.id + "@" + node.addr.getHostName());
 	}
-	
-	private void handleIS_DEAD() {
-		//we have been messaged saying that some node is dead
-		//need to remove that node from the table
-		//also, if removing that node makes responsible for its files, we need to replicate on our watchers.
-		if(DHT.getNextNodeOf(Server.me).nodeID == msg.getNodeID()) {
-			//if the dead node is our next node
-			Node myPreviousNode = DHT.getPrevNodeOf(Server.me);
-			for (ByteBuffer key : KVS.getKeys()) {
-				//for each key in the table
-                
-                //if this key was the responsibility of the dead node
-                if(DHT.findNodeFor(key.array()).nodeID == msg.getNodeID()){
-                    repSocket.send(Builder.replicatedPut(msg),myPreviousNode.addr, Utils.MAIN_PORT);
-                    // then we need to put it on our previous node for replication.
-                    
-                }
-            }
-		}
-		if (DHT.remove(msg.getNodeID()) != null) {
-			log.setLevel(Protocols.LOGGER_LEVEL);
-			// after taking care of that, remove the node from our circle.
-			log.info("Node " + msg.getNodeID() + " at " + msg.getNodeAddress().getHostName() + " was removed from the local DHT.");
 
+	/**
+	 * Sends REP_PUTS of only the keys we alone are responsible for to the specified node
+	 * @param node	node to replicate to
+	 */
+	public void repKeysTo(Node node) {
+		int count = 0;
+		// Iterate through all our keys
+		for (ByteBuffer key : KVS.getKeys()) {
+			// If it is a key we alone are responsible for
+			if (DHT.findNodeFor(key.array()) == Server.me) {
+				// Send the node a REP_PUT with the key
+				repSocket.send(Builder.replicatedPut(key, node), node.addr, Utils.MAIN_PORT);
+				count++;
+
+				// Sleep for a tiny amount
+				try { Thread.sleep(100); }
+				catch (InterruptedException e) { log.log(Level.SEVERE, e.toString(), e); }
+			}
+		}
+		log.info(count + " keys were PUT to new node " + node.id + "@" + node.addr.getHostName());
+	}
+
+	private void handleIS_DEAD() {
+		synchronized (DHT.class) {
+			// Get the node that died
+			Node deadNode = DHT.remove(msg.getNodeID());
+
+			if (deadNode != null) {
+				// If the dead node is a neighbor
+				if (Server.me.isNeighbor(deadNode)) {
+					// Update our neighbors
+					Server.me.nextID = DHT.getNextNodeOf(Server.me).id;
+					Server.me.prevID = DHT.getPrevNodeOf(Server.me).id;
+
+					// Replicate values we alone are responsible for to our new neighbors
+					repKeysTo(DHT.getNextNodeOf(Server.me));
+					repKeysTo(DHT.getPrevNodeOf(Server.me));
+				}
+			}
 		}
 	}
 

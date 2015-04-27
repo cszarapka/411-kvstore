@@ -42,9 +42,9 @@ public class DHT {
 	 */
 	public static void add(Node node) {
 		log.setLevel(Protocols.LOGGER_LEVEL);
-		circle.put(node.nodeID, node);
+		circle.put(node.id, node);
 		// Print out the nodes in the circle
-		log.info("Circle contents after ADD(" + node.nodeID + ")\n" + toText());
+		log.info("Circle contents after ADD(" + node.id + ")\n" + toText());
 	}
 
 	/**
@@ -131,7 +131,7 @@ public class DHT {
 	public static Node getNextNodeOf(Node node) {
 		int nextNodeNumber;
 		// Get all the nodes strictly lower than us, exclusive
-		SortedMap<Integer, Node> headMap = circle.headMap(node.nodeID);
+		SortedMap<Integer, Node> headMap = circle.headMap(node.id);
 		
 		if (headMap.isEmpty()) {
 			// if there are no nodes in the head map, get the largest valued node
@@ -151,14 +151,14 @@ public class DHT {
 	public static Node getPrevNodeOf(Node node){
 		int nextNodeNumber;
 		//Get all the nodes strictly higher than us, exclusive
-		SortedMap<Integer, Node> tailMap = circle.tailMap(node.nodeID);
+		SortedMap<Integer, Node> tailMap = circle.tailMap(node.id);
 		
 		if(tailMap.size() == 1){
 			// if there are no nodes in the tail map, get the smallest valued node
 			nextNodeNumber = circle.firstKey();
 		} else {
 			// if there are nodes greater than us, get the smallest one (closest)
-			tailMap = circle.tailMap(node.nodeID+1);
+			tailMap = circle.tailMap(node.id+1);
 			nextNodeNumber = tailMap.firstKey();
 		}
 		return circle.get(nextNodeNumber);
@@ -184,7 +184,7 @@ public class DHT {
 			for (int i = 0; i < 4; i++) {
 				buffer[index++] = ip[i];
 			}
-			buffer[index++] = (byte) node.nodeID;
+			buffer[index++] = (byte) node.id;
 		}
 		return buffer;
 	}
@@ -228,7 +228,7 @@ public class DHT {
 
 		while (nodes.hasNext()) {
 			currNode = nodes.next();
-			string += "| " + currNode.nodeID + " | " + currNode.name + " |\n";
+			string += "| " + currNode.id + " | " + currNode.name + " |\n";
 		}
 
 		return string;

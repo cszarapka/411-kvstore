@@ -32,8 +32,8 @@ public class JoinHandler implements Runnable {
 	private void respondToJOIN_REQUEST() {
 		synchronized (DHT.class) {
 			log.setLevel(Protocols.LOGGER_LEVEL);
-			int myID = Server.me.nodeID;
-			int nextNodeID = DHT.getNextNodeOf(Server.me).nodeID;
+			int myID = Server.me.id;
+			int nextNodeID = DHT.getNextNodeOf(Server.me).id;
 			int maxNodeCount = Utils.MAX_NUMBER_OF_NODES;
 			int offeredNodeID;
 
