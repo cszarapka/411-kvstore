@@ -32,6 +32,7 @@ public class WDT implements Runnable {
 		log.info("Watchdog Thread launched");
 		while (true) {
 			// Wait for a bit
+			sleep(Utils.WDT_TIMEOUT);
 
 			// Broadcast an IsAlive message
 			socket.broadcast(Builder.isAlive(Server.me), Server.broadcastAddresses,
