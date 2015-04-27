@@ -85,7 +85,7 @@ public class WDT implements Runnable {
 			}
 			
 			//prints table size
-			log.info("||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n NODE TABLE SIZE: " + nodeNum+"\n||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n");
+			log.info("||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n NODE TABLE SIZE: " + numNodes+"\n||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n");
 
 			// iterate through each node
 			for (int i = 0; i < numNodes; i++) {
