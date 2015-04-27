@@ -1,13 +1,24 @@
 #Group 11 : Key-Value Distributed System
 Monitoring Service: http://104.236.25.77:3000/
 
+##Getting Started
+To start the DHT, load a textfile called nodes.txt to each server which contains the name of every other node that will be included in the DHT. DO SOMETHING HERE MAX. Then start the jar (java -jar kvStore.jar) on every server except the server you wish to initialize the table from. Now on your intended starting server, use the command kvStore
+
+##Overview
+This is a fully functioning Distributed Hash Table. It allows a user to store up to 256 key-value pairs which are then replicated across a number of nodes. Requests for values can be sent to any node, which will either return the the value if it is contained within its Key-Value Store, or will ask the correct node for the value and return that value.
+
+When the jar is run, it initializes a node. The DHT table is started when one server's jar is initializes with the create argument. All other nodes pings various nodes in the hopes of a response that that node belongs to a DHT, which starts the DHT joining process. When the DHT node receives a ping from a table-less node, it splits its node range in half and gives the new node it's higher range. 
 
 ##Files
 Each node contains the following files:
-* kvs.jar             //Our project code
-* monitor.jar         //The node's monitoring service
-* javaCheck.jar       //Runs once every 3 minutes and reboots kvs.jar if it is not running
-* monitorCheck.jar    //Runs once every 3 minutes and reboots monitor.jar if it is not running
+* kvs.jar             
+>Our project code
+* monitor.jar         
+>The node's monitoring service
+* javaCheck.jar       
+>Runs once every 3 minutes and reboots kvs.jar if it is not running
+* monitorCheck.jar    
+>Runs once every 3 minutes and reboots monitor.jar if it is not running
 
 ##MESSAGE FORMAT
 Commands are sent to the system, from any computer, by sending a message to *node-IP:port* using the *wire protocol*. The list of nodes running our code can be found [here](runningNodes.txt).
@@ -66,45 +77,45 @@ Our DHT code is made up of 16 files:
 
 ###Main  
 * Server.java         
-    >Main code. Initializes datatypes and tries to join DHT.
+>Main code. Initializes datatypes and tries to join DHT.
 * WDT.java            
-    >WatchDogThread broadcasts isAlive messages to other nodes.
+>WatchDogThread broadcasts isAlive messages to other nodes.
 
 ###Communication
 * UDPSocket.java    
-    >Creates UDP sockets for communication.
+>Creates UDP sockets for communication.
 * Builder.java        
-    >Builds byte array to be sent to other nodes.
+>Builds byte array to be sent to other nodes.
 * Message.java        
-    >Converts received byte array into readable message.
+>Converts received byte array into readable message.
 * AppResponse.java
-    >Builds response to message.
+>Builds response to message.
 
 ###Handlers
 * JoinHandler.java    
-    >Thread handles requests from other nodes to join DHT.
+>Thread handles requests from other nodes to join DHT.
 * KVSHandler.java     
-    >Thread handles forwarded GET and PUT requests.
+>Thread handles forwarded GET and PUT requests.
 * UpdateHandler.java  
-    >Thread handles notifications from nodes regarding status of others.
+>Thread handles notifications from nodes regarding status of others.
 
 ###Structures 
 * Node.java           
-    >Node class containing host address and local timestamp.
+>Node class containing host address and local timestamp.
 * DHT.java           
-    >DHT circle containing nodes.
+>DHT circle containing nodes.
 * KVS.java            
-    >Storage for key/value pair.
+>Storage for key/value pair.
 
 ###Utilities
 * Commands.java       
-    >Determines the type of command being issued.
+>Determines the type of command being issued.
 * HashFunction.java   
-    >MD5 hash function.
+>MD5 hash function.
 * Protocols.java      
-    >List of OPcodes and important values used throught execution.
+>List of OPcodes and important values used throught execution.
 * Utils.java          
-    >Helper functions for byte level operations.
+>Helper functions for byte level operations.
 
 
 
@@ -119,7 +130,7 @@ _Todo:_ list commands here
 
 ##System Details
 
-- **Scale:** this system will be deployed on 150-200 nodes when it is fully completed
+- **Scale:** this system will be deployed on 80-100 nodes when it is fully completed
 - **Correctness:** tested through correct responses following sequences of gets, puts and removes
 - **Robustness:** our service continues to operate in spite of node failures
 - **Data durability:** our system does not lose data to node failures (_not yet implemented_)
