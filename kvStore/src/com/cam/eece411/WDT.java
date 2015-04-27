@@ -57,19 +57,23 @@ public class WDT implements Runnable {
 			int numNodes;
 			int[] nodeNum;
 			long[] nodeTimestamp;
-			
+			int prevNode;
+			int nextNode;
 			
 			synchronized(DHT.class){
 				numNodes = DHT.getSize();
 				nodeNum = new int[numNodes];
 				nodeTimestamp = new long[numNodes];
+				prevNode = DHT.getPrevNodeOf(Server.me).nodeID;
+				nextNode = DHT.getNextNodeOf(Server.me).nodeID;
 				int i = 0;
 				for(Node node : DHT.nodes()){
 					nodeNum[i] = node.nodeID;
 					if(node.nodeID != DHT.getNextNodeOf(Server.me).nodeID 
 							&& node.nodeID != DHT.getPrevNodeOf(Server.me).nodeID){
 						// if not our responsibility, update timestamp
-						node.updateTimestamp();
+						DHT.getNode(node.nodeID).updateTimestamp();
+						//node.updateTimestamp();
 					}
 
 					nodeTimestamp[i] = node.timestamp;
@@ -85,7 +89,7 @@ public class WDT implements Runnable {
 				// TODO: if one of the nodes has a really old timestamp, ping him <-- needed?
 				
 				//any node with with a timestamp older than maxDiff is declared dead 
-				if(timestampDiff > maxDiff ) {
+				if(timestampDiff > maxDiff && (nodeNum[i] == prevNode || nodeNum[i] == nextNode) ) {
 					log.info("Watchdog thread: broadcasting to all that node "
 							+ nodeNum[i] + "is dead.");
 					log.info("Current stamp: " + currentTimestamp
