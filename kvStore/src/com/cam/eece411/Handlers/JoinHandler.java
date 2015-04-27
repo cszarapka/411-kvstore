@@ -60,11 +60,11 @@ public class JoinHandler implements Runnable {
 					+ msg.getReturnPort() + " offering node ID: "
 					+ offeredNodeID);
 
-			DHT.add(new Node(msg.getNodeID(), msg.getNodeAddress()));
-			DHT.getNode(msg.getNodeID()).updateTimestamp();
+			DHT.add(new Node(offeredNodeID, msg.getReturnAddress()));
+			DHT.getNode(offeredNodeID).updateTimestamp();
 
-			log.info("Node " + msg.getNodeID() + " at "
-					+ msg.getNodeAddress().getHostName()
+			log.info("Node " + offeredNodeID + " at "
+					+ msg.getReturnAddress().getHostName()
 					+ " was added to the local DHT.");
 			/*
 			 * int prevNdeID; int nextNdeID; // get this node's neighbours
