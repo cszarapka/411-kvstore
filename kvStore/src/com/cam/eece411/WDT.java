@@ -24,19 +24,14 @@ public class WDT implements Runnable {
 	private UDPSocket socket;
 
 	public WDT(int port) {
+		log.setLevel(Protocols.LOGGER_LEVEL);
 		socket = new UDPSocket(port);
 	}
 
 	public void run() {
-		log.setLevel(Protocols.LOGGER_LEVEL);
 		log.info("Watchdog Thread launched");
 		while (true) {
 			// Wait for a bit
-			try {
-				Thread.sleep(Utils.WDT_TIMEOUT);
-			} catch (InterruptedException e) {
-				log.log(Level.SEVERE, e.toString(), e);
-			}
 
 			// Broadcast an IsAlive message
 			socket.broadcast(Builder.isAlive(Server.me), Server.broadcastAddresses,
@@ -128,6 +123,14 @@ public class WDT implements Runnable {
 				}
 			}
 
+		}
+	}
+	
+	private void sleep(int msec) {
+		try {
+			Thread.sleep(msec);
+		} catch (InterruptedException e) {
+			log.log(Level.SEVERE, e.toString(), e);
 		}
 	}
 }
