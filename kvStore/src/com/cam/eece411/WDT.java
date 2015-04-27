@@ -41,17 +41,22 @@ public class WDT implements Runnable {
 			// Broadcast an IsAlive message
 			// socket.broadcast(Builder.isAlive(Server.me), DHT.broadcastList(),
 			// Utils.MAIN_PORT);
-
-			socket.send(Builder.isAlive(Server.me),
-					DHT.getNextNodeOf(Server.me).addr, Utils.MAIN_PORT);
-			socket.send(Builder.isAlive(Server.me),
-					DHT.getPrevNodeOf(Server.me).addr, Utils.MAIN_PORT);
+			synchronized(DHT.class){
+				socket.send(Builder.isAlive(Server.me),
+						DHT.getNextNodeOf(Server.me).addr, Utils.MAIN_PORT);
+				socket.send(Builder.isAlive(Server.me),
+						DHT.getPrevNodeOf(Server.me).addr, Utils.MAIN_PORT);
+				log.info("SENDING IS-ALIVE TO: "+ DHT.getNextNodeOf(Server.me).addr);
+				log.info("SENDING IS-ALIVE TO: "+ DHT.getPrevNodeOf(Server.me).addr);
+			}
+			
+			
 
 			// get current time
 			long currentTimestamp = System.currentTimeMillis() / 1000L;
 
 			// max difference allowed is 2.5*WDT_TIMEOUT / 1000 / 1000 [seconds]
-			int maxDiff = ((Utils.WDT_TIMEOUT * 2500) / 1000) / 1000;
+			int maxDiff = ((Utils.WDT_TIMEOUT * 5000) / 1000) / 1000;
 
 			int numNodes;
 			int[] nodeNum;
