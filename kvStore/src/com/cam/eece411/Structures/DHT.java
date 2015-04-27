@@ -97,6 +97,19 @@ public class DHT {
 	public static Node getNode(int nodeNumber) {
 		return circle.get(nodeNumber);
 	}
+	
+	public static Node getNodeByAddr(String addr) {
+		Iterator<Node> nodes = circle.values().iterator();
+		Node currNode;
+		
+		while (nodes.hasNext()) {
+			currNode = nodes.next();
+			if (currNode.name.equalsIgnoreCase(addr)) {
+				return currNode;
+			}
+		}
+		return null;
+	}
 
 	public static Set<Entry<Integer, Node>> getNodes() {
 		return circle.entrySet();
