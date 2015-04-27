@@ -39,7 +39,7 @@ public class WDT implements Runnable {
 			}
 
 			// Broadcast an IsAlive message
-			socket.broadcast(Builder.isAlive(Server.me), DHT.broadcastList(),
+			socket.broadcast(Builder.isAlive(Server.me), Server.broadcastAddresses,
 			 Utils.MAIN_PORT);
 			synchronized(DHT.class){
 				//socket.send(Builder.isAlive(Server.me),

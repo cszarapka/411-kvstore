@@ -41,10 +41,11 @@ public class Server {
 	public static UDPSocket repSocket;
 	public static UDPSocket updateSocket;
 	public static List<String> nodes = null;
+	public static List<InetAddress> broadcastAddresses = null;
 
 	public static void main(String[] args) throws SocketException, IOException, InterruptedException {
 		
-		log.info("And so it begins. (V15)");
+		log.info("And so it begins. (V16)");
 
 		// Instantiate ourself as a node and set our state
 		setup();
@@ -140,6 +141,7 @@ public class Server {
 			while ((currentLine = br.readLine()) != null) {
 				// Add each line to our list
 				nodes.add(currentLine.trim());
+				
 			}
 		} catch (IOException e) {
 			log.log(Level.SEVERE, e.toString(), e);
@@ -212,6 +214,16 @@ public class Server {
 		}
 	}
 	
+	public static void buildNodeList() {
+		for(int i = 0; i < nodes.size(); i++) {
+			try {
+				broadcastAddresses.add(InetAddress.getByName(nodes.get(i)));
+			} catch (UnknownHostException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
 	
 	public static Message receiveJoinResponse() {
 		socket.setTimeout(Utils.JOIN_TIMEOUT);
