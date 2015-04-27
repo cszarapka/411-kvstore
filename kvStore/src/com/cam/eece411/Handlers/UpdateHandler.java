@@ -54,37 +54,51 @@ public class UpdateHandler implements Runnable {
 				// Add the new node to our table and update its timestamp
 				DHT.add(newNode);
 				DHT.getNode(msg.getNodeID()).updateTimestamp();
+				log.info("Node " + msg.getNodeID() + " at " + msg.getNodeAddress().getHostName() + " was added to the local DHT.");
 				
 				// Update our neighbors (because they may have changed with the addition)
 				Server.me.nextID = DHT.getNextNodeOf(newNode).id;
 				Server.me.prevID = DHT.getPrevNodeOf(newNode).id;
-			}
-			log.info("Node " + msg.getNodeID() + " at " + msg.getNodeAddress().getHostName() + " was added to the local DHT.");
-
-			// If the new node is a neighbor, send keys to him
-			if (Server.me.isNeighbor(newNode)) {
-				// TODO: Don't think this function is correct
-				sendAllKeysTo(newNode.id, newNode.id);
+				
+				// If the new node is a neighbor
+				if (Server.me.isNeighbor(newNode)) {
+					// If the new node is CCW of us
+					if (newNode.id == DHT.getNextNodeOf(Server.me).id) {
+						// Send him keys from our KVStore that he will now be responsible for
+						unloadKeysTo(newNode);
+					}
+					// Replicate our own keys to him as well
+					repKeysTo(newNode);
+				}
 			}
 		}
 	}
 
-	public void sendAllKeysTo(int nodeIDToSendTo, int nodeIDRangeToSend) {
-		//sends all keys in the given nodeIDRangeToSend's range to nodeIDToSendTo
-		//nodeIDRangeToSend and nodeIDRangeToSend must be in the table, or no keys will be sent
-		//both params represent a nodeID
-
-		// iterate through all keys
+	/**
+	 * PUT's and REMOVE's all keys that we have that we no
+	 * longer are responsible for.
+	 * @param node	the node to dump our load onto 
+	 */
+	public void unloadKeysTo(Node node) {
+		int count = 0;
+		// Iterate through all our keys
 		for (ByteBuffer key : KVS.getKeys()) {
-			//if this key is supposed to be on our neighbour then send it
-			if(DHT.findNodeFor(key.array()).id == nodeIDRangeToSend){
-				repSocket.send(Builder.replicatedPut(msg), DHT.getNode(nodeIDToSendTo).addr, Utils.MAIN_PORT);
-
+			// If the new node is responsible for this key
+			if(DHT.findNodeFor(key.array()) == node){
+				// Send the node a PUT with the key
+				updateSocket.send(Builder.put(key, node), node.addr, Utils.MAIN_PORT);
+				count++;
+				
 				// Sleep for a tiny amount
 				try { Thread.sleep(100); }
 				catch (InterruptedException e) { log.log(Level.SEVERE, e.toString(), e); }
 			}
 		}
+		log.info(count + " keys were PUT to new node " + node.id + "@" + node.addr.getHostName());
+	}
+	
+	public void repKeysTo(Node node) {
+		repSocket.send(Builder.replicatedPut(msg), DHT.getNode(nodeIDToSendTo).addr, Utils.MAIN_PORT);
 	}
 
 	private void handleIS_DEAD() {
