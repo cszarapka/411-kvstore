@@ -89,6 +89,9 @@ public class UpdateHandler implements Runnable {
 				updateSocket.send(Builder.put(key, node), node.addr, Utils.MAIN_PORT);
 				count++;
 				
+				// Remove the key from our local key value store now
+				KVS.remove(key.array());
+				
 				// Sleep for a tiny amount
 				try { Thread.sleep(100); }
 				catch (InterruptedException e) { log.log(Level.SEVERE, e.toString(), e); }
@@ -97,8 +100,26 @@ public class UpdateHandler implements Runnable {
 		log.info(count + " keys were PUT to new node " + node.id + "@" + node.addr.getHostName());
 	}
 	
+	/**
+	 * Sends REP_PUTS of only the keys we alone are responsible for to the specified node
+	 * @param node	node to replicate to
+	 */
 	public void repKeysTo(Node node) {
-		repSocket.send(Builder.replicatedPut(msg), DHT.getNode(nodeIDToSendTo).addr, Utils.MAIN_PORT);
+		int count = 0;
+		// Iterate through all our keys
+		for (ByteBuffer key : KVS.getKeys()) {
+			// If it is a key we alone are responsible for
+			if (DHT.findNodeFor(key.array()) == Server.me) {
+				// Send the node a REP_PUT with the key
+				repSocket.send(Builder.replicatedPut(key, node), node.addr, Utils.MAIN_PORT);
+				count++;
+				
+				// Sleep for a tiny amount
+				try { Thread.sleep(100); }
+				catch (InterruptedException e) { log.log(Level.SEVERE, e.toString(), e); }
+			}
+		}
+		log.info(count + " keys were PUT to new node " + node.id + "@" + node.addr.getHostName());
 	}
 
 	private void handleIS_DEAD() {
