@@ -89,13 +89,13 @@ public class WDT implements Runnable {
 
 				// TODO: if one of the nodes has a really old timestamp, ping
 				// him <-- needed?
-				log.info("TIMESTAMP DIFF:" + timestampDiff);
-				log.info("MAX DIFF: " + maxDiff);
+				
 				// any node with with a timestamp older than maxDiff is declared
 				// dead
 				if (timestampDiff > maxDiff
 						&& (nodeNum[i] == prevNode || nodeNum[i] == nextNode)) {
-
+					log.info("TIMESTAMP DIFF:" + timestampDiff);
+					log.info("MAX DIFF: " + maxDiff);
 					log.info("Watchdog thread: broadcasting to all that node "
 							+ nodeNum[i] + "is dead.");
 					log.info("Current stamp: " + currentTimestamp
