@@ -49,7 +49,7 @@ public class Server {
 
 		// Instantiate ourself as a node and set our state
 		setup();
-
+		
 		// Setup the main listening socket
 		socket = new UDPSocket(Utils.MAIN_PORT);
 		joinSocket = new UDPSocket(Utils.JOIN_PORT);
