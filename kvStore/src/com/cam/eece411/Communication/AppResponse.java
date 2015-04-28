@@ -86,23 +86,23 @@ public class AppResponse {
 			buffer[index++] = value[i];
 		}		
 	}
-	
+
 	public byte[] getValue() {
 		return this.value;
 	}
-	
+
 	/**
 	 * Return the fields of this message as a string
 	 */
 	public String toString() {
-		String string = "- - - - Response contents:\n" +
-						"Unique ID: " + Utils.bytesToHexString(uniqueID) + "\n" +
-						"Response Code: " + Integer.toHexString(responseCode) + "\n";
+		String string = "- - - - Response contents:" +
+						"Unique ID: " + Utils.bytesToHexString(uniqueID) + "" +
+						"Response Code: " + Integer.toHexString(responseCode) + "";
 		
 		// If this is a reply to a GET request, we ought to print out those values we got
 		if (valueLength > 0) {
-			string += "Value-Length: " + valueLength + "\n";
-			string += "Value: " + Utils.bytesToHexString(value) + "\n";
+			string += "Value-Length: " + valueLength + "";
+			string += "Value: " + Utils.bytesToHexString(value) + "";
 		}
 		return string;
 	}
