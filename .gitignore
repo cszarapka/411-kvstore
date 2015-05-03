@@ -37,9 +37,21 @@ local.properties
 # TeXlipse plugin
 .texlipse
 
+# Auto-JARing (Cam)
+build.xml
+jar-in-jar-loader.zip
+
 .metadata/
 .recommenders/
 
 .classpath
 
 .project
+
+kvStore/src/com/cam/eece411/build.xml
+
+kvStore/src/com/cam/eece411/jar-in-jar-loader.zip
+
+TestingClient/src/com/cam/test/eece411/build.xml
+
+TestingClient/src/com/cam/test/eece411/jar-in-jar-loader.zip

@@ -8,6 +8,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.cam.eece411.Utilities.Commands;
+import com.cam.eece411.Utilities.Protocols;
 import com.cam.eece411.Utilities.Utils;
 
 public class Message {
@@ -23,6 +24,10 @@ public class Message {
 	private byte[] srcPortBytes;
 	private byte[] srcAddr;
 
+	private int returnPort;
+	private byte[] returnAddress;
+	private byte[] returnPortBytes;
+	
 	private int nid;	// node ID
 	private byte[] nAddr;	// node address
 	private int numNodes;
@@ -75,14 +80,18 @@ public class Message {
 
 	private void parseKVSCommand() {
 		// In the echoed case, get the address info about the source of the request
-		if (cmd == Commands.ECHOED) {
+		if (cmd == Commands.ECHOED || cmd == Commands.ECHO_RETURN) {
 			// Get the source of the app-level command
-			srcAddr = Arrays.copyOfRange(bytes, index, index+4); index += 4;
-			srcPortBytes = Arrays.copyOfRange(bytes, index, index+4); index += 4;
-			srcPort = Utils.byteArrayToInt(srcPortBytes);
+			returnAddress = Arrays.copyOfRange(bytes, index, index+4); index += 4;
+			returnPortBytes = Arrays.copyOfRange(bytes, index, index+4); index += 4;
+			returnPort = Utils.byteArrayToInt(returnPortBytes);
 
 			// Get the KVS command being echoed
 			appCmd = bytes[index++];
+		}
+		
+		if (cmd == Commands.REP_PUT) {
+			appCmd = Commands.PUT;
 		}
 
 		if (appCmd < Commands.SHUTDOWN) {
@@ -128,12 +137,29 @@ public class Message {
 	public byte getCommand() {
 		return this.cmd;
 	}
+	
+	public byte getAppCommand() {
+		return this.appCmd;
+	}
 
 	public int getReturnPort() {
 		return this.srcPort;
 	}
+	
+	public int getEchoReturnPort() {
+		return this.returnPort;
+	}
 
+	public InetAddress getEchoReturnAddress() {
+		log.setLevel(Protocols.LOGGER_LEVEL);
+		try { return InetAddress.getByAddress(this.returnAddress); }
+		catch (UnknownHostException e) { log.log(Level.SEVERE, e.toString(), e); }
+		
+		return null;
+	}
+	
 	public InetAddress getReturnAddress() {
+		log.setLevel(Protocols.LOGGER_LEVEL);
 		try { return InetAddress.getByAddress(this.srcAddr); }
 		catch (UnknownHostException e) { log.log(Level.SEVERE, e.toString(), e); }
 		
@@ -145,6 +171,7 @@ public class Message {
 	}
 	
 	public InetAddress getNodeAddress() {
+		log.setLevel(Protocols.LOGGER_LEVEL);
 		try { return InetAddress.getByAddress(this.nAddr); }
 		catch (UnknownHostException e) { log.log(Level.SEVERE, e.toString(), e); }
 		

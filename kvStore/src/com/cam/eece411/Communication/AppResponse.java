@@ -87,6 +87,10 @@ public class AppResponse {
 		}		
 	}
 	
+	public byte[] getValue() {
+		return this.value;
+	}
+	
 	/**
 	 * Return the fields of this message as a string
 	 */

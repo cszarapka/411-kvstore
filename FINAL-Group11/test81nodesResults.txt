@@ -1,0 +1,183 @@
+```
+Stephans-MacBook-Air:Testing24th stephanbouthot$ java -jar Test.jar 
+Enter big node list file path: nodes.txt
+Done building node list ... 
+Enter Number of requests small,Number of requests large,Number of clients small,Number of clients large,Request sending duration (seconds): 5,5,81,81,15
+ ... Running response time tests - medium load ...
+[ Test: Response-time - random nodes. A client sends fixed number of requests ]
+Command: PUT (error) [avg] 0.0ms [min] 0.0ms [max] 0.0ms [stdev] 0.0ms
+Command: PUT (success) [avg] 370.0ms [min] 137.0ms [max] 698.0ms [stdev] 195.0ms
+Error: 0.0%
+Success: 100.0%
+Timed out: 0.0%
+Command: GET (error) [avg] 0.0ms [min] 0.0ms [max] 0.0ms [stdev] 0.0ms
+Command: GET (success) [avg] 333.0ms [min] 119.0ms [max] 541.0ms [stdev] 136.0ms
+Error: 0.0%
+Success: 100.0%
+Timed out: 0.0%
+Command: REMOVE (error) [avg] 0.0ms [min] 0.0ms [max] 0.0ms [stdev] 0.0ms
+Command: REMOVE (success) [avg] 468.0ms [min] 181.0ms [max] 962.0ms [stdev] 297.0ms
+Error: 0.0%
+Success: 80.0%
+Timed out: 20.0%
+[ Test: Response-time - multiple nodes, multiple clients, fixed number of requests ]
+Command: PUT (error) [avg] 0.0ms [min] 0.0ms [max] 0.0ms [stdev] 0.0ms
+Command: PUT (success) [avg] 1415.5185185185185ms [min] 471.87654320987656ms [max] 3099.185185185185ms [stdev] 1066.0864197530864ms
+Error: 0.0%
+Success: 80.49382716049382%
+Timed out: 19.506172839506174%
+Command: GET (error) [avg] 0.0ms [min] 0.0ms [max] 0.0ms [stdev] 0.0ms
+Command: GET (success) [avg] 796.1111111111111ms [min] 227.06172839506172ms [max] 2065.3456790123455ms [stdev] 774.9753086419753ms
+Error: 0.0%
+Success: 77.28395061728395%
+Timed out: 22.71604938271605%
+Command: REMOVE (error) [avg] 4.308641975308642ms [min] 4.308641975308642ms [max] 4.308641975308642ms [stdev] 0.0ms
+Command: REMOVE (success) [avg] 505.7901234567901ms [min] 166.2716049382716ms [max] 1420.4444444444443ms [stdev] 498.44444444444446ms
+Error: 0.24691358024691357%
+Success: 94.07407407407408%
+Timed out: 5.679012345679013%
+ ... Running throughput tests - medium load ...
+[ Test: Throughput - multiple nodes, multiple clients ]
+Total elapsed time: -29820ms
+Command: PUT Throughput (error): -0.0 reqs/s
+Command: PUT Throughput (success): -15.526492287055667 reqs/s
+Command: PUT Throughput (timed out): -5.935613682092555 reqs/s
+Command: PUT Throughput (total): -21.462105969148222 reqs/s
+Command: PUT (error) [avg] 0.0ms [min] 0.0ms [max] 0.0ms [stdev] 0.0ms
+Command: PUT (success) [avg] 747.0864197530864ms [min] 387.2345679012346ms [max] 1236.8765432098764ms [stdev] 303.14814814814815ms
+[ Test: Throughput - multiple nodes, multiple clients ]
+Total elapsed time: -30146ms
+Command: GET Throughput (error): -0.0 reqs/s
+Command: GET Throughput (success): -12.273601804551184 reqs/s
+Command: GET Throughput (timed out): -6.667551250580508 reqs/s
+Command: GET Throughput (total): -18.941153055131693 reqs/s
+Command: GET (error) [avg] 0.0ms [min] 0.0ms [max] 0.0ms [stdev] 0.0ms
+Command: GET (success) [avg] 589.4444444444445ms [min] 301.0ms [max] 1040.8024691358025ms [stdev] 282.38271604938274ms
+[ Test: Throughput - multiple nodes, multiple clients ]
+Total elapsed time: -30400ms
+Command: REMOVE Throughput (error): -0.0 reqs/s
+Command: REMOVE Throughput (success): -14.17763157894737 reqs/s
+Command: REMOVE Throughput (timed out): -5.296052631578948 reqs/s
+Command: REMOVE Throughput (total): -19.473684210526315 reqs/s
+Command: REMOVE (error) [avg] 0.0ms [min] 0.0ms [max] 0.0ms [stdev] 0.0ms
+Command: REMOVE (success) [avg] 683.5432098765432ms [min] 307.9259259259259ms [max] 1448.567901234568ms [stdev] 412.2098765432099ms
+ ... Running throughput tests - high load ...
+[ Test: Throughput - multiple nodes, multiple clients ]
+Total elapsed time: -30149ms
+Command: PUT Throughput (error): -0.0 reqs/s
+Command: PUT Throughput (success): -14.527845036319611 reqs/s
+Command: PUT Throughput (timed out): -6.202527447013168 reqs/s
+Command: PUT Throughput (total): -20.73037248333278 reqs/s
+Command: PUT (error) [avg] 0.0ms [min] 0.0ms [max] 0.0ms [stdev] 0.0ms
+Command: PUT (success) [avg] 741.8148148148148ms [min] 396.25925925925924ms [max] 1181.7037037037037ms [stdev] 278.18518518518516ms
+[ Test: Throughput - multiple nodes, multiple clients ]
+Total elapsed time: -30016ms
+Command: GET Throughput (error): -0.0 reqs/s
+Command: GET Throughput (success): -13.492803837953092 reqs/s
+Command: GET Throughput (timed out): -5.963486140724947 reqs/s
+Command: GET Throughput (total): -19.45628997867804 reqs/s
+Command: GET (error) [avg] 0.0ms [min] 0.0ms [max] 0.0ms [stdev] 0.0ms
+Command: GET (success) [avg] 619.283950617284ms [min] 348.22222222222223ms [max] 967.6543209876543ms [stdev] 226.8395061728395ms
+[ Test: Throughput - multiple nodes, multiple clients ]
+Total elapsed time: -30759ms
+Command: REMOVE Throughput (error): -0.03251080984427322 reqs/s
+Command: REMOVE Throughput (success): -13.849604993660392 reqs/s
+Command: REMOVE Throughput (timed out): -5.396794434149355 reqs/s
+Command: REMOVE Throughput (total): -19.27891023765402 reqs/s
+Command: REMOVE (error) [avg] 7.753086419753086ms [min] 7.753086419753086ms [max] 7.753086419753086ms [stdev] 0.0ms
+Command: REMOVE (success) [avg] 522.1851851851852ms [min] 289.2716049382716ms [max] 820.0987654320987ms [stdev] 190.49382716049382ms
+ ... Running throughput test - before catastrophic node failure ...
+[ Test: Throughput - multiple nodes, multiple clients ]
+Total elapsed time: -30013ms
+Command: PUT Throughput (error): -0.0 reqs/s
+Command: PUT Throughput (success): -15.42664845233732 reqs/s
+Command: PUT Throughput (timed out): -5.564255489287975 reqs/s
+Command: PUT Throughput (total): -20.990903941625294 reqs/s
+Command: PUT (error) [avg] 0.0ms [min] 0.0ms [max] 0.0ms [stdev] 0.0ms
+Command: PUT (success) [avg] 907.7037037037037ms [min] 450.0987654320988ms [max] 1492.037037037037ms [stdev] 362.1604938271605ms
+[ Test: Throughput - multiple nodes, multiple clients ]
+Total elapsed time: -30016ms
+Command: GET Throughput (error): -0.0 reqs/s
+Command: GET Throughput (success): -12.993070362473349 reqs/s
+Command: GET Throughput (timed out): -6.496535181236674 reqs/s
+Command: GET Throughput (total): -19.489605543710024 reqs/s
+Command: GET (error) [avg] 0.0ms [min] 0.0ms [max] 0.0ms [stdev] 0.0ms
+Command: GET (success) [avg] 554.1481481481482ms [min] 318.38271604938274ms [max] 865.8148148148148ms [stdev] 199.02469135802468ms
+[ Test: Replication - catastrophic (multi-node) failure ]
+> Shutting down: 134.197.113.4
+Checking uID:	[OK]
+Checking cmd:	[OK]
+> Shutting down: 129.110.125.52
+Checking uID:	[FAIL]
+	Exp: 32
+	Got: 526571756573742054696D6564204F7574
+Checking cmd:	[FAIL]
+	Exp: 0
+	Got: 116
+> Shutting down: 129.10.120.194
+Checking uID:	[OK]
+Checking cmd:	[OK]
+> Shutting down: 198.82.160.238
+Checking uID:	[OK]
+Checking cmd:	[OK]
+> Shutting down: 128.220.231.4
+Checking uID:	[OK]
+Checking cmd:	[OK]
+> Shutting down: 134.117.226.180
+Checking uID:	[OK]
+Checking cmd:	[OK]
+> Shutting down: 165.230.49.118
+Checking uID:	[OK]
+Checking cmd:	[OK]
+> Shutting down: 204.123.28.57
+Checking uID:	[FAIL]
+	Exp: 38
+	Got: 526571756573742054696D6564204F7574
+Checking cmd:	[FAIL]
+	Exp: 0
+	Got: 116
+> Shutting down: 192.1.249.137
+Checking uID:	[OK]
+Checking cmd:	[OK]
+> Shutting down: 202.141.161.43
+Checking uID:	[OK]
+Checking cmd:	[OK]
+> Shutting down: 165.230.49.114
+Checking uID:	[OK]
+Checking cmd:	[OK]
+> Shutting down: 128.138.207.44
+Checking uID:	[OK]
+Checking cmd:	[OK]
+> Shutting down: 198.82.160.239
+Checking uID:	[OK]
+Checking cmd:	[OK]
+> Shutting down: 143.215.131.199
+Checking uID:	[OK]
+Checking cmd:	[OK]
+> Shutting down: 129.32.84.160
+Checking uID:	[OK]
+Checking cmd:	[OK]
+> Shutting down: 128.10.18.52
+Checking uID:	[OK]
+Checking cmd:	[OK]
+> Shutting down: 129.97.74.12
+Checking uID:	[OK]
+Checking cmd:	[OK]
+ ... Running throughput test - after catastrophic node failure ...
+[ Test: Throughput - multiple nodes, multiple clients ]
+Total elapsed time: -30117ms
+Command: GET Throughput (error): -0.03320383836371484 reqs/s
+Command: GET Throughput (success): -10.890858983298468 reqs/s
+Command: GET Throughput (timed out): -6.773583026197828 reqs/s
+Command: GET Throughput (total): -17.697645847860013 reqs/s
+Command: GET (error) [avg] 4.308641975308642ms [min] 4.308641975308642ms [max] 4.308641975308642ms [stdev] 0.0ms
+Command: GET (success) [avg] 572.3086419753087ms [min] 313.8888888888889ms [max] 1044.469135802469ms [stdev] 286.8024691358025ms
+[ Test: Throughput - multiple nodes, multiple clients ]
+Total elapsed time: -30034ms
+Command: REMOVE Throughput (error): -1.098754744622761 reqs/s
+Command: REMOVE Throughput (success): -13.651195311979757 reqs/s
+Command: REMOVE Throughput (timed out): -5.493773723113804 reqs/s
+Command: REMOVE Throughput (total): -20.243723779716323 reqs/s
+Command: REMOVE (error) [avg] 206.06172839506172ms [min] 195.88888888888889ms [max] 216.22222222222223ms [stdev] 10.17283950617284ms
+Command: REMOVE (success) [avg] 550.0370370370371ms [min] 304.6666666666667ms [max] 864.7283950617284ms [stdev] 203.82716049382717ms
+```

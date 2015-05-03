@@ -9,6 +9,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import com.cam.eece411.Communication.AppResponse;
@@ -21,6 +22,7 @@ import com.cam.eece411.Handlers.UpdateHandler;
 import com.cam.eece411.Structures.DHT;
 import com.cam.eece411.Structures.Node;
 import com.cam.eece411.Utilities.Commands;
+import com.cam.eece411.Utilities.Protocols;
 import com.cam.eece411.Utilities.Utils;
 
 /**
@@ -30,39 +32,53 @@ import com.cam.eece411.Utilities.Utils;
  */
 public class Server {
 	private static final Logger log = Logger.getLogger(Server.class.getName());
+	
 
 	public static Node me;
 	public static Integer state;
 	public static UDPSocket socket;
+	public static UDPSocket joinSocket;
+	public static UDPSocket repSocket;
+	public static UDPSocket updateSocket;
 	public static List<String> nodes = null;
+	public static List<InetAddress> broadcastAddresses = null;
 
-	public static void main(String[] args) throws SocketException, IOException {
-		log.info("And so it begins.");
+	public static void main(String[] args) throws SocketException, IOException, InterruptedException {
+		
+		log.info("And so it begins. (V24)");
 
 		// Instantiate ourself as a node and set our state
 		setup();
-
+		
 		// Setup the main listening socket
 		socket = new UDPSocket(Utils.MAIN_PORT);
+		joinSocket = new UDPSocket(Utils.JOIN_PORT);
+		updateSocket = new UDPSocket(Utils.UPDATE_PORT);
+		repSocket = new UDPSocket(Utils.REP_PORT);
 
 		// Setup some local variables
 		Message msg;
 		byte cmd;
 
 		// Check if we were given the CREATE-DHT command
-		if (args.length == 1) {
+		if (args.length >= 1) {
 			log.info(args[0]);
 			if (args[0].equalsIgnoreCase("create")) {
 				createDHT();
 			}
+			if(args.length == 2) {
+				if(args[1].equalsIgnoreCase("log")) {
+					Protocols.LOGGER_LEVEL = java.util.logging.Level.ALL;
+				}
+			}
 		}
-
+		log.setLevel(Protocols.LOGGER_LEVEL);
 		// Try to join the DHT
 		readFrom(Utils.NODE_LIST);
 		while (state == Utils.OUT_OF_DHT) {
 			attemptToJoin();
 		}
-		
+		buildNodeList();
 		// Launch the Watchdog Thread
 		(new Thread(new WDT(Utils.WDT_PORT))).start();
 
@@ -73,21 +89,22 @@ public class Server {
 			msg = socket.receive();
 			cmd = msg.getCommand();
 			log.info(Utils.byteCmdToString(cmd) + " received from " + msg.getReturnAddress() + ":" + msg.getReturnPort());
-
+			//log.info("Message received: " + Utils.bytesToHexString(msg.getData()));
 			// TODO: Send back an acknowledgement?
 
 			// React to message
 			if (Commands.isKVSCommand(cmd)) {
 				// Launch the KVS Handler thread
-				(new Thread(new KVSHandler(msg))).start();
+				(new Thread(new KVSHandler(msg, socket))).start();
+				
 			}
 			else if (Commands.isJoinMessage(cmd)) {
 				// Launch the Join Handler thread
-				(new Thread(new JoinHandler(msg))).start();
+				(new Thread(new JoinHandler(msg, joinSocket))).start();
 			}
 			else if (Commands.isUpdate(cmd)) {
 				// Launch the Update Handler thread
-				(new Thread(new UpdateHandler(msg))).start();
+				(new Thread(new UpdateHandler(msg, repSocket, updateSocket))).start();
 			}
 			else if (cmd == Commands.SHUTDOWN) {
 				respondToSHUTDOWN(msg);
@@ -124,6 +141,7 @@ public class Server {
 			while ((currentLine = br.readLine()) != null) {
 				// Add each line to our list
 				nodes.add(currentLine.trim());
+				
 			}
 		} catch (IOException e) {
 			log.log(Level.SEVERE, e.toString(), e);
@@ -151,20 +169,27 @@ public class Server {
 		if (msg != null) {
 			if (msg.getCommand() == Commands.JOIN_RESPONSE) {
 				// Set our node ID
-				me.nodeID = msg.getNodeID();
+				me.id = msg.getNodeID();
 				
 				// Copy the DHT
 				DHT.add(msg.getNodes());
 				
+				
 				// Add ourself to our DHT
 				DHT.add(me);
+				
+
+				//give each node a timestamp
+				for (Node node : DHT.nodes()) {
+					node.updateTimestamp();
+				}
 				
 				// Set our state to IN DHT
 				state = Utils.IN_DHT;
 				
 				// Broadcast an IS ALIVE message 
 				socket.broadcast(Builder.isAlive(me), DHT.broadcastList(), Utils.MAIN_PORT);
-				log.info("Joined table as node " + me.nodeID + " and broadcasted the fact");
+				log.info("Joined table as node " + me.id + " and broadcasted the fact");
 			}
 		}
 	}
@@ -180,14 +205,27 @@ public class Server {
 		if (!me.name.equals(nodes.get(random))) {
 			try {
 				addr = InetAddress.getByName(nodes.get(random));
+				socket.send(Builder.joinRequest(), addr, Utils.MAIN_PORT);
+				log.info("JOIN-REQUEST sent to " + addr.getHostName() + ":" + Utils.MAIN_PORT);
 			} catch (UnknownHostException e) {
 				log.log(Level.SEVERE, e.toString(), e);
 			}
-			socket.send(Builder.joinRequest(), addr, Utils.MAIN_PORT);
-			log.info("JOIN-REQUEST sent to " + addr.getHostName() + ":" + Utils.MAIN_PORT);
+			
 		}
 	}
 	
+
+	public static void buildNodeList() {
+		broadcastAddresses = new ArrayList<InetAddress>();
+		for(int i = 0; i < nodes.size(); i++) {
+			try {
+				broadcastAddresses.add(InetAddress.getByName(nodes.get(i)));
+			} catch (UnknownHostException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
 	
 	public static Message receiveJoinResponse() {
 		socket.setTimeout(Utils.JOIN_TIMEOUT);

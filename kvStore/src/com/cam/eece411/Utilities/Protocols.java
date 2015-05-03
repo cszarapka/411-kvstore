@@ -1,5 +1,8 @@
 package com.cam.eece411.Utilities;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  * The constants used for commands at the app-layer and 
  * the node-layer of our system, and response codes.
@@ -33,10 +36,10 @@ public class Protocols {
 	public static final byte CODE_UNKNOWN_COMMAND	= 5;
 	
 	// Port numbers
-	public static final int LISTENING_PORT			= 5600;
+/*	public static final int LISTENING_PORT			= 5600;
 	public static final int SENDING_PORT			= 5601;
 	public static final int JOIN_RESPONSE_PORT 		= 5602;
-	public static final int IS_ALIVE_RESPONSE_PORT 	= 5603;
+	public static final int IS_ALIVE_RESPONSE_PORT 	= 5603;*/
 	
 	// Timeout values
 	public static final int JOIN_TIMEOUT = 5000;
@@ -54,4 +57,6 @@ public class Protocols {
 	public static final int IN_TABLE = 1;
 	public static final int LEFT_TABLE = 2;
 	public static final int HANDLING_JOIN = 3;
+	
+	public static Level LOGGER_LEVEL = java.util.logging.Level.OFF;
 }

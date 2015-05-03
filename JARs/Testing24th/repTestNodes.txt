@@ -1,0 +1,5 @@
+pl2.cs.yale.edu
+planetlab-01.bu.edu
+planetlab3.williams.edu
+planetlab1.cs.ucla.edu
+planetlab1.cs.uoregon.edu

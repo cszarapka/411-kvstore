@@ -11,6 +11,7 @@ import com.cam.eece411.Structures.DHT;
 import com.cam.eece411.Structures.KVS;
 import com.cam.eece411.Structures.Node;
 import com.cam.eece411.Utilities.Commands;
+import com.cam.eece411.Utilities.Protocols;
 import com.cam.eece411.Utilities.Utils;
 
 public class KVSHandler implements Runnable {
@@ -19,19 +20,36 @@ public class KVSHandler implements Runnable {
 	private Message msg;
 	private UDPSocket socket;
 	
-	public KVSHandler(Message msg) {
+	public KVSHandler(Message msg, UDPSocket socket) {
 		this.msg = msg;
-		socket = new UDPSocket(Utils.KVS_PORT);
+		this.socket = socket;//new UDPSocket(Utils.KVS_PORT);
 	}
 
 	public void run() {
+		log.setLevel(Protocols.LOGGER_LEVEL);
 		log.info("KVSHandler launched");
 		
 		// If it is a replicated PUT command we don't bother checking
 		// if it is in our key range.
 		if (msg.getCommand() == Commands.REP_PUT) {
 			handleREPLICATED_PUT();
-			socket.close();
+			//socket.close();
+			return;
+		}
+		
+		if(msg.getCommand() == Commands.ECHOED) {
+			//TODO: don't know if it should be handled this way
+			
+			socket.send(Builder.echo_return(msg,ECHOEDResponse()), msg.getReturnAddress(), Utils.MAIN_PORT);
+			log.info("Sending response to echoed put to " + msg.getReturnAddress() + ":" + Utils.MAIN_PORT);
+			return;
+		}
+		
+		if(msg.getCommand() == Commands.ECHO_RETURN) { //
+			log.info("Sending message: " + Utils.bytesToHexString(Builder.echoedResponseToClient(msg)));
+			byte[] x = {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
+			socket.send(Builder.echoedResponseToClient(msg), msg.getEchoReturnAddress(), msg.getEchoReturnPort());
+			log.info("Echo_Return received and sent to " +  msg.getEchoReturnAddress() + ":" + msg.getEchoReturnPort());
 			return;
 		}
 		
@@ -40,12 +58,13 @@ public class KVSHandler implements Runnable {
 		
 		if (servicingNode == null) {
 			log.severe("No node found for key.");
-			socket.close();
+			//socket.close();
 			return;
 		} else {
 			// If I'm responsible for the command
-			if (Server.me.nodeID == servicingNode.nodeID) {
+			if (Server.me.id == servicingNode.id) {
 				// Respond to the command appropriately
+				
 				switch (msg.getCommand()) {
 					case Commands.PUT: send(PUTResponse()); break;
 					case Commands.GET: send(GETResponse()); break;
@@ -53,14 +72,30 @@ public class KVSHandler implements Runnable {
 				}
 			} else {
 				// Send it to the node who is responsible for it
-				socket.send(Builder.echo(msg), servicingNode.addr, Utils.MAIN_PORT);
-				log.info("ECHOed " + Utils.byteCmdToString(msg.getCommand()) + " sent to " + servicingNode.nodeID + "@" + servicingNode.addr.getHostName() + ":" + Utils.MAIN_PORT);
+				UDPSocket newSocket = new UDPSocket(Utils.KVS_PORT);
+				newSocket.send(Builder.echo(msg), servicingNode.addr, Utils.MAIN_PORT);
+				log.info("ECHOed " + Utils.byteCmdToString(msg.getCommand()) + " sent to " + servicingNode.id + "@" + servicingNode.addr.getHostName() + ":" + Utils.MAIN_PORT);
+				newSocket.close();
 			}
 		}
-		socket.close();
+		//socket.close();
 	}
 
+	private AppResponse ECHOEDResponse() {
+		int command = msg.getAppCommand();
+		if(command == Commands.GET) {
+			return GETResponse();
+		} else if(command == Commands.PUT) {
+			return PUTResponse();
+		} else if(command == Commands.REMOVE) {
+			return REMOVEResponse();
+		} else {
+			return null;
+		}
+	}
+	
 	private AppResponse PUTResponse() {
+		log.setLevel(Protocols.LOGGER_LEVEL);
 		byte responseCode;
 		String output;
 		synchronized (KVS.class) {
@@ -76,19 +111,33 @@ public class KVSHandler implements Runnable {
 			
 			// Replicate this PUT if they are not you and are distinct
 			
-			if (cw.nodeID != Server.me.nodeID) {
+			if (cw.id != Server.me.id) {
 				socket.send(Builder.replicatedPut(msg), cw.addr, Utils.MAIN_PORT);
-				output += "and REPLICATED to " + cw.nodeID + "@" + cw.addr.getHostName() + ":" + Utils.MAIN_PORT;
+				output += "and REPLICATED to " + cw.id + "@" + cw.addr.getHostName() + ":" + Utils.MAIN_PORT;
 			}
 			
-			if (ccw.nodeID != Server.me.nodeID && ccw.nodeID != cw.nodeID) {
+			if (ccw.id != Server.me.id && ccw.id != cw.id) {
 				socket.send(Builder.replicatedPut(msg), ccw.addr, Utils.MAIN_PORT);
-				output += " and to " + ccw.nodeID + "@" + ccw.addr.getHostName() + ":" + Utils.MAIN_PORT;
+				output += " and to " + ccw.id + "@" + ccw.addr.getHostName() + ":" + Utils.MAIN_PORT;
 			}
 			log.info(output);
 		}
 		
 		return new AppResponse(msg, responseCode);
+	}
+	
+	private void REP_PUTResponse(){
+		log.setLevel(Protocols.LOGGER_LEVEL);
+		byte responseCode;
+		String output;
+		log.info("[REPLICATED PUT]: key is " + msg.getKey());
+		log.info("[REPLICATED PUT]: value is " + msg.getValue());
+		synchronized (KVS.class) {
+			// Update/add the key-value pair into our store
+			responseCode = KVS.put(msg.getKey(), msg.getValue());
+		}
+		log.info("[REPLICATED PUT]: received from " + msg.getReturnAddress());
+		log.info("[REPLICATED PUT]: response code: " + responseCode);
 	}
 	
 	private AppResponse GETResponse() {
@@ -114,11 +163,13 @@ public class KVSHandler implements Runnable {
 	}
 	
 	private void handleREPLICATED_PUT() {
-		PUTResponse();
+		REP_PUTResponse();
 	}
 	
 	private void send(AppResponse r) {
+		log.setLevel(Protocols.LOGGER_LEVEL);
 		socket.send(r.buffer, r.ipToSendTo, r.portToSendTo);
+		log.info("Sending message: " + Utils.bytesToHexString(r.buffer));
 		log.info("Response: " + Utils.byteCodeToString(r.responseCode) + " sent to " + r.ipToSendTo.getHostName() + ":" + r.portToSendTo);
 	}
 }

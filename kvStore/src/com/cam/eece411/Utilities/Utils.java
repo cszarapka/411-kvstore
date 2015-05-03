@@ -17,7 +17,7 @@ public final class Utils {
 	private Utils() {}
 
 	// filenames of node lists
-	public static final String NODE_LIST = "/home/ubc_eece411_5/repTestNodes.txt";
+	public static final String NODE_LIST = "repTestNodes.txt";
 
 	/*
 	 * Port Numbers
@@ -29,31 +29,37 @@ public final class Utils {
 	 * sent on their own port, and any specific responses they need
 	 * are sent to that port as well.
 	 */
-	public static final int MAIN_PORT	= 7010;
+	public static final int MAIN_PORT	= 9010;
 
 	/**
 	 * The Join-Handler's port for sending messages
 	 */
-	public static final int JOIN_PORT	= 7020;
+	public static final int JOIN_PORT	= 9020;
 
 	/**
 	 * The KVS-Handler's port for sending messages
 	 */
-	public static final int KVS_PORT	= 7030;
+	public static final int KVS_PORT	= 9030;
 
 	/**
 	 * The Update-Handler's port for sending messages
 	 */
-	public static final int UPDATE_PORT	= 7040;
+	public static final int UPDATE_PORT	= 9040;
 
 	/**
 	 * The WDT's port for sending messages
 	 */
-	public static final int WDT_PORT 	= 7050;
+	public static final int WDT_PORT 	= 9050;
+	
+	/**
+	 * The UpdateHandler's port for sending isAlive replication PUTs
+	 */
 
+	public static final int REP_PORT	= 9060;
+	
 	// Timeout values (msec)
 	public static final int JOIN_TIMEOUT = 5000;
-	public static final int WDT_TIMEOUT = 500000; // 8 minutes ish
+	public static final int WDT_TIMEOUT = 60000; // 8 minutes ish
 
 	// Max message size
 	public static final int MAX_MSG_SIZE	= 15100;
@@ -181,6 +187,7 @@ public final class Utils {
 			case Commands.IS_DEAD: 		string = "IS-DEAD"; break;
 			case Commands.JOIN_RESPONSE:	string = "JOIN-RESPONSE"; break;
 			case Commands.REP_PUT:	string = "REPLICATION-PUT"; break;
+			case Commands.ECHO_RETURN: string = "ECHO-RETURN"; break;
 		}
 		return string;
 	}
